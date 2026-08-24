@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/constants/app_colors.dart';
 
 class AppTheme {
@@ -97,19 +98,19 @@ class AppTheme {
       // Display (Lalezar)
       displayLarge: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 34,
+        fontSize: 44.sp,
         color: onSurface,
         height: 1.25,
       ),
       displayMedium: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 30,
+        fontSize: 40.sp,
         color: onSurface,
         height: 1.25,
       ),
       displaySmall: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 26,
+        fontSize: 36.sp,
         color: onSurface,
         height: 1.3,
       ),
@@ -117,19 +118,19 @@ class AppTheme {
       // Headlines (Lalezar)
       headlineLarge: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 24,
+        fontSize: 24.sp,
         color: onSurface,
         height: 1.3,
       ),
       headlineMedium: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 21,
+        fontSize: 21.sp,
         color: onSurface,
         height: 1.3,
       ),
       headlineSmall: TextStyle(
         fontFamily: fontDisplay,
-        fontSize: 18,
+        fontSize: 18.sp,
         color: onSurface,
         height: 1.35,
       ),
@@ -137,21 +138,21 @@ class AppTheme {
       // Titles (Vazirmatn Bold/SemiBold)
       titleLarge: TextStyle(
         fontFamily: fontBody,
-        fontSize: 16,
+        fontSize: 16.sp,
         fontWeight: FontWeight.w700,
         color: onSurface,
         height: 1.5,
       ),
       titleMedium: TextStyle(
         fontFamily: fontBody,
-        fontSize: 14,
+        fontSize: 14.sp,
         fontWeight: FontWeight.w600,
         color: onSurface,
         height: 1.5,
       ),
       titleSmall: TextStyle(
         fontFamily: fontBody,
-        fontSize: 12.5,
+        fontSize: 12.5.sp,
         fontWeight: FontWeight.w600,
         color: onSurface,
         height: 1.5,
@@ -160,19 +161,19 @@ class AppTheme {
       // Body (Vazirmatn Regular)
       bodyLarge: TextStyle(
         fontFamily: fontBody,
-        fontSize: 16,
+        fontSize: 16.sp,
         color: onSurface,
         height: 1.7,
       ),
       bodyMedium: TextStyle(
         fontFamily: fontBody,
-        fontSize: 14,
+        fontSize: 14.sp,
         color: onSurface,
         height: 1.6,
       ),
       bodySmall: TextStyle(
         fontFamily: fontBody,
-        fontSize: 12,
+        fontSize: 12.sp,
         color: soft,
         height: 1.6,
       ),
@@ -180,25 +181,25 @@ class AppTheme {
       // Labels (Vazirmatn Medium/Bold)
       labelLarge: TextStyle(
         fontFamily: fontBody,
-        fontSize: 15,
+        fontSize: 15.sp,
         fontWeight: FontWeight.w700,
         color: onSurface,
         height: 1.4,
       ),
       labelMedium: TextStyle(
         fontFamily: fontBody,
-        fontSize: 12.5,
+        fontSize: 12.5.sp,
         fontWeight: FontWeight.w500,
         color: onSurface,
         height: 1.4,
       ),
       labelSmall: TextStyle(
         fontFamily: fontBody,
-        fontSize: 11,
+        fontSize: 11.sp,
         fontWeight: FontWeight.w500,
         color: soft,
         height: 1.4,
-        letterSpacing: 0.2,
+        letterSpacing: 0.2.sp, // Letter spacing also scaled
       ),
     );
   }
@@ -231,7 +232,8 @@ class AppTheme {
         bodyColor: scheme.onPrimary,
         displayColor: scheme.onPrimary,
       ),
-      iconTheme: IconThemeData(color: scheme.onSurface, size: 24),
+      // Icon size scaled with width
+      iconTheme: IconThemeData(color: scheme.onSurface, size: 24.w),
 
       //* AppBar styling
       appBarTheme: AppBarTheme(
@@ -240,15 +242,15 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        titleSpacing: AppSpacing.lg,
+        titleSpacing: AppSpacing.lg.w, // Scaled spacing
         titleTextStyle: TextStyle(
           fontFamily: fontDisplay,
-          fontSize: 20,
+          fontSize: 20.sp,
           fontWeight: FontWeight.w400,
           color: scheme.onSurface,
         ),
-        iconTheme: IconThemeData(color: scheme.onSurface, size: 24),
-        actionsIconTheme: IconThemeData(color: scheme.onSurface, size: 24),
+        iconTheme: IconThemeData(color: scheme.onSurface, size: 24.w),
+        actionsIconTheme: IconThemeData(color: scheme.onSurface, size: 24.w),
         systemOverlayStyle: isDark
             ? SystemUiOverlayStyle.light.copyWith(
                 statusBarColor: Colors.transparent,
@@ -268,10 +270,10 @@ class AppTheme {
         clipBehavior: Clip.antiAlias,
         shadowColor: AppShadows.soft.color,
         shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.large,
+          borderRadius: AppRadius.large.r, // Scaled radius
           side: BorderSide(
             color: isDark ? AppColors.darkBorder : scheme.outlineVariant,
-            width: AppBorders.widthThin,
+            width: AppBorders.widthThin.w, // Scaled border width
           ),
         ),
       ),
@@ -284,12 +286,12 @@ class AppTheme {
           disabledBackgroundColor: scheme.primary.withValues(alpha: 0.35),
           disabledForegroundColor: scheme.onSurface.withValues(alpha: 0.6),
           elevation: 0,
-          minimumSize: const Size.fromHeight(AppRadius.control),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
-            vertical: AppSpacing.sm,
+          minimumSize: Size.fromHeight(AppRadius.control.h), // Scaled height
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl.w, // Scaled padding
+            vertical: AppSpacing.sm.h,
           ),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           textStyle: textTheme.labelLarge,
         ),
       ),
@@ -302,12 +304,12 @@ class AppTheme {
           disabledBackgroundColor: scheme.primary.withValues(alpha: 0.35),
           disabledForegroundColor: scheme.onSurface.withValues(alpha: 0.6),
           elevation: 0,
-          minimumSize: const Size.fromHeight(AppRadius.control),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
-            vertical: AppSpacing.sm,
+          minimumSize: Size.fromHeight(AppRadius.control.h),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl.w,
+            vertical: AppSpacing.sm.h,
           ),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           textStyle: textTheme.labelLarge,
         ),
       ),
@@ -317,13 +319,13 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: scheme.primary,
           backgroundColor: Colors.transparent,
-          side: BorderSide(color: scheme.primary, width: AppBorders.width),
-          minimumSize: const Size.fromHeight(AppRadius.control),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xl,
-            vertical: AppSpacing.sm,
+          side: BorderSide(color: scheme.primary, width: AppBorders.width.w),
+          minimumSize: Size.fromHeight(AppRadius.control.h),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.xl.w,
+            vertical: AppSpacing.sm.h,
           ),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           textStyle: textTheme.labelLarge,
         ),
       ),
@@ -332,10 +334,10 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: scheme.primary,
-          minimumSize: const Size(0, 40),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
-            vertical: AppSpacing.xs,
+          minimumSize: Size(0, 40.h), // Scaled min height
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm.w,
+            vertical: AppSpacing.xs.h,
           ),
           textStyle: textTheme.labelLarge,
         ),
@@ -345,7 +347,7 @@ class AppTheme {
       iconButtonTheme: IconButtonThemeData(
         style: IconButton.styleFrom(
           foregroundColor: scheme.onSurfaceVariant,
-          iconSize: 24,
+          iconSize: 24.w, // Scaled icon size
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -353,7 +355,7 @@ class AppTheme {
         foregroundColor: scheme.onPrimary,
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(AppRadius.lg),
+          borderRadius: BorderRadiusGeometry.circular(AppRadius.lg.r),
         ),
       ),
 
@@ -363,9 +365,9 @@ class AppTheme {
         fillColor: inputFill,
         isDense: true,
         alignLabelWithHint: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: 14,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg.w,
+          vertical: 14.h, // Scaled vertical padding
         ),
         labelStyle: textTheme.bodyMedium?.copyWith(
           color: scheme.onSurfaceVariant,
@@ -378,36 +380,39 @@ class AppTheme {
         suffixIconColor: scheme.onSurfaceVariant,
         errorStyle: textTheme.labelSmall?.copyWith(color: scheme.error),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.medium,
+          borderRadius: AppRadius.medium.r,
           borderSide: BorderSide(
             color: scheme.outlineVariant,
-            width: AppBorders.width,
+            width: AppBorders.width.w,
           ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.medium,
+          borderRadius: AppRadius.medium.r,
           borderSide: BorderSide(
             color: scheme.outlineVariant,
-            width: AppBorders.width,
+            width: AppBorders.width.w,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.medium,
+          borderRadius: AppRadius.medium.r,
           borderSide: BorderSide(
             color: scheme.primary,
-            width: AppBorders.width,
+            width: AppBorders.width.w,
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.medium,
+          borderRadius: AppRadius.medium.r,
           borderSide: BorderSide(
             color: scheme.error,
-            width: AppBorders.widthThin,
+            width: AppBorders.widthThin.w,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.medium,
-          borderSide: BorderSide(color: scheme.error, width: AppBorders.width),
+          borderRadius: AppRadius.medium.r,
+          borderSide: BorderSide(
+            color: scheme.error,
+            width: AppBorders.width.w,
+          ),
         ),
       ),
 
@@ -419,8 +424,8 @@ class AppTheme {
               : Colors.transparent,
         ),
         checkColor: WidgetStatePropertyAll(scheme.onPrimary),
-        side: BorderSide(color: scheme.outline, width: AppBorders.width),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        side: BorderSide(color: scheme.outline, width: AppBorders.width.w),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.r)),
       ),
       radioTheme: RadioThemeData(
         fillColor: WidgetStatePropertyAll(scheme.primary),
@@ -445,26 +450,26 @@ class AppTheme {
           backgroundColor: WidgetStatePropertyAll(cardColor),
           elevation: const WidgetStatePropertyAll(4),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: AppRadius.medium),
+            RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           ),
         ),
       ),
 
       //* Bottom Navigation Bar
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 68.h, // Scaled height
         elevation: 0,
         backgroundColor: cardColor,
         indicatorColor: isDark
             ? const Color(0xFF123E37)
             : AppColors.primaryTint200,
         indicatorShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         iconTheme: WidgetStateProperty.resolveWith(
           (s) => IconThemeData(
-            size: 24,
+            size: 24.w,
             color: s.contains(WidgetState.selected)
                 ? scheme.primary
                 : scheme.onSurfaceVariant,
@@ -473,7 +478,7 @@ class AppTheme {
         labelTextStyle: WidgetStateProperty.resolveWith(
           (s) => TextStyle(
             fontFamily: fontBody,
-            fontSize: 11.5,
+            fontSize: 11.5.sp,
             fontWeight: s.contains(WidgetState.selected)
                 ? FontWeight.w700
                 : FontWeight.w500,
@@ -488,20 +493,20 @@ class AppTheme {
       tabBarTheme: TabBarThemeData(
         labelColor: scheme.primary,
         unselectedLabelColor: scheme.onSurfaceVariant,
-        labelStyle: const TextStyle(
+        labelStyle: TextStyle(
           fontFamily: fontBody,
-          fontSize: 14,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w700,
         ),
-        unselectedLabelStyle: const TextStyle(
+        unselectedLabelStyle: TextStyle(
           fontFamily: fontBody,
-          fontSize: 14,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w500,
         ),
         indicatorColor: scheme.primary,
         indicatorSize: TabBarIndicatorSize.label,
         dividerColor: scheme.outlineVariant,
-        dividerHeight: AppBorders.width,
+        dividerHeight: AppBorders.width.w,
         splashFactory: InkRipple.splashFactory,
       ),
 
@@ -514,25 +519,25 @@ class AppTheme {
         secondaryLabelStyle: textTheme.labelMedium?.copyWith(
           color: scheme.onPrimary,
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm.w,
+          vertical: AppSpacing.xs.h,
         ),
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.small),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.small.r),
       ),
 
       //* Badge (Notifications)
       badgeTheme: BadgeThemeData(
         backgroundColor: scheme.error,
         textColor: Colors.white,
-        textStyle: const TextStyle(
+        textStyle: TextStyle(
           fontFamily: fontBody,
-          fontSize: 10,
+          fontSize: 10.sp,
           fontWeight: FontWeight.w700,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-        smallSize: 8,
+        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+        smallSize: 8.w,
       ),
 
       //* Dialog
@@ -540,7 +545,7 @@ class AppTheme {
         backgroundColor: cardColor,
         surfaceTintColor: Colors.transparent,
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.extraLarge),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.extraLarge.r),
         titleTextStyle: textTheme.headlineSmall?.copyWith(
           color: scheme.onSurface,
         ),
@@ -557,10 +562,10 @@ class AppTheme {
         elevation: 8,
         showDragHandle: true,
         dragHandleColor: scheme.outline,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(AppRadius.xl),
-            topRight: Radius.circular(AppRadius.xl),
+            topLeft: Radius.circular(AppRadius.xl.r),
+            topRight: Radius.circular(AppRadius.xl.r),
           ),
         ),
       ),
@@ -572,30 +577,32 @@ class AppTheme {
         contentTextStyle: textTheme.bodySmall?.copyWith(color: AppColors.shell),
         actionTextColor: AppColors.saffron,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
       ),
 
       //* ListTile & ExpansionTile
       listTileTheme: ListTileThemeData(
         iconColor: scheme.onSurfaceVariant,
         textColor: scheme.onSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+        contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
       ),
       expansionTileTheme: ExpansionTileThemeData(
         iconColor: scheme.primary,
         collapsedIconColor: scheme.onSurfaceVariant,
         textColor: scheme.onSurface,
         collapsedTextColor: scheme.onSurface,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
-        collapsedShape: RoundedRectangleBorder(borderRadius: AppRadius.medium),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: AppRadius.medium.r,
+        ),
       ),
 
       //* Divider (1.5px)
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
-        thickness: AppBorders.width,
-        space: 1,
+        thickness: AppBorders.width.w,
+        space: 1.h,
       ),
 
       //* Progress Indicator
@@ -609,12 +616,12 @@ class AppTheme {
       tooltipTheme: TooltipThemeData(
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurfaceHigh : AppColors.ink,
-          borderRadius: AppRadius.small,
+          borderRadius: AppRadius.small.r,
         ),
         textStyle: textTheme.labelSmall?.copyWith(color: AppColors.shell),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.xs,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm.w,
+          vertical: AppSpacing.xs.h,
         ),
       ),
 
@@ -634,11 +641,11 @@ class AppTheme {
           side: WidgetStatePropertyAll(
             BorderSide(
               color: scheme.outlineVariant,
-              width: AppBorders.widthThin,
+              width: AppBorders.widthThin.w,
             ),
           ),
           shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(borderRadius: AppRadius.medium),
+            RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           ),
           minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
         ),

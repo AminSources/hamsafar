@@ -5,8 +5,8 @@ packages:
     dependency: transitive
     description:
       name: args
-      sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
-      url: "https://pub-azs.ir"
+      sha256: "34b67ce1a3e41a875dc9007a2f44afcab84cb38264d33671dc50271cb93d9c2b"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.7.0"
   async:
@@ -14,7 +14,7 @@ packages:
     description:
       name: async
       sha256: e2eb0491ba5ddb6177742d2da23904574082139b07c1e33b8503b9f46f3e1a37
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.13.1"
   bloc:
@@ -22,15 +22,15 @@ packages:
     description:
       name: bloc
       sha256: e03b235924e4f509c27b5d6b2f949200e0a91149a9818b4f65eeb56662b75413
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "9.2.1"
   boolean_selector:
     dependency: transitive
     description:
       name: boolean_selector
-      sha256: "8aab1771e1243a5063b8b0ff68042d67334e3feab9e95b9490f9a6ebf73b42ea"
-      url: "https://pub-azs.ir"
+      sha256: ecafba3f5e48cd971483fe79d36f493d3220863211d78692b433d40c4f2260e1
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.2"
   characters:
@@ -38,15 +38,15 @@ packages:
     description:
       name: characters
       sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.4.1"
   clock:
     dependency: transitive
     description:
       name: clock
-      sha256: fddb70d9b5277016c77a80201021d40a2247104d9f4aa7bab7157b7e3f05b84b
-      url: "https://pub-azs.ir"
+      sha256: b58524664d681fb915b754a05008ae3f3418109d991a154083cee84262e6a7ec
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.1.2"
   code_assets:
@@ -54,23 +54,23 @@ packages:
     description:
       name: code_assets
       sha256: bf394f466ba9205f1812a0433b392d6af280f155f56651eda7c18cc32ed493b8
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.2.1"
   collection:
     dependency: transitive
     description:
       name: collection
-      sha256: "2f5709ae4d3d59dd8f7cd309b4e023046b57d8a6c82130785d2b0e5868084e76"
-      url: "https://pub-azs.ir"
+      sha256: "5d71ff3ceecc30fbb8c4c9e3386cd6d1b5be2b03de53713f7c0fef65d013bbf5"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.19.1"
   crypto:
     dependency: transitive
     description:
       name: crypto
-      sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
-      url: "https://pub-azs.ir"
+      sha256: "31b97ff448664342d57e8a4a32101c39bf44db05fd7420fe2f4c24e0638d47e7"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.0.7"
   cupertino_icons:
@@ -78,7 +78,7 @@ packages:
     description:
       name: cupertino_icons
       sha256: "41e005c33bd814be4d3096aff55b1908d419fde52ca656c8c47719ec745873cd"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.0.9"
   dio:
@@ -86,7 +86,7 @@ packages:
     description:
       name: dio
       sha256: "0df44ebba85e503958eb75d07eedd3c86275a58c1d3eda2f2ce8f0a2c3abbb3c"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "5.11.0"
   dio_web_adapter:
@@ -94,7 +94,7 @@ packages:
     description:
       name: dio_web_adapter
       sha256: "0786d0b7295a373de356fc0af4f6f1d0ab2844ed31b19dfc5e7556b70e24212c"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.2.1"
   equatable:
@@ -102,15 +102,15 @@ packages:
     description:
       name: equatable
       sha256: "3bce007a596ff8b3119c45d68aaef631272537c03d30e5d4534dd24bf4c5eaa2"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.0"
   fake_async:
     dependency: transitive
     description:
       name: fake_async
-      sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
-      url: "https://pub-azs.ir"
+      sha256: "8547de021ebe5d3cf0f3b956c9981a846eb8d529f4e6f005d235913c8ea73d01"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.3.3"
   ffi:
@@ -118,7 +118,7 @@ packages:
     description:
       name: ffi
       sha256: "6d7fd89431262d8f3125e81b50d3847a091d846eafcd4fdb88dd06f36d705a45"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.2.0"
   flutter:
@@ -130,16 +130,16 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_bloc
-      sha256: cf51747952201a455a1c840f8171d273be009b932c75093020f9af64f2123e38
-      url: "https://pub-azs.ir"
+      sha256: "5d737ceb7a7aaf89f7afcdf6ae7a12cbd2169aed442ee2c1a782338b60573161"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "9.1.1"
   flutter_lints:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: "3105dc8492f6183fb076ccf1f351ac3d60564bff92e20bfc4af9cc1651f4e7e1"
-      url: "https://pub-azs.ir"
+      sha256: "2bf3b46e83325cf1327e3537b8d5ec223fbe9d8d6208498a277ff90cbdcfa950"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "6.0.0"
   flutter_screenutil:
@@ -147,7 +147,7 @@ packages:
     description:
       name: flutter_screenutil
       sha256: "8239210dd68bee6b0577aa4a090890342d04a136ce1c81f98ee513fc0ce891de"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "5.9.3"
   flutter_test:
@@ -159,8 +159,8 @@ packages:
     dependency: transitive
     description:
       name: get
-      sha256: "5ed34a7925b85336e15d472cc4cfe7d9ebf4ab8e8b9f688585bf6b50f4c3d79a"
-      url: "https://pub-azs.ir"
+      sha256: "36e1df0b9d878ff3ea37c024e594e1fa858c0f4a876abba1bbee5859b8d541c1"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "4.7.3"
   get_it:
@@ -168,15 +168,15 @@ packages:
     description:
       name: get_it
       sha256: "568d62f0e68666fb5d95519743b3c24a34c7f19d834b0658c46e26d778461f66"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "9.2.1"
   get_storage:
     dependency: "direct main"
     description:
       name: get_storage
-      sha256: "39db1fffe779d0c22b3a744376e86febe4ade43bf65e06eab5af707dc84185a2"
-      url: "https://pub-azs.ir"
+      sha256: "9b5f85940059bf2228c700ee5c7a95f9eeb26b761ce343613b38bd3523ac87d0"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.1"
   hooks:
@@ -184,15 +184,15 @@ packages:
     description:
       name: hooks
       sha256: "9a62a50b50b769a737bc0a8ff381f333529df3ab746b2f6b02e83760231455ba"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.0.2"
   http_parser:
     dependency: transitive
     description:
       name: http_parser
-      sha256: "178d74305e7866013777bab2c3d8726205dc5a4dd935297175b19a23a2e66571"
-      url: "https://pub-azs.ir"
+      sha256: f38ffa72ab33b9a5f99ca9bdfbc65af6d52267760377788c4b04b06f1c1c06a1
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "4.1.2"
   jni:
@@ -200,7 +200,7 @@ packages:
     description:
       name: jni
       sha256: f038e58b4dc2c9037f50e233175086337e0b305e356d28211bf55f21c504cbd3
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.0.3"
   jni_flutter:
@@ -208,7 +208,7 @@ packages:
     description:
       name: jni_flutter
       sha256: "7b717011ea40d04fd47c2731d3d1d36eb99eba3435c2753d62489e8c3c9991d5"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.0.2"
   jni_util:
@@ -216,31 +216,31 @@ packages:
     description:
       name: jni_util
       sha256: "1ba86da04a5f2bf18fde2edb235587e70c5b0fc5bd4ba955f46b00942c3fc35f"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.0.0"
   leak_tracker:
     dependency: transitive
     description:
       name: leak_tracker
-      sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
-      url: "https://pub-azs.ir"
+      sha256: "182f2b7b157b8f2504793e3ecd66b8a4e322e1698ef7ab00a9453ef047e95b10"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "11.0.2"
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-      sha256: "1dbc140bb5a23c75ea9c4811222756104fbcd1a27173f0c34ca01e16bea473c1"
-      url: "https://pub-azs.ir"
+      sha256: "33ba21dd2e0aebdb829b1c87817c37c0c8957fc2689837189305fd35acdd6f8a"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.0.10"
   leak_tracker_testing:
     dependency: transitive
     description:
       name: leak_tracker_testing
-      sha256: "8d5a2d49f4a66b49744b23b018848400d23e54caf9463f4eb20df3eb8acb2eb1"
-      url: "https://pub-azs.ir"
+      sha256: "1c8c9f8288a8498abc17d86224b4ea6c54e2a74b7df272b580c7c35b7e94a0e9"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.0.2"
   lints:
@@ -248,15 +248,15 @@ packages:
     description:
       name: lints
       sha256: "12f842a479589fea194fe5c5a3095abc7be0c1f2ddfa9a0e76aed1dbd26a87df"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "6.1.0"
   logging:
     dependency: transitive
     description:
       name: logging
-      sha256: c8245ada5f1717ed44271ed1c26b8ce85ca3228fd2ffdb75468ab01979309d61
-      url: "https://pub-azs.ir"
+      sha256: "127e09b93ceefa2e268a422288520511e468662778993ec12b5e51e8a0cb68c4"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.3.0"
   matcher:
@@ -264,7 +264,7 @@ packages:
     description:
       name: matcher
       sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "0.12.19"
   material_color_utilities:
@@ -272,7 +272,7 @@ packages:
     description:
       name: material_color_utilities
       sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "0.13.0"
   meta:
@@ -280,23 +280,23 @@ packages:
     description:
       name: meta
       sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.18.0"
   mime:
     dependency: transitive
     description:
       name: mime
-      sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
-      url: "https://pub-azs.ir"
+      sha256: "2eb8c649b955456137a254994c2eafdbc70da6fdffac1b12613d9739a3d2bea3"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.0.0"
   nested:
     dependency: transitive
     description:
       name: nested
-      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
-      url: "https://pub-azs.ir"
+      sha256: "804c4ca7b6a49f96415d0eab4481f985ea3cb28fd3ffdd25ac391b592a96115d"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.0.0"
   objective_c:
@@ -304,7 +304,7 @@ packages:
     description:
       name: objective_c
       sha256: b7fb95a6d9a4f009edd63dc5ac69f07420b23a16161c6dd8660290b59c602e8e
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "9.5.0"
   package_config:
@@ -312,15 +312,15 @@ packages:
     description:
       name: package_config
       sha256: ffcf4cf3d6c0b74ac43708d9f56625506e8a68aa935abe9d267a7330f320eb5d
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.0.0"
   path:
     dependency: transitive
     description:
       name: path
-      sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
-      url: "https://pub-azs.ir"
+      sha256: f2ddc9037096de7b32a4343e48813d4641eae7f9d0359a058e412e3dac12ff97
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.9.1"
   path_provider:
@@ -328,7 +328,7 @@ packages:
     description:
       name: path_provider
       sha256: a7f4874f987173da295a61c181b8ee71dab59b332a486b391babf26a1b884825
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.6"
   path_provider_android:
@@ -336,15 +336,15 @@ packages:
     description:
       name: path_provider_android
       sha256: "69cbd515a62b94d32a7944f086b2f82b4ac40a1d45bebfc00813a430ab2dabcd"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.3.1"
   path_provider_foundation:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "2a376b7d6392d80cd3705782d2caa734ca4727776db0b6ec36ef3f1855197699"
-      url: "https://pub-azs.ir"
+      sha256: "4531f82d97f2c308c7905637b7bd7b7fae3827085c2c728b0ddbca721c5581e1"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.6.0"
   path_provider_linux:
@@ -352,7 +352,7 @@ packages:
     description:
       name: path_provider_linux
       sha256: "58c2005f147315b11e9b4a7bc889cd5203e250cba8e3f012dae259b4972b5c16"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.2.2"
   path_provider_platform_interface:
@@ -360,47 +360,47 @@ packages:
     description:
       name: path_provider_platform_interface
       sha256: "484838772624c3a4b94f1e44a3e19897fee738f2d5c4ce448443b0417f7c9dda"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.3"
   path_provider_windows:
     dependency: transitive
     description:
       name: path_provider_windows
-      sha256: bd6f00dbd873bfb70d0761682da2b3a2c2fccc2b9e84c495821639601d81afe7
-      url: "https://pub-azs.ir"
+      sha256: "13bee4bcd6cd297d699da6f6aa5d7a62cb1e12199002c24b1e4b7b8bfe1e75d4"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.3.0"
   platform:
     dependency: transitive
     description:
       name: platform
-      sha256: "5d6b1b0036a5f331ebc77c850ebc8506cbc1e9416c27e59b439f917a902a4984"
-      url: "https://pub-azs.ir"
+      sha256: "872be4110138e562b6da10ccdc02a0e5d706f3029831847fd520f4a4a0a6c4fc"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.1.6"
   plugin_platform_interface:
     dependency: transitive
     description:
       name: plugin_platform_interface
-      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
-      url: "https://pub-azs.ir"
+      sha256: "9791231257169a04f67ee2fdad587217c313b77e2476eda4cd7c76ed9c93b331"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.8"
   provider:
     dependency: transitive
     description:
       name: provider
-      sha256: "4e82183fa20e5ca25703ead7e05de9e4cceed1fbd1eadc1ac3cb6f565a09f272"
-      url: "https://pub-azs.ir"
+      sha256: "4d9e15ebe6a4d0a93d8acf22380b5de29d14eb8f31991d404b96600ef1e6db49"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "6.1.5+1"
   pub_semver:
     dependency: transitive
     description:
       name: pub_semver
-      sha256: "5bfcf68ca79ef689f8990d1160781b4bad40a3bd5e5218ad4076ddb7f4081585"
-      url: "https://pub-azs.ir"
+      sha256: "37e0498a1ceb6a5245b98021dc2efe9fb681bade0d7ff00c824c2769785c26df"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.2.0"
   record_use:
@@ -408,7 +408,7 @@ packages:
     description:
       name: record_use
       sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "0.6.0"
   sky_engine:
@@ -421,39 +421,39 @@ packages:
     description:
       name: source_span
       sha256: "56a02f1f4cd1a2d96303c0144c93bd6d909eea6bee6bf5a0e0b685edbd4c47ab"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.10.2"
   stack_trace:
     dependency: transitive
     description:
       name: stack_trace
-      sha256: "8b27215b45d22309b5cddda1aa2b19bdfec9df0e765f2de506401c071d38d1b1"
-      url: "https://pub-azs.ir"
+      sha256: "0037d7a0e3e3c9a547c7f29661d086af41d5cc0d59951e9760647339c17da7e7"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.12.1"
   stream_channel:
     dependency: transitive
     description:
       name: stream_channel
-      sha256: "969e04c80b8bcdf826f8f16579c7b14d780458bd97f56d107d3950fdbeef059d"
-      url: "https://pub-azs.ir"
+      sha256: "85021f7502ce19ba9bc6022b046e00d70b3b7dbc2531fbfe719ac917de9e4cad"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.1.4"
   string_scanner:
     dependency: transitive
     description:
       name: string_scanner
-      sha256: "921cd31725b72fe181906c6a94d987c78e3b98c2e205b397ea399d4054872b43"
-      url: "https://pub-azs.ir"
+      sha256: e636974dffeaf897e85e534ac4def377a2b520ee3f663ddd132f7f66e75c3d6d
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.4.1"
   term_glyph:
     dependency: transitive
     description:
       name: term_glyph
-      sha256: "7f554798625ea768a7518313e58f83891c7f5024f88e46e7182a4558850a4b8e"
-      url: "https://pub-azs.ir"
+      sha256: d6ea57eeb1944bea325d29cc207d3c2a24b254350100eb6663f5d0eba12ecc3b
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.2.2"
   test_api:
@@ -461,55 +461,55 @@ packages:
     description:
       name: test_api
       sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
-      url: "https://pub-azs.ir"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "0.7.11"
   typed_data:
     dependency: transitive
     description:
       name: typed_data
-      sha256: f9049c039ebfeb4cf7a7104a675823cd72dba8297f264b6637062516699fa006
-      url: "https://pub-azs.ir"
+      sha256: c48a2ee9c76c41db079cd9fd6a403900ba7452f9a2138376a8fdc30ad1c61731
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.4.0"
   vector_math:
     dependency: transitive
     description:
       name: vector_math
-      sha256: d530bd74fea330e6e364cda7a85019c434070188383e1cd8d9777ee586914c5b
-      url: "https://pub-azs.ir"
+      sha256: e2f2aa37c4ef504cba572a93f01bcf389ac10489c6e499ee5d122d274a375077
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "2.2.0"
   vm_service:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "0016aef94fc66495ac78af5859181e3f3bf2026bd8eecc72b9565601e19ab360"
-      url: "https://pub-azs.ir"
+      sha256: "5f37239c4851efcef929cea7824e76df7f2f0970aef85d66bbc430afa40e72f0"
+      url: "https://pub.tarazerp.ir"
     source: hosted
-    version: "15.2.0"
+    version: "15.3.0"
   web:
     dependency: transitive
     description:
       name: web
-      sha256: "868d88a33d8a87b18ffc05f9f030ba328ffefba92d6c127917a2ba740f9cfe4a"
-      url: "https://pub-azs.ir"
+      sha256: "5c6c9073f204d3015d106b3ab6c93034dc477d2158c338d3471b309869344662"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.1.1"
   xdg_directories:
     dependency: transitive
     description:
       name: xdg_directories
-      sha256: "7a3f37b05d989967cdddcbb571f1ea834867ae2faa29725fd085180e0883aa15"
-      url: "https://pub-azs.ir"
+      sha256: "8987dd98547b7293f302283e3bee2d95e21e53fd0e461078055fead776f35445"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "1.1.0"
   yaml:
     dependency: transitive
     description:
       name: yaml
-      sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
-      url: "https://pub-azs.ir"
+      sha256: "29c45dfe7e1f2e41542ea57c46e59843e647f67c73c1d516b05fa6104b910c34"
+      url: "https://pub.tarazerp.ir"
     source: hosted
     version: "3.1.3"
 sdks:
