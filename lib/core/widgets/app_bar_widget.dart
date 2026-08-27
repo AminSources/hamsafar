@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extenstion.dart';
+import 'package:hamsafar/core/widgets/chip_widget.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/enums/chip_mode.dart';
@@ -52,16 +53,14 @@ class AppBarWidget extends StatelessWidget {
         const Spacer(),
 
         hasChip!
-            ? Chip(
+            ? ChipWidget(
                 label: txt(
                   "مرحله 1 از 1",
                   color: chipMode == ChipMode.info
                       ? context.colorScheme.primary
                       : context.colorScheme.secondary,
                 ),
-                backgroundColor: chipMode == ChipMode.info
-                    ? context.colorScheme.primaryContainer
-                    : context.colorScheme.secondaryContainer,
+                chipMode: chipMode,
               )
             : const SizedBox(),
       ],

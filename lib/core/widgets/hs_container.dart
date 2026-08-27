@@ -36,6 +36,8 @@ class HsContainer extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        padding: padding,
+        margin: margin,
         decoration: BoxDecoration(
           border: Border.all(
             color: context.colorScheme.outline,

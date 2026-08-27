@@ -31,7 +31,7 @@ class AvatarIconWidget extends StatelessWidget {
         color: backgroundColor ?? context.colorScheme.primary,
         borderRadius: BorderRadius.circular(isCircle! ? 50.r : 20.r),
       ),
-      child: Icon(icon, size: iconSize ?? 50.sp, color: iconColor),
+      child: Icon(icon, size: iconSize ?? 20.sp, color: iconColor),
     );
   }
 }

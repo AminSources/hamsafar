@@ -61,7 +61,7 @@ class OnboardingPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   //? push home page
-                  Navigator.pushNamed(context, "/home");
+                  Navigator.pushNamed(context, "/main_wrapper");
                 },
                 child: txt("شروع"),
               ),
