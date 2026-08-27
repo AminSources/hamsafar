@@ -525,7 +525,7 @@ class AppTheme {
           vertical: AppSpacing.xs.h,
         ),
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.small.r),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.extraLarge.r),
       ),
 
       //* Badge (Notifications)

@@ -5,6 +5,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 class TextFieldWidget extends StatelessWidget {
   final String? title;
   final String? hintText;
+  final int? maxLines;
   final TextEditingController? controller;
 
   const TextFieldWidget({
@@ -12,6 +13,7 @@ class TextFieldWidget extends StatelessWidget {
     this.title,
     this.hintText,
     this.controller,
+    this.maxLines = 1,
   });
 
   @override
@@ -27,6 +29,7 @@ class TextFieldWidget extends StatelessWidget {
         //* field
         TextField(
           controller: controller,
+          maxLines: maxLines,
           decoration: InputDecoration(hintText: hintText),
         ),
       ],

@@ -9,6 +9,7 @@ class AvatarIconWidget extends StatelessWidget {
   final double? iconSize;
   final Color? backgroundColor;
   final Color? iconColor;
+  final bool? isCircle;
 
   const AvatarIconWidget({
     super.key,
@@ -18,6 +19,7 @@ class AvatarIconWidget extends StatelessWidget {
     this.iconSize,
     this.backgroundColor,
     this.iconColor,
+    this.isCircle = false,
   });
 
   @override
@@ -27,7 +29,7 @@ class AvatarIconWidget extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: backgroundColor ?? context.colorScheme.primary,
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(isCircle! ? 50.r : 20.r),
       ),
       child: Icon(icon, size: iconSize ?? 50.sp, color: iconColor),
     );
