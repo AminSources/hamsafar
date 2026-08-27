@@ -31,21 +31,27 @@ class txt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveStyle = _buildEffectiveStyle();
+
     return Text(
       text,
       textAlign: textAlign,
       maxLines: maxLine,
       overflow: textOverflow,
-      style:
-          style ??
-          TextStyle(
-            decoration: decoration,
-            decorationColor: decorationColor,
-            fontSize: size,
-            color: color,
-            fontFamily: fontFamily,
-            fontWeight: fontWeight,
-          ),
+      style: effectiveStyle,
+    );
+  }
+
+  TextStyle _buildEffectiveStyle() {
+    final baseStyle = style ?? const TextStyle();
+
+    return baseStyle.copyWith(
+      fontSize: size,
+      color: color,
+      fontWeight: fontWeight,
+      fontFamily: fontFamily,
+      decoration: decoration,
+      decorationColor: decorationColor,
     );
   }
 }

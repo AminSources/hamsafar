@@ -7,6 +7,8 @@ class AvatarIconWidget extends StatelessWidget {
   final double? height;
   final IconData? icon;
   final double? iconSize;
+  final Color? backgroundColor;
+  final Color? iconColor;
 
   const AvatarIconWidget({
     super.key,
@@ -14,6 +16,8 @@ class AvatarIconWidget extends StatelessWidget {
     this.height,
     this.icon,
     this.iconSize,
+    this.backgroundColor,
+    this.iconColor,
   });
 
   @override
@@ -22,10 +26,10 @@ class AvatarIconWidget extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: context.colorScheme.primary,
+        color: backgroundColor ?? context.colorScheme.primary,
         borderRadius: BorderRadius.circular(20.r),
       ),
-      child: Icon(icon, size: iconSize ?? 50.sp),
+      child: Icon(icon, size: iconSize ?? 50.sp, color: iconColor),
     );
   }
 }

@@ -14,59 +14,69 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox.expand(
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisAlignment: .center,
-            children: [
-              //* logo
-              AvatarIconWidget(
-                width: 75.w,
-                height: 75.w,
-                icon: Icons.train_rounded,
-                iconSize: 40.sp,
-              ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              children: [
+                //* space
+                SizedBox(height: 50.h),
 
-              //* space
-              SizedBox(height: 20.h),
+                //* logo
+                AvatarIconWidget(
+                  width: 75.w,
+                  height: 75.w,
+                  icon: Icons.train_rounded,
+                  iconSize: 40.sp,
+                ),
 
-              //* title
-              txt("همسفر", style: context.textTheme.displayLarge),
+                //* space
+                SizedBox(height: 20.h),
 
-              //* space
-              SizedBox(height: 10.h),
+                //* title
+                txt("همسفر", style: context.textTheme.displayLarge),
 
-              //* subtitle
-              txt("ورود به حساب کاربری", style: context.textTheme.bodyLarge),
+                //* space
+                SizedBox(height: 10.h),
 
-              //* space
-              SizedBox(height: 20.h),
+                //* subtitle
+                txt("ورود به حساب کاربری", style: context.textTheme.bodyLarge),
 
-              //* email field
-              TextFieldWidget(title: "ایمیل", hintText: "example@gmail.com"),
+                //* space
+                SizedBox(height: 20.h),
 
-              //* space
-              SizedBox(height: 20.h),
+                //* email field
+                TextFieldWidget(title: "ایمیل", hintText: "example@gmail.com"),
 
-              //* continue button
-              ElevatedButton(onPressed: () {}, child: txt("ادامه")),
+                //* space
+                SizedBox(height: 20.h),
 
-              //* space
-              SizedBox(height: 20.h),
+                //* continue button
+                ElevatedButton(
+                  onPressed: () {
+                    //? push verify page
+                    Navigator.pushNamed(context, "/verify");
+                  },
+                  child: txt("ادامه"),
+                ),
 
-              //* footer
-              AuthFooterWidget(),
+                //* space
+                SizedBox(height: 20.h),
 
-              //* space
-              SizedBox(height: 20.h),
+                //* footer
+                AuthFooterWidget(),
 
-              //* footer note
-              NoteWidget(
-                noteText:
-                    "همسفر فقط از ایمیل برای استفاده از کد تایید استفاده میکند، رمز عبور وجود ندارد",
-                noteIcon: Icons.lock_outline_rounded,
-              ),
-            ],
+                //* space
+                SizedBox(height: 20.h),
+
+                //* footer note
+                NoteWidget(
+                  noteText:
+                      "همسفر فقط از ایمیل برای استفاده از کد تایید استفاده میکند، رمز عبور وجود ندارد",
+                  noteIcon: Icons.lock_outline_rounded,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -6,8 +6,8 @@ import 'package:hamsafar/core/constants/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
-  static const String fontDisplay = 'Lalezar';
-  static const String fontBody = 'Vazirmatn';
+  static const String fontDisplay = 'lalezar';
+  static const String fontBody = 'vazirmatn';
 
   //* Light theme entry point
   static ThemeData get light => _build(_lightScheme);
@@ -161,7 +161,7 @@ class AppTheme {
       // Body (Vazirmatn Regular)
       bodyLarge: TextStyle(
         fontFamily: fontBody,
-        fontSize: 16.sp,
+        fontSize: 18.sp,
         color: onSurface,
         height: 1.7,
       ),
