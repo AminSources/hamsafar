@@ -4,8 +4,24 @@ import 'package:hamsafar/core/extensions/theme_extenstion.dart';
 import 'package:hamsafar/core/widgets/avatar_icon_widget.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
+
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    //? push auth page
+    Future.delayed(
+      const Duration(seconds: 2),
+      () => mounted ? Navigator.pushNamed(context, "/auth") : null,
+    );
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

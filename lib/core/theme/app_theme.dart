@@ -210,7 +210,7 @@ class AppTheme {
     final TextTheme textTheme = _textTheme(scheme);
 
     final Color cardColor = isDark ? AppColors.darkSurface : Colors.white;
-    final Color inputFill = isDark ? AppColors.darkSurfaceHigh : Colors.white;
+    //final Color inputFill = isDark ? AppColors.darkSurfaceHigh : Colors.white;
     final Color chipBg = isDark ? AppColors.darkSurfaceHigh : AppColors.mist;
 
     return ThemeData(
@@ -303,7 +303,7 @@ class AppTheme {
           foregroundColor: scheme.onPrimary,
           disabledBackgroundColor: scheme.primary.withValues(alpha: 0.35),
           disabledForegroundColor: scheme.onSurface.withValues(alpha: 0.6),
-          elevation: 0,
+          elevation: 3,
           minimumSize: Size.fromHeight(AppRadius.control.h),
           padding: EdgeInsets.symmetric(
             horizontal: AppSpacing.xl.w,
@@ -311,6 +311,7 @@ class AppTheme {
           ),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.medium.r),
           textStyle: textTheme.labelLarge,
+          shadowColor: scheme.primary,
         ),
       ),
 
@@ -361,8 +362,8 @@ class AppTheme {
 
       //* Input Decoration (Forms)
       inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: inputFill,
+        // filled: true,
+        // fillColor: inputFill,
         isDense: true,
         alignLabelWithHint: true,
         contentPadding: EdgeInsets.symmetric(

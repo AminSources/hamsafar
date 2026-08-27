@@ -6,8 +6,15 @@ class AvatarIconWidget extends StatelessWidget {
   final double? width;
   final double? height;
   final IconData? icon;
+  final double? iconSize;
 
-  const AvatarIconWidget({super.key, this.width, this.height, this.icon});
+  const AvatarIconWidget({
+    super.key,
+    this.width,
+    this.height,
+    this.icon,
+    this.iconSize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class AvatarIconWidget extends StatelessWidget {
         color: context.colorScheme.primary,
         borderRadius: BorderRadius.circular(20.r),
       ),
-      child: Icon(icon, size: 50.w),
+      child: Icon(icon, size: iconSize ?? 50.sp),
     );
   }
 }
