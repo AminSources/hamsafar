@@ -4,6 +4,7 @@ import 'package:hamsafar/core/constants/app_strings.dart';
 import 'package:hamsafar/core/extensions/theme_extenstion.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
+import 'package:hamsafar/features/trip_feature/presentation/pages/trips_page.dart';
 
 class MainWrapper extends StatelessWidget {
   const MainWrapper({super.key});
@@ -43,7 +44,12 @@ class MainWrapper extends StatelessWidget {
         ),
       ),
 
-      body: SizedBox.expand(child: PageView(children: [HomePage()])),
+      body: SizedBox.expand(
+        child: PageView(
+          reverse: true,
+          children: [const HomePage(), const TripsPage()],
+        ),
+      ),
     );
   }
 }

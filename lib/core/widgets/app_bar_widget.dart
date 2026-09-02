@@ -12,6 +12,7 @@ class AppBarWidget extends StatelessWidget {
   final bool? hasBackButton;
   final bool? hasChip;
   final ChipMode? chipMode;
+  final Widget? leading;
 
   const AppBarWidget({
     super.key,
@@ -20,6 +21,7 @@ class AppBarWidget extends StatelessWidget {
     this.hasBackButton,
     this.hasChip = false,
     this.chipMode = ChipMode.info,
+    this.leading,
   });
 
   @override
@@ -52,17 +54,10 @@ class AppBarWidget extends StatelessWidget {
         //* space
         const Spacer(),
 
+        //* leading
         hasChip!
-            ? ChipWidget(
-                label: txt(
-                  "مرحله 1 از 1",
-                  color: chipMode == ChipMode.info
-                      ? context.colorScheme.primary
-                      : context.colorScheme.secondary,
-                ),
-                chipMode: chipMode,
-              )
-            : const SizedBox(),
+            ? ChipWidget(label: txt("مرحله 1 از 1"), chipMode: chipMode)
+            : leading ?? SizedBox(),
       ],
     );
   }

@@ -1,1 +1,1 @@
-enum ChipMode { warning, info }
+enum ChipMode { warning, info, success }

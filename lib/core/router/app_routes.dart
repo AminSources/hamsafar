@@ -5,6 +5,7 @@ import 'package:hamsafar/features/auth_feature/presentation/pages/auth_page.dart
 import 'package:hamsafar/features/auth_feature/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/verify_page.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
+import 'package:hamsafar/features/trip_feature/presentation/pages/trips_page.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -16,5 +17,6 @@ class AppRoutes {
     "/onboarding": (context) => const OnboardingPage(),
     "/main_wrapper": (context) => const MainWrapper(),
     "/home": (context) => const HomePage(),
+    '/trips': (context) => const TripsPage(),
   };
 }

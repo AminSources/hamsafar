@@ -84,20 +84,6 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-
-            //* space
-            SizedBox(height: 20.h),
-
-            Row(
-              textDirection: .rtl,
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                txt("فعالیت های اخیر", style: context.textTheme.bodyLarge),
-
-                //* see all button
-                TextButton(onPressed: () {}, child: txt("همه")),
-              ],
-            ),
           ],
         ),
       ),

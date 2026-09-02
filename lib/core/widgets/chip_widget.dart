@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/core/extensions/chip_extenstion.dart';
 import 'package:hamsafar/core/extensions/theme_extenstion.dart';
 import 'package:hamsafar/enums/chip_mode.dart';
 
@@ -16,9 +17,10 @@ class ChipWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: label,
-      backgroundColor: chipMode == ChipMode.info
-          ? context.colorScheme.primaryContainer
-          : context.colorScheme.secondaryContainer,
+      labelStyle: context.textTheme.bodySmall?.copyWith(
+        color: context.setChipLabel(chipMode!),
+      ),
+      backgroundColor: context.setChipBackground(chipMode!),
     );
   }
 }
