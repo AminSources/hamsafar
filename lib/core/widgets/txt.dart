@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-class Txt extends StatelessWidget {
+// ignore: camel_case_types
+class txt extends StatelessWidget {
   final String text;
-  final TextStyle? style; // تغییر نام به استاندارد فلاتر
+  final TextStyle? style;
   final double? size;
   final Color? color;
   final FontWeight? fontWeight;
@@ -13,7 +14,7 @@ class Txt extends StatelessWidget {
   final TextDecoration? decoration;
   final Color? decorationColor;
 
-  const Txt(
+  const txt(
     this.text, {
     super.key,
     this.style,

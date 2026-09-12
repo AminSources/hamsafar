@@ -14,6 +14,7 @@ class AppColors {
 
   //* primary dark theme
   static const Color darkPrimary = Color(0xFF2DD4BF);
+  static const Color darkPrimaryDark = Color(0xFF239686);
   static const Color darkOnPrimary = Color(0xFF042F2E);
   static const Color darkPrimaryContainer = Color(0xFF115E59);
   static const Color darkSecondary = Color(0xFFFBBF24);

@@ -13,6 +13,7 @@ class AppTheme {
     scheme: const ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.primary,
+      primaryFixed: AppColors.primaryDark,
       onPrimary: AppColors.onPrimary,
       primaryContainer: AppColors.primaryContainer,
       onPrimaryContainer: AppColors.primaryDark,
@@ -50,6 +51,7 @@ class AppTheme {
     scheme: const ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.darkPrimary,
+      primaryFixed: AppColors.darkPrimaryDark,
       onPrimary: AppColors.darkOnPrimary,
       primaryContainer: AppColors.darkPrimaryContainer,
       onPrimaryContainer: AppColors.primaryContainer,

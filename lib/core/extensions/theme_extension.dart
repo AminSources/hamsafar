@@ -9,4 +9,18 @@ extension ThemeExtension on BuildContext {
 
   //? get text theme
   TextTheme get textTheme => theme.textTheme;
+
+  //? get vertical gradient
+  LinearGradient get verticalGradient => LinearGradient(
+    colors: [colorScheme.primary, colorScheme.primaryFixed],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  //? get horizontal gradient
+  LinearGradient get horizontalGradient => LinearGradient(
+    colors: [colorScheme.primary, colorScheme.primaryFixed],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
 }
