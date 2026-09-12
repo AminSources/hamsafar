@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>همسفر — طراحی رابط کاربری · بخش ۱ از ۲</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#0D9488; --pd:#0F766E; --pl:#CCFBF1; --pl2:#E9FBF7;
+  --acc:#F59E0B;
+  --bg:#F5F7FA; --line:#E4E9F0;
+  --t1:#0F172A; --t2:#5B6B7F; --t3:#9AA7B8;
+}
+body{font-family:'Vazirmatn',sans-serif;background:#17171A;color:#E7E7EA}
+/* ===================== CANVAS (Figma style) ===================== */
+.canvas{padding:56px 64px;min-width:1200px;background-image:radial-gradient(#26262B 1.1px,transparent 1.1px);background-size:26px 26px}
+.bhead{margin-bottom:44px;max-width:1000px}
+.bhead h1{font-size:30px;font-weight:900;display:flex;align-items:center;gap:14px}
+.logo-badge{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#14B8A6,#0F766E);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 24px rgba(13,148,136,.35);flex:none}
+.logo-badge svg{width:24px;height:24px}
+.bhead p{color:#9B9BA1;margin-top:12px;font-size:13.5px;line-height:2.1}
+.meta{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.meta span{background:#26262B;border:1px solid #35353B;color:#C9C9CF;font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:999px}
+.sect{margin-bottom:60px}
+.sect>h2{font-size:15px;font-weight:800;color:#8AE9DD;display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.sect>h2::after{content:"";flex:1;height:1px;background:#2E2E33}
+.row{display:flex;flex-wrap:wrap;gap:56px 48px;align-items:flex-start}
+.frame{flex:none}
+.flabel{font-size:12px;color:#8A8A92;margin-bottom:10px;display:flex;gap:8px;align-items:center;font-weight:600}
+.flabel b{background:#26262B;border:1px solid #35353B;color:#8AE9DD;padding:2px 8px;border-radius:7px;font-size:10.5px}
+/* ===================== PHONE FRAME ===================== */
+.screen{position:relative;width:375px;height:812px;background:var(--bg);border-radius:22px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06);color:var(--t1)}
+.hi{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:118px;height:4px;border-radius:4px;background:rgba(15,23,42,.25);z-index:60}
+.hi-w{background:rgba(255,255,255,.45)}
+/* status bar */
+.sb{display:flex;justify-content:space-between;align-items:center;padding:13px 22px 4px;font-size:12px;font-weight:800;color:var(--t1)}
+.sb svg{width:46px;height:13px}
+.sb-l{color:#fff}
+/* body */
+.body{padding:6px 20px 100px}
+/* app bar */
+.abar{display:flex;align-items:center;gap:10px;padding:8px 0 12px}
+.abar .ttl{font-size:15px;font-weight:800;flex:1}
+.icb{width:38px;height:38px;border-radius:12px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--t1);flex:none}
+.icb svg{width:18px;height:18px}
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#14B8A6,#0D9488);color:#fff;font-weight:800;font-size:14px;font-family:inherit;box-shadow:0 8px 20px rgba(13,148,136,.28);cursor:pointer}
+.btn svg{width:18px;height:18px}
+.btn-line{background:#fff;color:var(--t1);border:1.5px solid var(--line);box-shadow:none;font-weight:700}
+.btn-danger{background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA;box-shadow:none}
+.btn-ghost{background:none;border:none;color:var(--t3);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+/* fields */
+.field{margin-bottom:13px}
+.field label{font-size:12px;font-weight:700;color:var(--t2);display:block;margin-bottom:6px}
+.inp{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--t1);width:100%}
+.inp .ph{color:var(--t3)}
+.inp svg{width:17px;height:17px;color:var(--t3);flex:none}
+.inp.focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(20,184,166,.13)}
+.inp.ta{min-height:84px;align-items:flex-start;line-height:1.9}
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:10.5px;font-weight:800}
+.chip svg{width:11px;height:11px}
+.chip-amber{background:#FEF3C7;color:#B45309}
+.chip-green{background:#DCFCE7;color:#15803D}
+.chip-teal{background:var(--pl);color:var(--pd)}
+.chip-gray{background:#EEF2F7;color:#64748B}
+.chip-red{background:#FEE2E2;color:#B91C1C}
+.chip-w{background:rgba(255,255,255,.18);color:#fff}
+/* cards */
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 6px 18px rgba(15,23,42,.04)}
+.h{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px}
+.h b{font-size:14px;font-weight:800}
+.h a{font-size:11px;color:var(--pd);font-weight:800;text-decoration:none}
+.irow{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2)}
+.irow svg{width:15px;height:15px;color:var(--p);flex:none}
+/* avatars */
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex:none}
+.av-s{width:30px;height:30px;font-size:10px}
+.av-l{width:88px;height:88px;font-size:28px;border-radius:32px}
+.c1{background:#0EA5E9}.c2{background:#F97316}.c3{background:#8B5CF6}.c4{background:#EC4899}.c5{background:#22C55E}.c6{background:#64748B}
+.stack{display:flex}
+.stack .av{border:2.5px solid #fff;margin-inline-start:-9px}
+.stack .av:first-child{margin:0}
+/* nav bar */
+.nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;padding:8px 8px 20px;z-index:50}
+.nav .it{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--t3);font-weight:700}
+.nav .it .ico{width:46px;height:28px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.nav .it svg{width:20px;height:20px}
+.nav .it.on{color:var(--pd)}
+.nav .it.on .ico{background:var(--pl)}
+/* home options */
+.opts{display:flex;gap:10px;margin-top:14px}
+.opt{flex:1;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:0 4px 12px rgba(15,23,42,.03)}
+.opt .oi{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.opt .oi svg{width:19px;height:19px}
+.opt b{font-size:11px;font-weight:800}
+.opt span{font-size:9.5px;color:var(--t3);font-weight:700}
+.oi-t{background:var(--pl);color:var(--pd)}
+.oi-a{background:#FEF3C7;color:#B45309}
+.oi-v{background:#EDE9FE;color:#6D28D9}
+/* trip card */
+.trow{display:flex;justify-content:space-between;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;color:var(--pd);background:var(--pl2);padding:4px 9px;border-radius:999px}
+.pill svg{width:11px;height:11px}
+.tname{font-size:17px;font-weight:900;margin-top:10px}
+.tdest{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--t2);margin-top:5px}
+.tdest svg{width:13px;height:13px;color:var(--acc)}
+.tgrid{display:flex;align-items:center;background:#F7FAFC;border:1px solid var(--line);border-radius:14px;margin-top:12px;padding:10px 4px}
+.tgrid>div{flex:1;text-align:center}
+.tgrid span{display:block;font-size:9.5px;color:var(--t3);font-weight:700}
+.tgrid b{font-size:11.5px;font-weight:800}
+.tgrid .sep{width:1px;height:26px;background:var(--line);flex:none}
+.tmem{display:flex;align-items:center;gap:8px;margin-top:13px;padding-top:13px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--t3);font-weight:700}
+.tmem .more{margin-inline-start:auto;color:var(--pd);display:flex;align-items:center;gap:2px;font-weight:800}
+.tmem .more svg{width:13px;height:13px;transform:scaleX(-1)}
+/* live trip card */
+.tcard-live{background:linear-gradient(145deg,#10A396,#085F59);border:none;color:#fff}
+.tcard-live .tdest{color:rgba(255,255,255,.85)}
+.tcard-live .tgrid{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.15)}
+.tcard-live .tgrid span{color:rgba(255,255,255,.65)}
+.tcard-live .tgrid b{color:#fff}
+.tcard-live .tgrid .sep{background:rgba(255,255,255,.2)}
+.tcard-live .tmem{border-top-color:rgba(255,255,255,.25);color:rgba(255,255,255,.75)}
+.tcard-live .tmem .more{color:#fff}
+.prog{height:7px;border-radius:6px;background:rgba(255,255,255,.2);margin-top:12px;overflow:hidden}
+.prog i{display:block;height:100%;width:45%;border-radius:6px;background:#FCD34D}
+.plabel{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.8);font-weight:700;margin-top:6px}
+/* activity */
+.act{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:8px}
+.act .ai{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.act .ai svg{width:16px;height:16px}
+.act p{font-size:11.5px;font-weight:700;flex:1}
+.act span{font-size:10px;color:var(--t3);font-weight:600}
+/* detail head */
+.thead{background:linear-gradient(145deg,#10A396,#07564F);border-radius:20px;padding:16px;color:#fff;position:relative;overflow:hidden}
+.thead::before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);top:-60px;left:-40px}
+.thead::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.06);bottom:-30px;right:-20px}
+.thead>*{position:relative}
+/* member / rule rows */
+.frow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.frow .fi{flex:1;min-width:0}
+.frow .fi b{display:block;font-size:12.5px;font-weight:800}
+.frow .fi span{font-size:10.5px;color:var(--t3);font-weight:600}
+.rrow{display:flex;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:8px;font-size:11.5px;color:var(--t2);font-weight:600;line-height:1.8}
+.rrow svg{width:15px;height:15px;color:var(--acc);flex:none;margin-top:3px}
+/* steps */
+.steps{display:flex;align-items:center;gap:5px;margin:2px 0 6px}
+.stp{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:#E5EAF1;color:#8595A9;flex:none}
+.stp.on{background:var(--p);color:#fff;box-shadow:0 4px 10px rgba(13,148,136,.35)}
+.stp.done{background:var(--pl);color:var(--pd)}
+.sline{flex:1;height:2.5px;background:#E5EAF1;border-radius:2px}
+.sline.on{background:var(--p)}
+.stlabel{font-size:11px;color:var(--t3);font-weight:700;margin-bottom:14px}
+.stlabel b{color:var(--pd)}
+/* map */
+.map{height:130px;border-radius:16px;position:relative;overflow:hidden;background:linear-gradient(135deg,#DDF7F1,#EDFBF7);border:1.5px solid var(--line);margin-bottom:13px}
+.map::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 24px,rgba(13,148,136,.1) 24px 25px),repeating-linear-gradient(90deg,transparent 0 24px,rgba(13,148,136,.1) 24px 25px)}
+.map .blob{position:absolute;border-radius:50%;background:rgba(34,197,94,.18)}
+.map .road{position:absolute;inset:0;width:100%;height:100%}
+.mpin{position:absolute;top:32px;right:118px;width:30px;height:30px;border-radius:50% 50% 50% 0;background:var(--p);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(13,148,136,.4)}
+.mpin::after{content:"";width:10px;height:10px;border-radius:50%;background:#fff}
+.mapbtn{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:11px;font-weight:800;color:var(--pd);display:flex;align-items:center;gap:6px;box-shadow:0 8px 18px rgba(15,23,42,.12);font-family:inherit;white-space:nowrap}
+.mapbtn svg{width:13px;height:13px}
+/* modes */
+.modes{display:flex;gap:10px;margin-bottom:14px}
+.mode{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:12px;position:relative}
+.mode svg{width:20px;height:20px;color:var(--t3);margin-bottom:8px}
+.mode b{display:block;font-size:12px;font-weight:800}
+.mode span{font-size:9.5px;color:var(--t3);font-weight:700;display:block;margin-top:2px}
+.mode.on{border-color:var(--p);background:var(--pl2)}
+.mode.on svg{color:var(--pd)}
+.mode .ck{position:absolute;top:10px;left:10px;width:18px;height:18px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center}
+.mode .ck svg{width:10px;height:10px;margin:0;color:#fff}
+/* calendar */
+.cal{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:13px}
+.cal .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal .ch b{font-size:13px;font-weight:800}
+.cal .ch .icb{width:30px;height:30px;border-radius:10px}
+.cal .ch .icb svg{width:14px;height:14px;transform:scaleX(-1)}
+.cw{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.wd{font-size:10px;color:var(--t3);font-weight:800;padding:4px 0}
+.d{height:33px;display:flex;align-items:center;justify-content:center;font-size:11.5px;border-radius:11px;color:var(--t1);font-weight:600}
+.d.off{visibility:hidden}
+.d.dis{color:#C4CEDA}
+.d.sel{background:var(--p);color:#fff;font-weight:800;box-shadow:0 4px 10px rgba(13,148,136,.3)}
+.d.in{background:var(--pl);color:var(--pd);border-radius:5px}
+/* note */
+.note{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;font-size:10.5px;font-weight:600;border-radius:12px;padding:10px 12px;display:flex;gap:8px;line-height:1.9;margin-bottom:13px}
+.note svg{width:14px;height:14px;flex:none;margin-top:3px}
+/* misc */
+.ordiv{display:flex;align-items:center;gap:10px;color:var(--t3);font-size:11px;font-weight:700;margin:15px 0}
+.ordiv::before,.ordiv::after{content:"";flex:1;height:1px;background:var(--line)}
+.brow{text-align:center;font-size:12px;color:var(--t2);font-weight:600;margin-top:18px}
+.brow b{color:var(--pd)}
+.cta-wrap{position:absolute;bottom:0;left:0;right:0;padding:14px 20px 26px;background:linear-gradient(to top,var(--bg) 65%,transparent);z-index:40}
+.hint{text-align:center;font-size:10.5px;color:var(--t3);font-weight:600;margin-top:14px}
+.fchip-row{display:flex;gap:8px;margin-bottom:14px;overflow:hidden}
+.fchip{padding:7px 14px;border-radius:999px;background:#fff;border:1.5px solid var(--line);font-size:11px;font-weight:700;color:var(--t2);flex:none}
+.fchip.on{background:var(--pd);border-color:var(--pd);color:#fff}
+.greet{flex:1}
+.greet b{display:block;font-size:16px;font-weight:900}
+.greet span{font-size:11px;color:var(--t3);font-weight:600}
+.nbadge{position:relative}
+.nbadge::after{content:"";position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#EF4444;border:2px solid #fff}
+.onb-av{width:96px;height:96px;margin:6px auto 20px;position:relative}
+.onb-av .av-l{width:96px;height:96px;font-size:30px;border-radius:36px}
+.cam{position:absolute;bottom:-4px;left:-4px;width:32px;height:32px;border-radius:12px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg)}
+.cam svg{width:15px;height:15px}
+.check-row{display:flex;align-items:flex-start;gap:9px;font-size:11px;color:var(--t2);font-weight:600;margin:4px 0 16px;line-height:1.9}
+.check-row .bx{width:19px;height:19px;border-radius:6px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;margin-top:2px}
+.check-row .bx svg{width:11px;height:11px}
+.check-row u{color:var(--pd);font-weight:800}
+/* ===================== SPLASH ===================== */
+.splash{background:linear-gradient(160deg,#10A79A 0%,#0A6E64 55%,#064E46 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+.splash::before{content:"";position:absolute;width:340px;height:340px;border-radius:50%;border:2px dashed rgba(255,255,255,.14);top:-120px;left:-140px}
+.splash::after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;border:2px dashed rgba(255,255,255,.1);bottom:-100px;right:-110px}
+.sp-logo{width:96px;height:96px;border-radius:32px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;margin-bottom:22px;backdrop-filter:blur(4px)}
+.sp-logo svg{width:46px;height:46px}
+.splash h1{font-size:38px;font-weight:900;letter-spacing:-.5px}
+.splash p{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;margin-top:8px}
+.sp-dots{display:flex;gap:6px;margin-top:34px}
+.sp-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.3)}
+.sp-dots i.on{width:22px;border-radius:5px;background:#FCD34D}
+.sp-ver{position:absolute;bottom:26px;font-size:10.5px;color:rgba(255,255,255,.55);font-weight:600}
+.auth-logo{width:64px;height:64px;border-radius:22px;background:linear-gradient(135deg,#14B8A6,#0F766E);display:flex;align-items:center;justify-content:center;color:#fff;margin-bottom:22px;box-shadow:0 12px 26px rgba(13,148,136,.3)}
+.auth-logo svg{width:30px;height:30px}
+.auth-h{font-size:22px;font-weight:900;margin-bottom:6px}
+.auth-p{font-size:12.5px;color:var(--t3);font-weight:600;margin-bottom:24px}
+.forgot{display:block;text-align:left;font-size:11.5px;color:var(--pd);font-weight:800;text-decoration:none;margin:-4px 0 18px}
+.forget2{text-align:center;margin-top:26px}
+.forget2 a{color:var(--pd);font-weight:800;font-size:12.5px;text-decoration:none}
+.ficon{width:88px;height:88px;border-radius:30px;background:var(--pl);color:var(--pd);display:flex;align-items:center;justify-content:center;margin:16px auto 20px}
+.ficon svg{width:38px;height:38px}
+.footer-note{margin-top:20px;color:#77777E;font-size:12px;line-height:2.2;border-top:1px solid #2E2E33;padding-top:22px}
+.footer-note b{color:#8AE9DD}
+/* ===================== PART 2 STYLES ===================== */
+.btn-sm{width:auto;padding:10px 16px;font-size:11.5px;border-radius:11px;box-shadow:none}
+.icb.red{color:#DC2626;background:#FEF2F2;border-color:#FECACA}
+.icb.sm{width:34px;height:34px;border-radius:11px}
+.icb.sm svg{width:15px;height:15px}
+.addrow{display:flex;gap:8px;margin-bottom:12px}
+.addrow .inp{flex:1}
+.addrow .btn{width:auto;padding:12px 18px;font-size:12px}
+.chip-x{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;font-size:11px;font-weight:700;margin-inline-start:7px;margin-bottom:7px}
+.chip-x svg{width:11px;height:11px;color:var(--t3)}
+/* gradient budget card */
+.budg{background:linear-gradient(145deg,#10A396,#07564F);border-radius:18px;padding:16px;color:#fff;margin-bottom:13px;position:relative;overflow:hidden}
+.budg::before{content:"";position:absolute;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.08);top:-55px;left:-35px}
+.budg>*{position:relative}
+.budg .bt{font-size:11px;opacity:.85;font-weight:700}
+.budg .bv{font-size:21px;font-weight:900;margin-top:4px}
+.budg .brow{display:flex;gap:8px;margin-top:13px}
+.budg .bcell{flex:1;background:rgba(255,255,255,.13);border-radius:12px;padding:9px 6px;text-align:center}
+.budg .bcell span{display:block;font-size:9px;opacity:.75;font-weight:700;margin-bottom:3px}
+.budg .bcell b{font-size:11.5px}
+/* success */
+.succ{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:56px}
+.bigck{width:102px;height:102px;border-radius:50%;background:var(--pl);display:flex;align-items:center;justify-content:center;color:var(--pd);margin-bottom:20px;box-shadow:0 0 0 12px rgba(204,251,241,.55)}
+.bigck svg{width:44px;height:44px}
+.succ h2{font-size:21px;font-weight:900}
+.succ p{font-size:12px;color:var(--t2);font-weight:600;line-height:2.1;margin-top:8px;padding:0 14px}
+.codebox{display:flex;align-items:center;gap:10px;background:#F0FDFA;border:2px dashed var(--p);border-radius:16px;padding:13px 14px;margin:18px 0 14px;width:100%}
+.codebox b{flex:1;font-size:19px;font-weight:900;letter-spacing:5px;color:var(--pd);text-align:center}
+.codebox button{width:42px;height:42px;border-radius:12px;border:none;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.codebox button svg{width:17px;height:17px}
+/* voting */
+.qcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:13px;position:relative;overflow:hidden}
+.qcard::before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:var(--pl2);top:-55px;left:-40px}
+.qcard>*{position:relative}
+.qcard b{font-size:16px;font-weight:900}
+.qcard span{display:block;font-size:10.5px;color:var(--t3);font-weight:700;margin-top:5px}
+.vopt{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:9px}
+.vopt .vt{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:800;margin-bottom:9px}
+.vopt .vt .me{font-size:9.5px;color:var(--pd);font-weight:800;display:flex;align-items:center;gap:4px}
+.vopt .vt .me svg{width:11px;height:11px}
+.vbar{height:8px;border-radius:6px;background:#EDF1F6;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:6px;background:#CBD5E1}
+.vopt.win{border-color:var(--p);background:var(--pl2)}
+.vopt.win .vbar i{background:var(--p)}
+.vopt .vmeta{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);font-weight:700;margin-top:7px}
+/* progress line */
+.paybar{height:8px;background:#EDF1F6;border-radius:6px;margin-bottom:14px;overflow:hidden}
+.paybar i{display:block;height:100%;background:var(--p);border-radius:6px}
+/* tasks */
+.tsk{display:flex;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:9px;align-items:flex-start}
+.tsk .cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--line);flex:none;margin-top:1px}
+.tsk.done .cb{background:var(--p);border-color:var(--p);color:#fff;display:flex;align-items:center;justify-content:center}
+.tsk .cb svg{width:11px;height:11px}
+.tsk .tf{flex:1}
+.tsk b{font-size:12.5px;font-weight:800;display:block}
+.tsk.done b{text-decoration:line-through;color:var(--t3)}
+.tsk .who{font-size:10.5px;color:var(--t3);font-weight:700;margin-top:4px;display:flex;align-items:center;gap:6px}
+.tsk .who i{width:17px;height:17px;border-radius:50%;font-style:normal;font-size:8.5px;font-weight:800;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+/* toggle */
+.tgl{width:42px;height:24px;border-radius:99px;background:#D7DEE7;position:relative;flex:none}
+.tgl::after{content:"";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.22)}
+.tgl.on{background:var(--p)}
+.tgl.on::after{right:auto;left:3px}
+/* segmented */
+.seg3{display:flex;background:#E8EDF3;border-radius:14px;padding:4px;margin-bottom:14px}
+.seg3 span{flex:1;text-align:center;padding:9px;border-radius:11px;font-size:11.5px;font-weight:800;color:var(--t2)}
+.seg3 span.on{background:#fff;color:var(--pd);box-shadow:0 3px 8px rgba(15,23,42,.08)}
+.seg3 .bdg{background:#EF4444;color:#fff;border-radius:99px;padding:1px 6px;font-size:9px;margin-inline-start:4px}
+.subseg{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:12px}
+.subseg span{flex:1;text-align:center;padding:8px;border-radius:9px;font-size:11px;font-weight:800;color:var(--t3)}
+.subseg span.on{background:var(--pl);color:var(--pd)}
+/* select circle (invite) */
+.selc{width:22px;height:22px;border-radius:8px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;color:transparent}
+.selc svg{width:12px;height:12px}
+.selc.on{background:var(--p);border-color:var(--p);color:#fff}
+/* profile */
+.phead{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 0 2px}
+.phead .ed{position:relative}
+.phead .pen{position:absolute;bottom:-4px;left:-4px;width:30px;height:30px;border-radius:10px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg)}
+.phead .pen svg{width:14px;height:14px}
+.phead h3{font-size:17px;font-weight:900;margin-top:12px}
+.phead .un{font-size:11.5px;color:var(--t3);font-weight:700;margin-top:2px}
+.stats{display:flex;gap:10px;margin:14px 0}
+.stat{flex:1;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.stat svg{width:16px;height:16px;color:var(--acc);margin-bottom:5px}
+.stat b{font-size:15px;font-weight:900}
+.stat span{font-size:9.5px;color:var(--t3);font-weight:700;margin-top:2px}
+/* settings list */
+.slist{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:14px}
+.sitem{display:flex;align-items:center;gap:11px;padding:13px 14px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:800}
+.sitem:last-child{border-bottom:none}
+.sitem .si{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none}
+.sitem .si svg{width:17px;height:17px}
+.sitem .val{margin-inline-start:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3);font-weight:700}
+.sitem .val svg{width:14px;height:14px}
+.oi-b{background:#DBEAFE;color:#1D4ED8}
+.oi-g{background:#DCFCE7;color:#15803D}
+.oi-r{background:#FEE2E2;color:#DC2626}
+.oi-p{background:#FCE7F3;color:#BE185D}
+.seg-mini{display:flex;background:#EEF2F7;border-radius:10px;padding:3px}
+.seg-mini span{padding:5px 11px;border-radius:8px;font-size:10px;font-weight:800;color:var(--t3)}
+.seg-mini span.on{background:#fff;color:var(--pd);box-shadow:0 2px 6px rgba(15,23,42,.08)}
+.dots{display:flex;gap:8px;align-items:center}
+.dotc{width:20px;height:20px;border-radius:50%;position:relative}
+.dotc.on::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(15,23,42,.3)}
+/* days */
+.days{display:flex;gap:7px;margin-bottom:14px}
+.day{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:9px 2px;text-align:center}
+.day b{display:block;font-size:11.5px;font-weight:800}
+.day span{display:block;font-size:7.5px;color:var(--t3);font-weight:700;margin-top:3px}
+.day.on{background:var(--pl2);border-color:var(--p)}
+.day.on b{color:var(--pd)}
+.kit{width:540px;height:auto;padding:22px}
+.kit-title{font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px}
+.kit-sub{font-size:10.5px;color:var(--t3);font-weight:600;margin:4px 0 14px}
+.kit-h{font-size:12px;font-weight:800;margin:16px 0 9px;display:flex;align-items:center;gap:8px}
+.kit-h:first-of-type{margin-top:0}
+.kit-h::after{content:"";flex:1;height:1px;background:var(--line)}
+.sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.sw{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.sw i{display:block;height:44px}
+.sw .swb{padding:6px 8px}
+.sw b{display:block;font-size:9.5px;font-weight:800;direction:ltr;text-align:left;color:var(--t1)}
+.sw span{display:block;font-size:8.5px;color:var(--t3);font-weight:700;margin-top:1px}
+.trow2{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:10px;background:#fff;border:1px solid var(--line);margin-bottom:5px}
+.trow2 .pname{font-size:10px;font-weight:800;color:var(--pd);width:180px;direction:ltr;text-align:left;flex:none}
+.trow2 .dot{width:18px;height:18px;border-radius:6px;border:1px solid rgba(15,23,42,.08);flex:none}
+.trow2 .hex{font-size:9.5px;color:var(--t2);width:62px;direction:ltr;flex:none;font-weight:700}
+.trow2 .use{flex:1;font-size:9.5px;color:var(--t2);font-weight:600;line-height:1.6}
+.tsrow{display:flex;align-items:center;gap:10px;padding:7px 12px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:5px}
+.tsrow .tname{font-size:9.5px;font-weight:800;color:var(--pd);width:106px;direction:ltr;text-align:left;flex:none}
+.tsrow .tmeta{font-size:8.5px;color:var(--t3);width:66px;flex:none;font-weight:800}
+.tsrow .tdot{width:10px;height:10px;border-radius:50%;flex:none}
+.tsrow .tsample{flex:1;color:var(--t1);white-space:nowrap;overflow:hidden}
+.w-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+.wt{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 6px 10px;text-align:center}
+.wt b{font-size:22px;display:block;color:var(--t1)}
+.wt span{font-size:8.5px;color:var(--t3);font-weight:700;display:block;margin-top:5px;line-height:1.6}
+.tok-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.tok{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.tok .demo{background:var(--pl2);border:1.5px solid var(--p);width:100%;height:42px}
+.tok b{font-size:10px;font-weight:800}
+.tok span{font-size:8.5px;color:var(--t3);font-weight:700}
+.sp-row{display:flex;align-items:flex-end;gap:9px;padding:4px 2px}
+.sp-box{background:var(--p);border-radius:4px;flex:none}
+.kit-note{background:#F0FDFA;border:1px solid var(--pl);color:var(--pd);font-size:9.5px;font-weight:700;border-radius:10px;padding:9px 11px;line-height:2;margin-top:12px}
+.comp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px}
+</style>
+</head>
+<body>
+
+<!-- ======================= SVG ICON LIBRARY ======================= -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.6" fill="currentColor"/><circle cx="18" cy="5" r="2.6" fill="currentColor"/><path d="M8.4 18.2h5.1a4.3 4.3 0 0 0 0-8.6H9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="0.5 4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5M5.5 9.5V21h13V9.5M10 21v-5.5h4V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 8.5-2.2 5-4.8 2 2.2-5z" fill="currentColor"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.2" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.4 19.2c.6-3.1 2.9-4.8 5.6-4.8s5 1.7 5.6 4.8M15.4 5.4a2.9 2.9 0 1 1 1.4 5.5M16.8 14.7c2.4.4 3.9 1.9 4.3 4.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20c.8-3.4 3.5-5.3 7-5.3s6.2 1.9 7 5.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 3.5a5.5 5.5 0 0 0-5.5 5.5c0 3.8-1.4 5.2-2 6.2h15c-.6-1-2-2.4-2-6.2A5.5 5.5 0 0 0 12 3.5zM10 18.8a2.1 2.1 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.8-3.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M3 10.5h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9.8h18M6.5 14.8h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5S5 15.8 5 10a7 7 0 1 1 14 0c0 5.8-7 11.5-7 11.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-set" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="6.5" r="2.3" fill="#fff" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="12" r="2.3" fill="#fff" stroke="currentColor" stroke-width="2"/><circle cx="7.5" cy="17.5" r="2.3" fill="#fff" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19.3 8.7a2.2 2.2 0 0 0-3.1-3.1L4.9 16.9 4 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m13.5 6.5 3.1 3.1" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 7 10 4.2h4L15.5 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.2" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-vote" viewBox="0 0 24 24"><rect x="4" y="11" width="4.2" height="9" rx="1.4" fill="currentColor"/><rect x="10" y="4" width="4.2" height="16" rx="1.4" fill="currentColor"/><rect x="16" y="8" width="4.2" height="12" rx="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-task" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5V3.2h6v1.3M9 13.4l2 2 4-4.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21.5v-17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5.5 4.5H18l-2.6 4 2.6 4H5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="m3.5 8.5 4.3 2.9L12 5.2l4.2 6.2 4.3-2.9-1.6 10H5.1z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 5.6v5.3c0 4.9 3 8 7 10.1 4-2.1 7-5.2 7-10.1V5.6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9 11.6 2 2 4-4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M14.5 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 12H3.5M7 8l-3.8 4L7 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 16.9l-5.4 2.9 1.1-6.1L3.2 9.4l6.1-.8z" fill="currentColor"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><rect x="4" y="7.5" width="16" height="13" rx="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 7.5V6.3a3.5 3.5 0 0 1 7 0v1.2M8.5 12v3M15.5 12v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="14.5" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m11.2 11.3 8.3-8.3M17 5.5l2.5 2.5M13.8 8.7l2 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m3.5 11 17-6.8-6.8 17-2.5-7.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+  <symbol id="i-status" viewBox="0 0 58 16"><rect x="0" y="9" width="3" height="5.5" rx="1" fill="currentColor"/><rect x="5" y="6.2" width="3" height="8.3" rx="1" fill="currentColor"/><rect x="10" y="3.2" width="3" height="11.3" rx="1" fill="currentColor"/><rect x="15" y=".5" width="3" height="14" rx="1" fill="currentColor"/><path d="M26 4.6c3-2.7 7.8-2.7 10.8 0l-1.6 1.8c-2.1-1.9-5.5-1.9-7.6 0z" fill="currentColor"/><path d="M28.7 7.6c1.5-1.4 4.1-1.4 5.6 0L31.5 10.6z" fill="currentColor"/><circle cx="31.5" cy="12.4" r="1.6" fill="currentColor"/><rect x="39" y="3" width="15.5" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"/><rect x="41" y="5" width="9.5" height="6" rx="1.6" fill="currentColor"/><rect x="55.8" y="6" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></symbol>
+  <symbol id="i-google" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.1h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.2-2 3.7-5 3.7-8.6z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.3 1.2-3.2 0-6-2.2-7-5.1l-3.8 3C3.2 21.3 7.3 24 12 24z"/><path fill="#FBBC05" d="M5 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3l-3.8-3C.4 8.3 0 10.1 0 12s.4 3.7 1.2 5.3l3.8-3z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4L19 3C17 1.1 14.8 0 12 0 7.3 0 3.2 2.7 1.2 6.7l3.8 3c1-2.9 3.8-5 7-5z"/></symbol>
+  <!-- آیکون‌های جدید بخش دوم — داخل کتابخانه svg اضافه شود -->
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.3 5.3 7 7M17 17l1.7 1.7M18.7 5.3 17 7M7 17l-1.7 1.7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.6-3.8-9S9.5 5.5 12 3z" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-bug" viewBox="0 0 24 24"><rect x="7.5" y="8" width="9" height="12" rx="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 8a2.5 2.5 0 0 1 5 0M12 8.5V20M7.5 12.5H4M20 12.5h-3.5M7.5 17l-2.5 2.2M16.5 17l2.5 2.2M7.8 9.2 5.5 7M16.2 9.2l2.3-2.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3.5l1.5 4-2 1.5a12 12 0 0 0 6.5 6.5L16 14l4 1.5V19a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6.5h16M9 6.5V4.8a1.3 1.3 0 0 1 1.3-1.3h3.4A1.3 1.3 0 0 1 15 4.8v1.7M6.5 6.5 7.5 20a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-13.5M10 10.5v6M14 10.5v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 5.5v-.2A2.3 2.3 0 0 0 13.2 3H6.3A2.3 2.3 0 0 0 4 5.3v6.9a2.3 2.3 0 0 0 2.3 2.3h.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5S3.5 15 3.5 9.3A4.8 4.8 0 0 1 12 6.6a4.8 4.8 0 0 1 8.5 2.7C20.5 15 12 20.5 12 20.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="i-cash" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.2 12h.01M17.8 12h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
+<symbol id="i-chevl" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5.5a5 5 0 0 1-10 0zM7 5.5H4.5a3 3 0 0 0 3 4M17 5.5h2.5a3 3 0 0 1-3 4M12 14.5V17M8.5 20.5h7M9.5 17.5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V4M8 7.5l4-4 4 4M5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-userplus" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 19.5c.7-3.2 3.2-5 6-5 1.5 0 2.9.5 4 1.4M18.5 11.5v6M15.5 14.5h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+
+</svg>
+
+<div class="canvas">
+
+  <!-- ================= BOARD HEADER ================= -->
+  <div class="bhead">
+    <h1><span class="logo-badge"><svg><use href="#i-route"/></svg></span> همسفر — طراحی رابط کاربری (بخش ۱ از ۲)</h1>
+    <p>
+      اپلیکیشن هماهنگی سفرهای کوتاه دوستانه · این فایل شامل نیمه نخست صفحات پروژه است: اسپلش، احراز هویت کامل، صفحه خانه در هر دو حالت (آماده‌سازی / در حال سفر)، جزئیات سفر، تب سفرها، جستجوی سفر و دو مرحله نخست رویداد ایجاد سفر. نیمه دوم (ادامه ایجاد سفر، رای‌گیری، پرداخت، وظایف، دوستان، پروفایل و تنظیمات) در فایل بعدی قرار می‌گیرد.
+    </p>
+    <div class="meta">
+      <span>📱 موبایل · ۳۷۵ × ۸۱۲</span>
+      <span>🧭 راست‌چین (RTL)</span>
+      <span>☀️ لایت‌مود</span>
+      <span>🔤 فونت وزیرمتن</span>
+      <span>🎨 پالت: سز فیروزه‌ای + کهربایی</span>
+      <span>🗂 ۱۳ فریم</span>
+    </div>
+  </div>
+
+  <!-- ================= SECTION 1: SPLASH & AUTH ================= -->
+  <div class="sect">
+    <h2>۱) اسپلش و احراز هویت · Splash &amp; Authentication</h2>
+    <div class="row">
+
+      <!-- 01 SPLASH -->
+      <div class="frame">
+        <div class="flabel"><b>01</b> اسپلش · Splash</div>
+        <div class="screen splash">
+          <div class="sp-logo"><svg><use href="#i-route"/></svg></div>
+          <h1>همسفر</h1>
+          <p>سفرِ کوتاه، هماهنگیِ آسان</p>
+          <div class="sp-dots"><i class="on"></i><i></i><i></i></div>
+          <span class="sp-ver">نسخه ۱.۰.۰</span>
+          <div class="hi hi-w"></div>
+        </div>
+      </div>
+
+      <!-- 02 LOGIN -->
+      <div class="frame">
+        <div class="flabel"><b>02</b> ورود به حساب · Login</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body" style="padding-top:26px">
+            <div class="auth-logo"><svg><use href="#i-route"/></svg></div>
+            <div class="auth-h">خوش برگشتی! 👋</div>
+            <div class="auth-p">برای ادامه هماهنگی سفرها وارد حسابت شو</div>
+            <div class="field">
+              <label>ایمیل</label>
+              <div class="inp focus">sara.mohammadi@gmail.com</div>
+            </div>
+            <div class="field">
+              <label>رمز عبور</label>
+              <div class="inp"><span class="ph" style="flex:1;letter-spacing:3px">••••••••</span><svg><use href="#i-eye"/></svg></div>
+            </div>
+            <a href="#" class="forgot">فراموشی رمز عبور؟</a>
+            <button class="btn">ورود به حساب</button>
+            <div class="ordiv">یا</div>
+            <button class="btn btn-line"><svg style="width:18px;height:18px"><use href="#i-google"/></svg> ورود با گوگل</button>
+            <div class="brow">حساب کاربری ندارید؟ <b>ایجاد حساب</b></div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 03 SIGNUP -->
+      <div class="frame">
+        <div class="flabel"><b>03</b> ایجاد حساب کاربری · Sign up</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body" style="padding-top:20px">
+            <div class="auth-h">ایجاد حساب کاربری</div>
+            <div class="auth-p">با ایمیل خودت در چند ثانیه ثبت‌نام کن</div>
+            <div class="field">
+              <label>ایمیل</label>
+              <div class="inp"><span class="ph">example@email.com</span></div>
+            </div>
+            <div class="field">
+              <label>رمز عبور</label>
+              <div class="inp"><span class="ph">حداقل ۸ کاراکتر</span><svg><use href="#i-eye"/></svg></div>
+            </div>
+            <div class="field">
+              <label>تأیید رمز عبور</label>
+              <div class="inp"><span class="ph">تکرار رمز عبور</span><svg><use href="#i-eye"/></svg></div>
+            </div>
+            <div class="check-row">
+              <span class="bx"><svg><use href="#i-check"/></svg></span>
+              <span><u>شرایط استفاده</u> و <u>حریم خصوصی</u> همسفر را مطالعه کرده و می‌پذیرم.</span>
+            </div>
+            <button class="btn">ایجاد حساب کاربری</button>
+            <div class="ordiv">یا</div>
+            <button class="btn btn-line"><svg style="width:18px;height:18px"><use href="#i-google"/></svg> ایجاد حساب با گوگل</button>
+            <div class="brow">حساب کاربری دارید؟ <b>وارد شوید</b></div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 04 FORGOT PASSWORD -->
+      <div class="frame">
+        <div class="flabel"><b>04</b> فراموشی رمز عبور · Forgot password</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body" style="padding-top:8px">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+            </div>
+            <div class="ficon"><svg><use href="#i-key"/></svg></div>
+            <div class="auth-h" style="text-align:center">بازیابی رمز عبور</div>
+            <div class="auth-p" style="text-align:center;line-height:2">ایمیل خود را وارد کنید تا کد بازیابی رمز عبور برایتان ارسال شود.</div>
+            <div class="field" style="margin-top:20px">
+              <label>ایمیل</label>
+              <div class="inp focus">sara.mohammadi@gmail.com</div>
+            </div>
+            <button class="btn" style="margin-top:6px"><svg><use href="#i-send"/></svg> ارسال کد بازیابی</button>
+            <div class="forget2"><a href="#">بازگشت به صفحه ورود</a></div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 05 ONBOARDING PROFILE -->
+      <div class="frame">
+        <div class="flabel"><b>05</b> تکمیل پروفایل · Onboarding</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body" style="padding-top:14px">
+            <div class="auth-h" style="text-align:center">پروفایلت رو کامل کن ✨</div>
+            <div class="auth-p" style="text-align:center">این اطلاعات به دوستانت کمک می‌کند تو را پیدا کنند</div>
+            <div class="onb-av">
+              <div class="av av-l c1">س</div>
+              <div class="cam"><svg><use href="#i-cam"/></svg></div>
+            </div>
+            <div class="field">
+              <label>نام و نام خانوادگی</label>
+              <div class="inp focus">سارا محمدی</div>
+            </div>
+            <div class="field">
+              <label>نام کاربری</label>
+              <div class="inp"><bdi dir="ltr">@sara_travel</bdi></div>
+            </div>
+            <div class="field">
+              <label>درباره من</label>
+              <div class="inp ta"><span class="ph">چند خط درباره خودت و سبک سفر کردنت بنویس...</span></div>
+            </div>
+            <button class="btn" style="margin-top:8px">ادامه</button>
+            <div style="text-align:center;margin-top:14px"><button class="btn-ghost">بعداً انجام می‌دهم</button></div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= SECTION 2: HOME ================= -->
+  <div class="sect">
+    <h2>۲) صفحه خانه · Home (دو حالت: آماده‌سازی و در حال سفر)</h2>
+    <div class="row">
+
+      <!-- 06 HOME PREPARING -->
+      <div class="frame">
+        <div class="flabel"><b>06</b> خانه — در حال آماده‌سازی · Preparing</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <div class="av c1">س</div>
+              <div class="greet"><b>سلام، سارا! 👋</b><span>آماده‌ی سفر بعدی هستی؟</span></div>
+              <button class="icb nbadge"><svg><use href="#i-bell"/></svg></button>
+            </div>
+            <div class="h"><b>سفر فعلی</b><a href="#">جزئیات کامل</a></div>
+            <div class="card">
+              <div class="trow">
+                <span class="chip chip-amber"><svg><use href="#i-clock"/></svg> در حال آماده‌سازی</span>
+                <span class="pill"><svg><use href="#i-clock"/></svg> ۳ روز مانده</span>
+              </div>
+              <div class="tname">سفر جنگل‌گردی شمال 🌲</div>
+              <div class="tdest"><svg><use href="#i-pin"/></svg> جاده چالوس، آبشار شکرآب</div>
+              <div class="tgrid">
+                <div><span>تاریخ</span><b>۱۵ تا ۱۷ اردیبهشت</b></div>
+                <div class="sep"></div>
+                <div><span>زمان حرکت</span><b>۰۷:۰۰</b></div>
+                <div class="sep"></div>
+                <div><span>اعضا</span><b>۶ نفر</b></div>
+              </div>
+              <div class="tmem">
+                <div class="stack">
+                  <div class="av av-s c1">س</div><div class="av av-s c2">م</div><div class="av av-s c3">ن</div><div class="av av-s c5">ع</div>
+                </div>
+                <span>+۲ عضو دیگر</span>
+                <span class="more">مشاهده <svg><use href="#i-chev"/></svg></span>
+              </div>
+            </div>
+            <div class="opts">
+              <div class="opt"><div class="oi oi-v"><svg><use href="#i-vote"/></svg></div><b>رای‌گیری</b><span>۱ رای‌گیری فعال</span></div>
+              <div class="opt"><div class="oi oi-a"><svg><use href="#i-card"/></svg></div><b>پرداخت سهم</b><span>۴۵۰٬۰۰۰ تومان</span></div>
+              <div class="opt"><div class="oi oi-t"><svg><use href="#i-task"/></svg></div><b>وظایف سفر</b><span>۴ وظیفه</span></div>
+            </div>
+            <div class="h"><b>فعالیت‌های اخیر</b></div>
+            <div class="act"><div class="ai oi-t"><svg><use href="#i-users"/></svg></div><p>مهدی به سفر پیوست</p><span>۱۰ دقیقه پیش</span></div>
+            <div class="act"><div class="ai oi-v"><svg><use href="#i-vote"/></svg></div><p>رای‌گیری زمان حرکت شروع شد</p><span>۱ ساعت پیش</span></div>
+          </div>
+          <div class="nav">
+            <div class="it on"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+            <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+            <div class="it"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+            <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 07 HOME IN TRIP -->
+      <div class="frame">
+        <div class="flabel"><b>07</b> خانه — در حال سفر · In trip</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <div class="av c1">س</div>
+              <div class="greet"><b>سفر خوبی داشته باشی! 🚗</b><span>روز دوم از سفر شمال</span></div>
+              <button class="icb nbadge"><svg><use href="#i-bell"/></svg></button>
+            </div>
+            <div class="h"><b>سفر فعلی</b><a href="#">جزئیات کامل</a></div>
+            <div class="card tcard-live">
+              <div class="trow">
+                <span class="chip chip-w">🚗 در حال سفر</span>
+                <span class="chip chip-w"><svg><use href="#i-pin"/></svg> موقعیت فعال</span>
+              </div>
+              <div class="tname">سفر جنگل‌گردی شمال 🌲</div>
+              <div class="tdest"><svg style="color:#FCD34D"><use href="#i-pin"/></svg> اقامتگاه بوم‌گردی، کلاردشت</div>
+              <div class="prog"><i></i></div>
+              <div class="plabel"><span>شروع: ۱۵ اردیبهشت</span><span>روز ۲ از ۴</span><span>پایان: ۱۷ اردیبهشت</span></div>
+              <div class="tgrid">
+                <div><span>برگشت</span><b>۱۷ اردیبهشت</b></div>
+                <div class="sep"></div>
+                <div><span>ساعت برگشت</span><b>۱۸:۰۰</b></div>
+                <div class="sep"></div>
+                <div><span>اعضا</span><b>۶ نفر</b></div>
+              </div>
+              <div class="tmem">
+                <div class="stack">
+                  <div class="av av-s c1">س</div><div class="av av-s c2">م</div><div class="av av-s c3">ن</div><div class="av av-s c5">ع</div>
+                </div>
+                <span>+۲ عضو دیگر</span>
+                <span class="more">مشاهده <svg><use href="#i-chev"/></svg></span>
+              </div>
+            </div>
+            <div class="opts">
+              <div class="opt"><div class="oi oi-v"><svg><use href="#i-vote"/></svg></div><b>رای‌گیری</b><span>برنامه فردا</span></div>
+              <div class="opt"><div class="oi oi-a"><svg><use href="#i-card"/></svg></div><b>پرداخت سهم</b><span>تسویه پرداخت شد ✓</span></div>
+              <div class="opt"><div class="oi oi-t"><svg><use href="#i-task"/></svg></div><b>وظایف سفر</b><span>۲ وظیفه امروز</span></div>
+            </div>
+            <div class="h"><b>فعالیت‌های اخیر</b></div>
+            <div class="act"><div class="ai oi-a"><svg><use href="#i-card"/></svg></div><p>لیدر پرداخت نگار را تأیید کرد</p><span>۲۰ دقیقه پیش</span></div>
+            <div class="act"><div class="ai oi-t"><svg><use href="#i-task"/></svg></div><p>وظیفه «خرید صبحانه» انجام شد</p><span>۲ ساعت پیش</span></div>
+          </div>
+          <div class="nav">
+            <div class="it on"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+            <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+            <div class="it"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+            <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 08 TRIP DETAIL (HOME) -->
+      <div class="frame">
+        <div class="flabel"><b>08</b> جزئیات سفر (از خانه) · Trip detail</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+              <div class="ttl">جزئیات سفر</div>
+              <button class="icb"><svg><use href="#i-set"/></svg></button>
+            </div>
+            <div class="thead">
+              <div class="trow">
+                <span class="chip chip-w">در حال آماده‌سازی</span>
+                <span class="chip chip-w"><svg><use href="#i-clock"/></svg> ۳ روز مانده</span>
+              </div>
+              <div class="tname" style="font-size:19px">سفر جنگل‌گردی شمال 🌲</div>
+              <div class="tdest"><svg style="color:#FCD34D"><use href="#i-pin"/></svg> جاده چالوس، آبشار شکرآب</div>
+              <div class="tgrid">
+                <div><span>تاریخ</span><b>۱۵–۱۷ اردیبهشت</b></div>
+                <div class="sep"></div>
+                <div><span>حرکت</span><b>۰۷:۰۰</b></div>
+                <div class="sep"></div>
+                <div><span>اعضا</span><b>۶ از ۸</b></div>
+              </div>
+            </div>
+            <div class="h"><b>اعضای سفر (۶)</b><a href="#">همه</a></div>
+            <div class="frow"><div class="av av-s c1">س</div><div class="fi"><b>سارا محمدی</b><span>@sara_travel</span></div><span class="chip chip-teal"><svg><use href="#i-crown"/></svg> لیدر</span></div>
+            <div class="frow"><div class="av av-s c2">م</div><div class="fi"><b>مهدی رضایی</b><span>@mahdi_r</span></div><span class="chip chip-green">تأیید شده</span></div>
+            <div class="frow"><div class="av av-s c3">ن</div><div class="fi"><b>نگار احمدی</b><span>@negar_a</span></div><span class="chip chip-green">تأیید شده</span></div>
+            <div class="frow"><div class="av av-s c5">ع</div><div class="fi"><b>علی کریمی</b><span>@ali_k</span></div><span class="chip chip-amber">در انتظار پرداخت</span></div>
+            <div class="h"><b>قوانین سفر</b></div>
+            <div class="rrow"><svg><use href="#i-flag"/></svg><span>حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)</span></div>
+            <div class="rrow"><svg><use href="#i-flag"/></svg><span>لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است</span></div>
+            <div class="rrow"><svg><use href="#i-flag"/></svg><span>تقسیم مساوی هزینه‌ها و احترام به طبیعت 🌱</span></div>
+            <button class="btn btn-danger" style="margin-top:14px"><svg><use href="#i-out"/></svg> ترک سفر</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= SECTION 3: TRIPS ================= -->
+  <div class="sect">
+    <h2>۳) سفرها و جستجو · Trips &amp; Search</h2>
+    <div class="row">
+
+      <!-- 09 TRIPS TAB -->
+      <div class="frame">
+        <div class="flabel"><b>09</b> تب سفرها · Trips</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar"><div class="ttl" style="font-size:18px">سفرها 🧭</div></div>
+            <div class="inp" style="margin-bottom:12px"><svg><use href="#i-search"/></svg><span class="ph">جستجوی سفر...</span></div>
+            <button class="btn" style="margin-bottom:18px"><svg><use href="#i-plus"/></svg> ایجاد سفر جدید</button>
+            <div class="h" style="margin-top:4px"><b>سفرهای من</b><a href="#">مشاهده همه</a></div>
+            <div class="card" style="margin-bottom:10px">
+              <div class="trow"><span class="chip chip-amber">در حال آماده‌سازی</span><span class="pill"><svg><use href="#i-clock"/></svg> ۳ روز مانده</span></div>
+              <div class="tname" style="font-size:14px">سفر جنگل‌گردی شمال 🌲</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-cal"/></svg> ۱۵ تا ۱۷ اردیبهشت ۱۴۰۴</div>
+              <div class="irow"><svg><use href="#i-users"/></svg> ۶ عضو · لیدر: سارا محمدی</div>
+            </div>
+            <div class="card" style="margin-bottom:10px;opacity:.92">
+              <div class="trow"><span class="chip chip-gray">پایان یافته</span><span class="pill" style="background:#EEF2F7;color:#64748B"><svg><use href="#i-star"/></svg> ۴.۸</span></div>
+              <div class="tname" style="font-size:14px">سفر کویر مرنجاب 🏜</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-cal"/></svg> ۲۰ تا ۲۲ فروردین ۱۴۰۴</div>
+              <div class="irow"><svg><use href="#i-users"/></svg> ۸ عضو · لیدر: مهدی رضایی</div>
+            </div>
+            <div class="card" style="opacity:.92">
+              <div class="trow"><span class="chip chip-gray">پایان یافته</span><span class="pill" style="background:#EEF2F7;color:#64748B"><svg><use href="#i-star"/></svg> ۴.۵</span></div>
+              <div class="tname" style="font-size:14px">یک‌روزه: دریاچه فشافویه 🚣</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-cal"/></svg> ۸ اسفند ۱۴۰۳</div>
+              <div class="irow"><svg><use href="#i-users"/></svg> ۵ عضو · لیدر: سارا محمدی</div>
+            </div>
+          </div>
+          <div class="nav">
+            <div class="it"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+            <div class="it on"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+            <div class="it"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+            <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 10 SEARCH RESULTS -->
+      <div class="frame">
+        <div class="flabel"><b>10</b> نتایج جستجوی سفر · Search results</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+              <div class="ttl">جستجوی سفر</div>
+            </div>
+            <div class="inp focus" style="margin-bottom:12px"><svg style="color:var(--pd)"><use href="#i-search"/></svg> شمال <svg style="margin-inline-start:auto"><use href="#i-x"/></svg></div>
+            <div class="fchip-row">
+              <span class="fchip on">همه</span><span class="fchip">آخر هفته</span><span class="fchip">یک‌روزه</span><span class="fchip">چندروزه</span>
+            </div>
+            <div class="card" style="margin-bottom:10px">
+              <div class="trow"><span class="chip chip-green">عضوگیری باز</span><span class="pill"><svg><use href="#i-users"/></svg> ۴ از ۸</span></div>
+              <div class="tname" style="font-size:14px">کمپینگ ساحل شمال 🏕</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-pin"/></svg> ساحل زیباکنار، گیلان</div>
+              <div class="irow"><svg><use href="#i-cal"/></svg> ۲۲ تا ۲۴ اردیبهشت · حرکت ۰۶:۳۰</div>
+            </div>
+            <div class="card" style="margin-bottom:10px">
+              <div class="trow"><span class="chip chip-amber">در حال آماده‌سازی</span><span class="pill"><svg><use href="#i-users"/></svg> ۶ از ۶</span></div>
+              <div class="tname" style="font-size:14px">آبگردی در آبشار شکرآب 💦</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-pin"/></svg> جاده چالوس، مازندران</div>
+              <div class="irow"><svg><use href="#i-cal"/></svg> ۱۵ تا ۱۷ اردیبهشت · حرکت ۰۷:۰۰</div>
+            </div>
+            <div class="card">
+              <div class="trow"><span class="chip chip-green">عضوگیری باز</span><span class="pill"><svg><use href="#i-users"/></svg> ۳ از ۱۰</span></div>
+              <div class="tname" style="font-size:14px">جنگل‌نوردی دالخانی 🌳</div>
+              <div class="irow" style="margin-top:8px"><svg><use href="#i-pin"/></svg> رامسر، مازندران</div>
+              <div class="irow"><svg><use href="#i-cal"/></svg> ۲۹ اردیبهشت (یک‌روزه) · حرکت ۰۵:۳۰</div>
+            </div>
+            <div class="hint">برای مشاهده جزئیات و ارسال درخواست، روی هر سفر بزنید</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 11 PUBLIC TRIP DETAIL -->
+      <div class="frame">
+        <div class="flabel"><b>11</b> جزئیات سفر عمومی (با درخواست عضویت)</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+              <div class="ttl">جزئیات سفر</div>
+              <button class="icb"><svg><use href="#i-flag"/></svg></button>
+            </div>
+            <div class="thead">
+              <div class="trow">
+                <span class="chip chip-w">🟢 عضوگیری باز</span>
+                <span class="chip chip-w"><svg><use href="#i-users"/></svg> ۴ از ۸ نفر</span>
+              </div>
+              <div class="tname" style="font-size:19px">کمپینگ ساحل شمال 🏕</div>
+              <div class="tdest"><svg style="color:#FCD34D"><use href="#i-pin"/></svg> ساحل زیباکنار، گیلان</div>
+              <div class="tgrid">
+                <div><span>تاریخ</span><b>۲۲–۲۴ اردیبهشت</b></div>
+                <div class="sep"></div>
+                <div><span>حرکت</span><b>رای‌گیری</b></div>
+                <div class="sep"></div>
+                <div><span>سهم هر نفر</span><b>~۳۸۰٬۰۰۰ ت</b></div>
+              </div>
+            </div>
+            <div class="h"><b>درباره سفر</b></div>
+            <div class="rrow"><svg><use href="#i-info"/></svg><span>دو شب کمپینگ کنار ساحل با آتش‌بازی، موسیقی و والیبال. چادر و وسایل کمپ بر عهده هر نفر است.</span></div>
+            <div class="h"><b>اعضا (۴)</b></div>
+            <div class="frow"><div class="av av-s c4">ر</div><div class="fi"><b>رضا قاسمی</b><span>@reza_q</span></div><span class="chip chip-teal"><svg><use href="#i-crown"/></svg> لیدر</span></div>
+            <div class="frow"><div class="stack" style="margin-inline-end:4px"><div class="av av-s c2">م</div><div class="av av-s c3">ن</div><div class="av av-s c6">ا</div></div><div class="fi"><b>۳ عضو دیگر</b><span>تأیید شده توسط لیدر</span></div></div>
+            <div class="h"><b>قوانین سفر</b></div>
+            <div class="rrow"><svg><use href="#i-flag"/></svg><span>همراه داشتن کارت شناسایی الزامی است</span></div>
+            <div class="rrow"><svg><use href="#i-flag"/></svg><span>بودجه قبل از سفر دریافت و مازاد آن بازگردانده می‌شود</span></div>
+          </div>
+          <div class="cta-wrap">
+            <button class="btn"><svg><use href="#i-send"/></svg> ارسال درخواست عضویت</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= SECTION 4: CREATE TRIP ================= -->
+  <div class="sect">
+    <h2>۴) رویداد ایجاد سفر · Create trip (مرحله ۱ و ۲ از ۵)</h2>
+    <div class="row">
+
+      <!-- 12 CREATE STEP 1 -->
+      <div class="frame">
+        <div class="flabel"><b>12</b> ایجاد سفر — ۱/۵ جزییات عمومی</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+              <div class="ttl">ایجاد سفر جدید</div>
+              <span class="chip chip-teal">۱ از ۵</span>
+            </div>
+            <div class="steps">
+              <div class="stp on">۱</div><div class="sline"></div>
+              <div class="stp">۲</div><div class="sline"></div>
+              <div class="stp">۳</div><div class="sline"></div>
+              <div class="stp">۴</div><div class="sline"></div>
+              <div class="stp">۵</div>
+            </div>
+            <div class="stlabel">مرحله ۱ · <b>جزییات عمومی سفر</b></div>
+            <div class="field">
+              <label>نام سفر *</label>
+              <div class="inp focus">سفر جنگل‌گردی شمال</div>
+            </div>
+            <div class="field">
+              <label>توضیح کوتاه</label>
+              <div class="inp ta">دو روز طبیعت‌گردی در جنگل‌های چالوس همراه با کمپینگ و آبشارگردی 🌲</div>
+            </div>
+            <div class="field">
+              <label>مقصد *</label>
+              <div class="map">
+                <div class="blob" style="width:70px;height:70px;top:12px;right:20px"></div>
+                <div class="blob" style="width:50px;height:50px;bottom:26px;left:34px"></div>
+                <svg class="road" viewBox="0 0 335 130" preserveAspectRatio="none"><path d="M-10 105 C 70 100, 95 35, 175 50 S 300 22, 350 40" fill="none" stroke="#0D9488" stroke-width="4" stroke-dasharray="9 8" opacity=".5" stroke-linecap="round"/></svg>
+                <div class="mpin"></div>
+                <button class="mapbtn"><svg><use href="#i-pin"/></svg> تعیین آدرس دقیق روی نقشه</button>
+              </div>
+            </div>
+            <div class="field">
+              <label>محل تجمع</label>
+              <div class="inp"><svg><use href="#i-pin"/></svg> میدان ونک، جنب پمپ بنزین</div>
+            </div>
+            <button class="btn" style="margin-top:6px">ادامه <svg style="transform:scaleX(-1)"><use href="#i-back"/></svg></button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- 13 CREATE STEP 2 -->
+      <div class="frame">
+        <div class="flabel"><b>13</b> ایجاد سفر — ۲/۵ تاریخ و زمان</div>
+        <div class="screen">
+          <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+          <div class="body">
+            <div class="abar">
+              <button class="icb"><svg><use href="#i-back"/></svg></button>
+              <div class="ttl">ایجاد سفر جدید</div>
+              <span class="chip chip-teal">۲ از ۵</span>
+            </div>
+            <div class="steps">
+              <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+              <div class="stp on">۲</div><div class="sline"></div>
+              <div class="stp">۳</div><div class="sline"></div>
+              <div class="stp">۴</div><div class="sline"></div>
+              <div class="stp">۵</div>
+            </div>
+            <div class="stlabel">مرحله ۲ · <b>تاریخ و زمان سفر</b></div>
+            <div class="modes">
+              <div class="mode on"><span class="ck"><svg><use href="#i-check"/></svg></span><svg><use href="#i-cal"/></svg><b>تعیین قطعی</b><span>زمان را خودتان مشخص کنید</span></div>
+              <div class="mode"><svg><use href="#i-vote"/></svg><b>رای‌گیری از اعضا</b><span>اعضا با هم تصمیم بگیرند</span></div>
+            </div>
+            <div class="cal">
+              <div class="ch">
+                <button class="icb"><svg><use href="#i-chev"/></svg></button>
+                <b>اردیبهشت ۱۴۰۴</b>
+                <button class="icb"><svg style="transform:rotate(180deg) scaleX(-1)"><use href="#i-chev"/></svg></button>
+              </div>
+              <div class="cw">
+                <span class="wd">ش</span><span class="wd">ی</span><span class="wd">د</span><span class="wd">س</span><span class="wd">چ</span><span class="wd">پ</span><span class="wd">ج</span>
+                <span class="d off"></span><span class="d off"></span><span class="d dis">۱</span><span class="d dis">۲</span><span class="d dis">۳</span><span class="d dis">۴</span><span class="d dis">۵</span>
+                <span class="d dis">۶</span><span class="d dis">۷</span><span class="d dis">۸</span><span class="d dis">۹</span><span class="d dis">۱۰</span><span class="d dis">۱۱</span><span class="d dis">۱۲</span>
+                <span class="d dis">۱۳</span><span class="d dis">۱۴</span><span class="d sel">۱۵</span><span class="d in">۱۶</span><span class="d sel">۱۷</span><span class="d">۱۸</span><span class="d">۱۹</span>
+                <span class="d">۲۰</span><span class="d">۲۱</span><span class="d">۲۲</span><span class="d">۲۳</span><span class="d">۲۴</span><span class="d">۲۵</span><span class="d">۲۶</span>
+                <span class="d">۲۷</span><span class="d">۲۸</span><span class="d">۲۹</span><span class="d">۳۰</span><span class="d">۳۱</span><span class="d off"></span><span class="d off"></span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:13px">
+              <div class="field" style="flex:1;margin:0"><label>تاریخ رفت</label><div class="inp"><svg><use href="#i-cal"/></svg> ۱۵ اردیبهشت</div></div>
+              <div class="field" style="flex:1;margin:0"><label>تاریخ برگشت</label><div class="inp"><svg><use href="#i-cal"/></svg> ۱۷ اردیبهشت</div></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:13px">
+              <div class="field" style="flex:1;margin:0"><label>ساعت حرکت</label><div class="inp focus"><svg><use href="#i-clock"/></svg> ۰۷:۰۰</div></div>
+              <div class="field" style="flex:1;margin:0"><label>ساعت برگشت</label><div class="inp"><svg><use href="#i-clock"/></svg> ۱۸:۰۰</div></div>
+            </div>
+            <div class="note"><svg><use href="#i-info"/></svg><span>در حالت «رای‌گیری»، تنها یک مورد (مثلاً فقط زمان حرکت) برای تصمیم‌گیری اعضا گذاشته می‌شود و پس از بسته شدن عضوگیری آغاز خواهد شد.</span></div>
+            <button class="btn">ادامه <svg style="transform:scaleX(-1)"><use href="#i-back"/></svg></button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+
+      <!-- ================= SECTION 5: ادامه ایجاد سفر ================= -->
+<div class="sect">
+  <h2>۵) رویداد ایجاد سفر · ادامه (مرحله ۳ تا ۵) و موفقیت</h2>
+  <div class="row">
+
+    <!-- 14 CREATE STEP 3 : COST -->
+    <div class="frame">
+      <div class="flabel"><b>14</b> ایجاد سفر — ۳/۵ هزینه و بودجه</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">ایجاد سفر جدید</div>
+            <span class="chip chip-teal">۳ از ۵</span>
+          </div>
+          <div class="steps">
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp on">۳</div><div class="sline"></div>
+            <div class="stp">۴</div><div class="sline"></div>
+            <div class="stp">۵</div>
+          </div>
+          <div class="stlabel">مرحله ۳ · <b>هزینه و بودجه سفر</b></div>
+          <div class="budg">
+            <div class="bt">هزینه تخمینی کل سفر</div>
+            <div class="bv">۲٬۷۰۰٬۰۰۰ تومان</div>
+            <div class="brow">
+              <div class="bcell"><span>تعداد نفرات</span><b>۶ نفر</b></div>
+              <div class="bcell"><span>سهم هر نفر</span><b>۴۵۰٬۰۰۰ ت</b></div>
+              <div class="bcell"><span>دریافت‌شده</span><b>۰ ت</b></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <div class="field" style="flex:1"><label>هزینه تخمینی کل</label><div class="inp focus"><svg><use href="#i-cash"/></svg> ۲٬۷۰۰٬۰۰۰</div></div>
+            <div class="field" style="flex:1"><label>دریافتی هر نفر</label><div class="inp"><svg><use href="#i-card"/></svg> ۴۵۰٬۰۰۰</div></div>
+          </div>
+          <div class="field"><label>آیتم‌های هزینه</label></div>
+          <div class="addrow">
+            <div class="inp"><span class="ph">مثلاً: ورودی پارک ملی</span></div>
+            <button class="btn"><svg><use href="#i-plus"/></svg></button>
+          </div>
+          <div style="margin-bottom:10px">
+            <span class="chip-x">⛽ سوخت <svg><use href="#i-x"/></svg></span>
+            <span class="chip-x">🏕 اقامت <svg><use href="#i-x"/></svg></span>
+            <span class="chip-x">🍕 خوراک <svg><use href="#i-x"/></svg></span>
+            <span class="chip-x">🛣 عوارض مسیر <svg><use href="#i-x"/></svg></span>
+          </div>
+          <div class="note"><svg><use href="#i-info"/></svg><span>هزینه تخمینی بر اساس سفرهای مشابه قبلی شما محاسبه شده است. بودجه قبل از سفر دریافت و در صورت اضافه آمدن، به هر نفر بازگردانده می‌شود.</span></div>
+          <button class="btn">ادامه <svg style="transform:scaleX(-1)"><use href="#i-back"/></svg></button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 15 CREATE STEP 4 : RULES -->
+    <div class="frame">
+      <div class="flabel"><b>15</b> ایجاد سفر — ۴/۵ قوانین</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">ایجاد سفر جدید</div>
+            <span class="chip chip-teal">۴ از ۵</span>
+          </div>
+          <div class="steps">
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp on">۴</div><div class="sline"></div>
+            <div class="stp">۵</div>
+          </div>
+          <div class="stlabel">مرحله ۴ · <b>قوانین سفر</b></div>
+          <div class="addrow">
+            <div class="inp"><span class="ph">قانون جدید را بنویسید...</span></div>
+            <button class="btn"><svg><use href="#i-plus"/></svg> افزودن</button>
+          </div>
+          <div class="h" style="margin-top:4px"><b>قوانین تعیین‌شده (۳)</b></div>
+          <div class="frow" style="align-items:center">
+            <svg style="width:16px;height:16px;color:var(--acc);flex:none"><use href="#i-flag"/></svg>
+            <div class="fi"><b style="font-size:11.5px;font-weight:700">حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)</b></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+          </div>
+          <div class="frow" style="align-items:center">
+            <svg style="width:16px;height:16px;color:var(--acc);flex:none"><use href="#i-flag"/></svg>
+            <div class="fi"><b style="font-size:11.5px;font-weight:700">لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است</b></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+          </div>
+          <div class="frow" style="align-items:center">
+            <svg style="width:16px;height:16px;color:var(--acc);flex:none"><use href="#i-flag"/></svg>
+            <div class="fi"><b style="font-size:11.5px;font-weight:700">برگشت زودتر از موعد، فقط با هماهنگی لیدر مجاز است</b></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+          </div>
+          <div class="note" style="margin-top:14px"><svg><use href="#i-info"/></svg><span>قوانین برای جلوگیری از مشکلات حین سفر (برگشت زودهنگام، اختلاف مالی و...) تعیین می‌شوند و همه اعضا پس از عضویت آن‌ها را تأیید می‌کنند.</span></div>
+          <button class="btn" style="margin-top:6px">ادامه <svg style="transform:scaleX(-1)"><use href="#i-back"/></svg></button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 16 CREATE STEP 5 : INVITE -->
+    <div class="frame">
+      <div class="flabel"><b>16</b> ایجاد سفر — ۵/۵ دعوت اعضا</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">ایجاد سفر جدید</div>
+            <span class="chip chip-teal">۵ از ۵</span>
+          </div>
+          <div class="steps">
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp done"><svg style="width:12px;height:12px"><use href="#i-check"/></svg></div><div class="sline on"></div>
+            <div class="stp on">۵</div>
+          </div>
+          <div class="stlabel">مرحله ۵ · <b>دعوت اعضا از لیست دوستان</b></div>
+          <div class="inp" style="margin-bottom:12px"><svg><use href="#i-search"/></svg><span class="ph">جستجو در دوستان...</span></div>
+          <div class="frow"><span class="selc on"><svg><use href="#i-check"/></svg></span><div class="av av-s c2">م</div><div class="fi"><b>مهدی رضایی</b><span>۱۲ سفر مشترک · امتیاز ۴.۸</span></div></div>
+          <div class="frow"><span class="selc on"><svg><use href="#i-check"/></svg></span><div class="av av-s c3">ن</div><div class="fi"><b>نگار احمدی</b><span>۸ سفر مشترک · امتیاز ۴.۹</span></div></div>
+          <div class="frow"><span class="selc on"><svg><use href="#i-check"/></svg></span><div class="av av-s c5">ع</div><div class="fi"><b>علی کریمی</b><span>۵ سفر مشترک · امتیاز ۴.۶</span></div></div>
+          <div class="frow"><span class="selc"></span><div class="av av-s c2">ر</div><div class="fi"><b>رضا قاسمی</b><span>۳ سفر مشترک · امتیاز ۴.۷</span></div></div>
+          <div class="frow"><span class="selc"></span><div class="av av-s c4">ا</div><div class="fi"><b>الناز شریفی</b><span>۲ سفر مشترک · امتیاز ۴.۵</span></div></div>
+          <div style="display:flex;align-items:center;gap:8px;margin:12px 0">
+            <span class="chip chip-teal"><svg><use href="#i-users"/></svg> ۳ نفر انتخاب شده</span>
+            <span class="hint" style="margin:0">دعوت‌شدگان می‌توانند عضویت را بپذیرند یا رد کنند</span>
+          </div>
+          <button class="btn"><svg><use href="#i-check"/></svg> ایجاد سفر</button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 17 SUCCESS + INVITE CODE -->
+    <div class="frame">
+      <div class="flabel"><b>17</b> موفقیت ایجاد سفر + کد دعوت</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body succ">
+          <div class="bigck"><svg><use href="#i-check"/></svg></div>
+          <h2>سفر شما ایجاد شد! 🎉</h2>
+          <p>شما لیدر سفر «سفر جنگل‌گردی شمال» هستید. پس از پذیرش اعضا، مراحل هماهنگی (رای‌گیری، وظایف و تقسیم بودجه) آغاز می‌شود.</p>
+          <div style="width:100%;text-align:right;font-size:11px;font-weight:800;color:var(--t2)">کد دعوت سفر</div>
+          <div class="codebox">
+            <b>HMS-84Z2K</b>
+            <button><svg><use href="#i-copy"/></svg></button>
+          </div>
+          <button class="btn btn-line" style="margin-bottom:10px"><svg><use href="#i-share"/></svg> اشتراک‌گذاری کد دعوت</button>
+          <button class="btn"><svg><use href="#i-home"/></svg> رفتن به خانه</button>
+          <div class="hint">با وارد کردن این کد در «جستجوی سفر»، دوستان می‌توانند درخواست عضویت بدهند</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= SECTION 6: مدیریت سفر ================= -->
+<div class="sect">
+  <h2>۶) هماهنگی سفر · رای‌گیری، پرداخت سهم، وظایف</h2>
+  <div class="row">
+
+    <!-- 18 VOTING -->
+    <div class="frame">
+      <div class="flabel"><b>18</b> رای‌گیری زمان حرکت · Voting</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">رای‌گیری سفر</div>
+            <span class="chip chip-green">فعال</span>
+          </div>
+          <div class="qcard">
+            <b>زمان حرکت کی باشد؟ ⏰</b>
+            <span>رای‌گیری پس از بسته شدن عضوگیری شروع شد · ۵ ساعت تا پایان</span>
+          </div>
+          <div class="vopt win">
+            <div class="vt"><span>۰۷:۰۰ صبح 🌅</span><span class="me"><svg><use href="#i-check"/></svg> رای شما</span></div>
+            <div class="vbar"><i style="width:67%"></i></div>
+            <div class="vmeta"><span>۴ رای از ۶ عضو</span><span>۶۷٪</span></div>
+          </div>
+          <div class="vopt">
+            <div class="vt"><span>۰۸:۳۰ صبح</span></div>
+            <div class="vbar"><i style="width:17%"></i></div>
+            <div class="vmeta"><span>۱ رای از ۶ عضو</span><span>۱۷٪</span></div>
+          </div>
+          <div class="vopt">
+            <div class="vt"><span>۰۹:۰۰ صبح</span></div>
+            <div class="vbar"><i style="width:16%"></i></div>
+            <div class="vmeta"><span>۱ رای از ۶ عضو</span><span>۱۶٪</span></div>
+          </div>
+          <button class="btn" style="margin-top:10px"><svg><use href="#i-vote"/></svg> ثبت رای برای «۰۷:۰۰»</button>
+          <div class="hint">زمان سفر با بیشترین رای تعیین و به همه اعضا اعلام می‌شود</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 19 PAYMENTS -->
+    <div class="frame">
+      <div class="flabel"><b>19</b> پرداخت سهم و وضعیت پرداخت‌ها</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">پرداخت و بودجه</div>
+            <span class="chip chip-amber">۲ در انتظار</span>
+          </div>
+          <div class="budg">
+            <div class="bt">بودجه کل سفر</div>
+            <div class="bv">۲٬۷۰۰٬۰۰۰ تومان</div>
+            <div class="brow">
+              <div class="bcell"><span>سهم هر نفر</span><b>۴۵۰٬۰۰۰ ت</b></div>
+              <div class="bcell"><span>دریافت‌شده</span><b>۱٬۸۰۰٬۰۰۰ ت</b></div>
+              <div class="bcell"><span>باقی‌مانده</span><b>۹۰۰٬۰۰۰ ت</b></div>
+            </div>
+          </div>
+          <div class="note"><svg><use href="#i-cash"/></svg><span>پرداخت سهم به لیدر به‌صورت نقدی یا کارت‌به‌کارت انجام می‌شود و پس از تأیید لیدر، وضعیت شما «پرداخت شده» می‌شود.</span></div>
+          <div class="h" style="margin-top:6px"><b>وضعیت پرداخت‌ها</b><a href="#">۴ از ۶ نفر</a></div>
+          <div class="paybar"><i style="width:66%"></i></div>
+          <div class="frow"><div class="av av-s c1">س</div><div class="fi"><b>سارا محمدی</b><span>@sara_travel</span></div><span class="chip chip-teal"><svg><use href="#i-crown"/></svg> لیدر · تسویه</span></div>
+          <div class="frow"><div class="av av-s c2">م</div><div class="fi"><b>مهدی رضایی</b><span>۴۵۰٬۰۰۰ تومان</span></div><span class="chip chip-green"><svg><use href="#i-check"/></svg> پرداخت شده</span></div>
+          <div class="frow"><div class="av av-s c3">ن</div><div class="fi"><b>نگار احمدی</b><span>۴۵۰٬۰۰۰ تومان</span></div><span class="chip chip-green"><svg><use href="#i-check"/></svg> پرداخت شده</span></div>
+          <div class="frow"><div class="av av-s c5">ع</div><div class="fi"><b>علی کریمی</b><span>۴۵۰٬۰۰۰ تومان</span></div><span class="chip chip-amber">در انتظار تأیید</span></div>
+          <div class="frow"><div class="av av-s c2">ر</div><div class="fi"><b>رضا قاسمی</b><span>۴۵۰٬۰۰۰ تومان</span></div><span class="chip chip-red">پرداخت نشده</span></div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 20 TASKS -->
+    <div class="frame">
+      <div class="flabel"><b>20</b> وظایف و مسئولیت‌های سفر</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">وظایف سفر</div>
+            <span class="chip chip-teal">۲ از ۴ انجام شد</span>
+          </div>
+          <div class="paybar"><i style="width:50%"></i></div>
+          <div class="tsk done">
+            <span class="cb"><svg><use href="#i-check"/></svg></span>
+            <div class="tf"><b>رزرو اقامتگاه بوم‌گردی</b><div class="who"><i class="c1">س</i> سارا محمدی (لیدر) · انجام شد</div></div>
+          </div>
+          <div class="tsk done">
+            <span class="cb"><svg><use href="#i-check"/></svg></span>
+            <div class="tf"><b>خرید صبحانه روز اول</b><div class="who"><i class="c5">ع</i> علی کریمی · انجام شد</div></div>
+          </div>
+          <div class="tsk">
+            <span class="cb"></span>
+            <div class="tf"><b>همراه آوردن اجاق گاز</b><div class="who"><i class="c2">م</i> مهدی رضایی · بر اساس «وسایل من»</div></div>
+          </div>
+          <div class="tsk">
+            <span class="cb"></span>
+            <div class="tf"><b>همراه آوردن جعبه کمک‌های اولیه</b><div class="who"><i class="c3">ن</i> نگار احمدی · بر اساس «وسایل من»</div></div>
+          </div>
+          <div class="note" style="margin-top:12px"><svg><use href="#i-info"/></svg><span>لیدر پس از بسته شدن عضوگیری، مسئولیت‌ها را با توجه به پروفایل و «وسایل من» هر عضو تعیین می‌کند تا کسی زیر بار مسئولیت نرود.</span></div>
+          <button class="btn btn-line"><svg><use href="#i-plus"/></svg> تعیین وظیفه جدید (لیدر)</button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= SECTION 7: دوستان ================= -->
+<div class="sect">
+  <h2>۷) دوستان · لیست، درخواست‌ها، جستجو، پروفایل دوست</h2>
+  <div class="row">
+
+    <!-- 21 FRIENDS LIST -->
+    <div class="frame">
+      <div class="flabel"><b>21</b> دوستان من · My friends</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar"><div class="ttl" style="font-size:18px">دوستان 👥</div></div>
+          <div class="inp" style="margin-bottom:12px"><svg><use href="#i-search"/></svg><span class="ph">جستجوی دوست...</span></div>
+          <div class="seg3">
+            <span class="on">دوستان من</span>
+            <span>درخواست‌ها <span class="bdg">۲</span></span>
+            <span>جستجو</span>
+          </div>
+          <div class="frow">
+            <div class="av av-s c2">م</div>
+            <div class="fi"><b>مهدی رضایی</b><span>@mahdi_r · امتیاز ۴.۸ · ۱۲ سفر</span></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+            <svg style="width:15px;height:15px;color:var(--t3)"><use href="#i-chevl"/></svg>
+          </div>
+          <div class="frow">
+            <div class="av av-s c3">ن</div>
+            <div class="fi"><b>نگار احمدی</b><span>@negar_a · امتیاز ۴.۹ · ۸ سفر</span></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+            <svg style="width:15px;height:15px;color:var(--t3)"><use href="#i-chevl"/></svg>
+          </div>
+          <div class="frow">
+            <div class="av av-s c5">ع</div>
+            <div class="fi"><b>علی کریمی</b><span>@ali_k · امتیاز ۴.۶ · ۵ سفر</span></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+            <svg style="width:15px;height:15px;color:var(--t3)"><use href="#i-chevl"/></svg>
+          </div>
+          <div class="frow">
+            <div class="av av-s c4">ا</div>
+            <div class="fi"><b>الناز شریفی</b><span>@elnaz_sh · امتیاز ۴.۵ · ۲ سفر</span></div>
+            <button class="icb red sm"><svg><use href="#i-trash"/></svg></button>
+            <svg style="width:15px;height:15px;color:var(--t3)"><use href="#i-chevl"/></svg>
+          </div>
+          <div class="hint">با زدن روی هر کارت، پروفایل دوست نمایش داده می‌شود</div>
+        </div>
+        <div class="nav">
+          <div class="it"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+          <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+          <div class="it on"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+          <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 22 REQUESTS -->
+    <div class="frame">
+      <div class="flabel"><b>22</b> درخواست‌های دوستی · Requests</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar"><div class="ttl" style="font-size:18px">دوستان 👥</div></div>
+          <div class="seg3">
+            <span>دوستان من</span>
+            <span class="on">درخواست‌ها <span class="bdg">۲</span></span>
+            <span>جستجو</span>
+          </div>
+          <div class="subseg"><span class="on">دریافتی (۲)</span><span>ارسالی (۲)</span></div>
+          <div class="frow">
+            <div class="av av-s c2">ر</div>
+            <div class="fi"><b>رضا قاسمی</b><span>@reza_q · ۲ ساعت پیش</span></div>
+            <button class="btn btn-sm">پذیرفتن</button>
+            <button class="btn btn-danger btn-sm">رد</button>
+          </div>
+          <div class="frow">
+            <div class="av av-s c4">ا</div>
+            <div class="fi"><b>الناز شریفی</b><span>@elnaz_sh · ۱ روز پیش</span></div>
+            <button class="btn btn-sm">پذیرفتن</button>
+            <button class="btn btn-danger btn-sm">رد</button>
+          </div>
+          <div class="h"><b>درخواست‌های ارسالی</b></div>
+          <div class="frow">
+            <div class="av av-s c6">ح</div>
+            <div class="fi"><b>حامد توکلی</b><span>@hamed_t · ارسال ۳ روز پیش</span></div>
+            <span class="chip chip-amber"><svg><use href="#i-clock"/></svg> در انتظار</span>
+          </div>
+          <div class="frow">
+            <div class="av av-s c4">م</div>
+            <div class="fi"><b>مریم صادقی</b><span>@maryam_s · ارسال ۱ هفته پیش</span></div>
+            <span class="chip chip-gray">مشاهده شد</span>
+          </div>
+          <div class="hint">پس از پذیرفته شدن درخواست، دوست به لیست «دوستان من» اضافه می‌شود</div>
+        </div>
+        <div class="nav">
+          <div class="it"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+          <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+          <div class="it on"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+          <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 23 SEARCH FRIEND -->
+    <div class="frame">
+      <div class="flabel"><b>23</b> جستجوی دوست · Search friend</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar"><div class="ttl" style="font-size:18px">دوستان 👥</div></div>
+          <div class="seg3">
+            <span>دوستان من</span>
+            <span>درخواست‌ها</span>
+            <span class="on">جستجو</span>
+          </div>
+          <div class="inp focus" style="margin-bottom:14px"><svg style="color:var(--pd)"><use href="#i-search"/></svg> negar_a <svg style="margin-inline-start:auto"><use href="#i-x"/></svg></div>
+          <div class="card" style="margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div class="av c3">ن</div>
+              <div class="fi" style="flex:1"><b style="font-size:13px;font-weight:800">نگار احمدی</b><div style="font-size:10.5px;color:var(--t3);font-weight:600">@negar_a · ۳ دوست مشترک</div></div>
+              <span class="chip chip-green">امتیاز ۴.۹</span>
+            </div>
+            <button class="btn"><svg><use href="#i-userplus"/></svg> ارسال درخواست دوستی</button>
+          </div>
+          <div class="card">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div class="av c6">ن</div>
+              <div class="fi" style="flex:1"><b style="font-size:13px;font-weight:800">نیلوفر نادری</b><div style="font-size:10.5px;color:var(--t3);font-weight:600">@negar_n · ۱ دوست مشترک</div></div>
+              <span class="chip chip-gray">امتیاز ۴.۳</span>
+            </div>
+            <button class="btn btn-line" style="opacity:.85"><svg><use href="#i-check"/></svg> درخواست ارسال شده</button>
+          </div>
+          <div class="hint">با زدن روی کارت، پروفایل کامل کاربر نمایش داده می‌شود</div>
+        </div>
+        <div class="nav">
+          <div class="it"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+          <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+          <div class="it on"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+          <div class="it"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 24 FRIEND PROFILE -->
+    <div class="frame">
+      <div class="flabel"><b>24</b> پروفایل دوست · Friend profile</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">پروفایل دوست</div>
+          </div>
+          <div class="phead">
+            <div class="av av-l c3">ن</div>
+            <h3>نگار احمدی</h3>
+            <div class="un">@negar_a · دوست از ۱۴۰۲</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><svg><use href="#i-star"/></svg><b>۴.۹</b><span>امتیاز</span></div>
+            <div class="stat"><svg><use href="#i-compass"/></svg><b>۸</b><span>تعداد سفرها</span></div>
+            <div class="stat"><svg><use href="#i-users"/></svg><b>۳</b><span>دوست مشترک</span></div>
+          </div>
+          <div class="h" style="margin-top:6px"><b>درباره من</b></div>
+          <div class="rrow"><svg><use href="#i-info"/></svg><span>علاقه‌مند به طبیعت‌گردی و عکاسی. معمولاً آخر هفته‌ها آزادم و وسایل کمپینگ دارم. 📷</span></div>
+          <div class="h"><b>روزهای آزاد هفته</b></div>
+          <div class="days">
+            <div class="day"><b>ش</b></div><div class="day"><b>ی</b></div><div class="day"><b>د</b></div><div class="day"><b>س</b></div>
+            <div class="day on"><b>چ</b></div><div class="day on"><b>پ</b></div><div class="day on"><b>ج</b></div>
+          </div>
+          <div class="h"><b>وسایل من</b></div>
+          <div style="margin-bottom:12px">
+            <span class="chip-x">🏕 چادر ۲ نفره</span>
+            <span class="chip-x">🔥 اجاق گاز</span>
+            <span class="chip-x">📷 دوربین حرفه‌ای</span>
+            <span class="chip-x">🧭 قطب‌نما</span>
+          </div>
+          <button class="btn btn-danger"><svg><use href="#i-trash"/></svg> حذف دوست</button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= SECTION 8: پروفایل و تنظیمات ================= -->
+<div class="sect">
+  <h2>۸) پروفایل و تنظیمات · Profile &amp; Settings</h2>
+  <div class="row">
+
+    <!-- 25 PROFILE -->
+    <div class="frame">
+      <div class="flabel"><b>25</b> پروفایل کاربر · Profile</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar"><div class="ttl" style="font-size:18px">پروفایل 👤</div></div>
+          <div class="phead">
+            <div class="ed">
+              <div class="av av-l c1">س</div>
+              <div class="pen"><svg><use href="#i-edit"/></svg></div>
+            </div>
+            <h3>سارا محمدی</h3>
+            <div class="un">@sara_travel</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><svg><use href="#i-trophy"/></svg><b>۴.۹</b><span>امتیاز من</span></div>
+            <div class="stat"><svg><use href="#i-compass"/></svg><b>۱۲</b><span>تعداد سفرها</span></div>
+            <div class="stat"><svg><use href="#i-users"/></svg><b>۸</b><span>دوستان</span></div>
+          </div>
+          <div class="slist">
+            <div class="sitem"><div class="si oi-t"><svg><use href="#i-edit"/></svg></div> ویرایش پروفایل <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-a"><svg><use href="#i-cal"/></svg></div> روزهای آزاد من <span class="val">چ، پ، ج <svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-v"><svg><use href="#i-bag"/></svg></div> وسایل من <span class="val">۵ مورد <svg><use href="#i-chevl"/></svg></span></div>
+          </div>
+          <div class="slist">
+            <div class="sitem"><div class="si oi-b"><svg><use href="#i-set"/></svg></div> تنظیمات برنامه <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-g"><svg><use href="#i-shield"/></svg></div> تنظیمات حساب کاربری و حریم خصوصی <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+          </div>
+          <button class="btn btn-danger"><svg><use href="#i-out"/></svg> خروج از حساب کاربری</button>
+        </div>
+        <div class="nav">
+          <div class="it"><div class="ico"><svg><use href="#i-home"/></svg></div>خانه</div>
+          <div class="it"><div class="ico"><svg><use href="#i-compass"/></svg></div>سفرها</div>
+          <div class="it"><div class="ico"><svg><use href="#i-users"/></svg></div>دوستان</div>
+          <div class="it on"><div class="ico"><svg><use href="#i-user"/></svg></div>پروفایل</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 26 AVAILABLE DAYS -->
+    <div class="frame">
+      <div class="flabel"><b>26</b> روزهای آزاد من · Available days</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">روزهای آزاد من</div>
+          </div>
+          <div class="auth-p" style="margin-bottom:18px">روزهای آزاد هفته‌ات را انتخاب کن تا هماهنگی زمان سفرها راحت‌تر انجام شود.</div>
+          <div class="days">
+            <div class="day"><b>ش</b><span>—</span></div>
+            <div class="day"><b>ی</b><span>—</span></div>
+            <div class="day"><b>د</b><span>—</span></div>
+            <div class="day on"><b>س</b><span>از ۱۷:۰۰</span></div>
+            <div class="day on"><b>چ</b><span>تمام روز</span></div>
+            <div class="day on"><b>پ</b><span>تمام روز</span></div>
+            <div class="day on"><b>ج</b><span>تمام روز</span></div>
+          </div>
+          <div class="h"><b>بازه زمانی روزهای انتخابی</b></div>
+          <div style="display:flex;gap:10px;margin-bottom:14px">
+            <div class="field" style="flex:1;margin:0"><label>از ساعت</label><div class="inp focus"><svg><use href="#i-clock"/></svg> ۰۶:۰۰</div></div>
+            <div class="field" style="flex:1;margin:0"><label>تا ساعت</label><div class="inp"><svg><use href="#i-clock"/></svg> ۲۳:۰۰</div></div>
+          </div>
+          <div class="note"><svg><use href="#i-info"/></svg><span>روزهای آزاد شما در پروفایلتان به دوستان نمایش داده می‌شود و لیدر هنگام برنامه‌ریزی سفر آن‌ها را در نظر می‌گیرد.</span></div>
+          <button class="btn" style="margin-top:8px"><svg><use href="#i-check"/></svg> ذخیره تغییرات</button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 27 MY ITEMS -->
+    <div class="frame">
+      <div class="flabel"><b>27</b> وسایل من · My items</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">وسایل من 🎒</div>
+          </div>
+          <div class="auth-p" style="margin-bottom:14px">وسایلی که می‌توانید در سفرها همراه بیاورید؛ لیدر بر اساس این لیست وظایف را تقسیم می‌کند.</div>
+          <div class="h" style="margin-top:2px"><b>کمپینگ 🏕</b></div>
+          <div class="frow"><div class="fi"><b>چادر ۲ نفره</b><span>آماده برای سفر</span></div><div class="tgl on"></div></div>
+          <div class="frow"><div class="fi"><b>کیسه خواب</b><span>آماده برای سفر</span></div><div class="tgl on"></div></div>
+          <div class="h"><b>آشپزخانه 🍳</b></div>
+          <div class="frow"><div class="fi"><b>اجاق گاز مسافرتی</b><span>آماده برای سفر</span></div><div class="tgl on"></div></div>
+          <div class="frow"><div class="fi"><b>ست ظروف پخت</b><span>در دسترس نیست</span></div><div class="tgl"></div></div>
+          <div class="h"><b>ابزار 🔧</b></div>
+          <div class="frow"><div class="fi"><b>جعبه کمک‌های اولیه</b><span>در دسترس نیست</span></div><div class="tgl"></div></div>
+          <div class="frow"><div class="fi"><b>چراغ‌قوه</b><span>آماده برای سفر</span></div><div class="tgl on"></div></div>
+          <button class="btn btn-line" style="margin-top:12px"><svg><use href="#i-plus"/></svg> افزودن وسیله جدید</button>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 28 SETTINGS -->
+    <div class="frame">
+      <div class="flabel"><b>28</b> تنظیمات برنامه · Settings</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">تنظیمات ⚙️</div>
+          </div>
+          <div class="h" style="margin-top:2px"><b>تنظیمات برنامه</b></div>
+          <div class="slist">
+            <div class="sitem"><div class="si oi-b"><svg><use href="#i-globe"/></svg></div> زبان برنامه <span class="val">فارسی <svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-a"><svg><use href="#i-sun"/></svg></div> نوع تم <span class="val"><span class="seg-mini"><span class="on">روشن</span><span>تیره</span></span></span></div>
+            <div class="sitem"><div class="si oi-p"><svg><use href="#i-heart"/></svg></div> رنگ تم <span class="val dots"><span class="dotc on" style="background:#0D9488"></span><span class="dotc" style="background:#2563EB"></span><span class="dotc" style="background:#F59E0B"></span><span class="dotc" style="background:#EC4899"></span><span class="dotc" style="background:#8B5CF6"></span></span></div>
+          </div>
+          <div class="h"><b>حساب و پشتیبانی</b></div>
+          <div class="slist">
+            <div class="sitem"><div class="si oi-g"><svg><use href="#i-shield"/></svg></div> تنظیمات حساب کاربری و حریم خصوصی <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-r"><svg><use href="#i-bug"/></svg></div> گزارش باگ <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+            <div class="sitem"><div class="si oi-t"><svg><use href="#i-phone"/></svg></div> تماس با ما <span class="val"><svg><use href="#i-chevl"/></svg></span></div>
+          </div>
+          <div class="hint" style="margin-top:22px">همسفر · نسخه ۱.۰.۰ · ساخته‌شده با 💚 برای سفرهای دوستانه</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+    <!-- 29 BUG REPORT / CONTACT -->
+    <div class="frame">
+      <div class="flabel"><b>29</b> گزارش باگ / تماس با ما</div>
+      <div class="screen">
+        <div class="sb"><span>۹:۴۱</span><svg><use href="#i-status"/></svg></div>
+        <div class="body">
+          <div class="abar">
+            <button class="icb"><svg><use href="#i-back"/></svg></button>
+            <div class="ttl">گزارش باگ و تماس</div>
+          </div>
+          <div class="subseg"><span class="on"><svg style="width:12px;height:12px;vertical-align:-1px"><use href="#i-bug"/></svg> گزارش باگ</span><span><svg style="width:12px;height:12px;vertical-align:-1px"><use href="#i-phone"/></svg> تماس با ما</span></div>
+          <div class="field">
+            <label>موضوع *</label>
+            <div class="inp focus">مشکل در ثبت تأیید پرداخت</div>
+          </div>
+          <div class="field">
+            <label>توضیحات *</label>
+            <div class="inp ta">هنگام تأیید پرداخت عضو، برنامه پیام خطا نمایش می‌دهد و وضعیت پرداخت به‌روز نمی‌شود...</div>
+          </div>
+          <div class="field">
+            <label>ایمیل (اختیاری)</label>
+            <div class="inp">sara.mohammadi@gmail.com</div>
+          </div>
+          <div class="field">
+            <label>نوع مشکل</label>
+            <div class="fchip-row" style="margin-bottom:0">
+              <span class="fchip on">مالی</span><span class="fchip">فنی</span><span class="fchip">رابط کاربری</span><span class="fchip">سایر</span>
+            </div>
+          </div>
+          <button class="btn" style="margin-top:10px"><svg><use href="#i-send"/></svg> ارسال گزارش</button>
+          <div class="hint">بازخورد شما به بهتر شدن همسفر کمک می‌کند 💚</div>
+        </div>
+        <div class="hi"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="frame">
+      <div class="flabel"><b>30</b> پالت رنگ · Color Palette</div>
+      <div class="screen kit">
+        <div class="kit-title">🎨 رنگ‌های سازمانی همسفر</div>
+        <div class="kit-sub">تمام رنگ‌های استفاده‌شده در طراحی به همراه کد HEX</div>
+
+        <div class="kit-h">اصلی · Primary (فیروزه‌ای)</div>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:#14B8A6"></i><div class="swb"><b>#14B8A6</b><span>روشن — ابتدای گرادیان</span></div></div>
+          <div class="sw"><i style="background:#0D9488"></i><div class="swb"><b>#0D9488</b><span>اصلی — دکمه/آیکن فعال</span></div></div>
+          <div class="sw"><i style="background:#0F766E"></i><div class="swb"><b>#0F766E</b><span>تیره — لینک و تب فعال</span></div></div>
+          <div class="sw"><i style="background:#CCFBF1"></i><div class="swb"><b>#CCFBF1</b><span>کانتینر — چیپ فعال</span></div></div>
+          <div class="sw"><i style="background:#E9FBF7"></i><div class="swb"><b>#E9FBF7</b><span>خیلی روشن — انتخاب مود</span></div></div>
+          <div class="sw"><i style="background:#5EEAD4"></i><div class="swb"><b>#5EEAD4</b><span>معکوس — برای دارک‌مود</span></div></div>
+          <div class="sw"><i style="background:linear-gradient(135deg,#14B8A6,#0D9488)"></i><div class="swb"><b>Gradient</b><span>دکمه اصلی و لوگو</span></div></div>
+          <div class="sw"><i style="background:linear-gradient(145deg,#10A396,#07564F)"></i><div class="swb"><b>Gradient</b><span>کادر سفر و هدر جزئیات</span></div></div>
+        </div>
+
+        <div class="kit-h">تأکید و هشدار · Accent (کهربایی)</div>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:#F59E0B"></i><div class="swb"><b>#F59E0B</b><span>کهربایی اصلی</span></div></div>
+          <div class="sw"><i style="background:#FCD34D"></i><div class="swb"><b>#FCD34D</b><span>پراگرس و ستاره</span></div></div>
+          <div class="sw"><i style="background:#FEF3C7"></i><div class="swb"><b>#FEF3C7</b><span>پس‌زمینه هشدار</span></div></div>
+          <div class="sw"><i style="background:#B45309"></i><div class="swb"><b>#B45309</b><span>متن هشدار</span></div></div>
+          <div class="sw"><i style="background:#FFFBEB"></i><div class="swb"><b>#FFFBEB</b><span>پس‌زمینه یادداشت</span></div></div>
+          <div class="sw"><i style="background:#FDE68A"></i><div class="swb"><b>#FDE68A</b><span>حاشیه یادداشت</span></div></div>
+          <div class="sw"><i style="background:#92400E"></i><div class="swb"><b>#92400E</b><span>متن یادداشت</span></div></div>
+        </div>
+
+        <div class="kit-h">معنایی · Semantic (موفقیت / خطا / رای‌گیری)</div>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:#22C55E"></i><div class="swb"><b>#22C55E</b><span>موفقیت</span></div></div>
+          <div class="sw"><i style="background:#DCFCE7"></i><div class="swb"><b>#DCFCE7</b><span>پس‌زمینه موفقیت</span></div></div>
+          <div class="sw"><i style="background:#15803D"></i><div class="swb"><b>#15803D</b><span>متن موفقیت</span></div></div>
+          <div class="sw"><i style="background:#DC2626"></i><div class="swb"><b>#DC2626</b><span>خطا اصلی</span></div></div>
+          <div class="sw"><i style="background:#EF4444"></i><div class="swb"><b>#EF4444</b><span>نشان اعلان</span></div></div>
+          <div class="sw"><i style="background:#FEE2E2"></i><div class="swb"><b>#FEE2E2</b><span>پس‌زمینه خطا</span></div></div>
+          <div class="sw"><i style="background:#B91C1C"></i><div class="swb"><b>#B91C1C</b><span>متن خطا</span></div></div>
+          <div class="sw"><i style="background:#8B5CF6"></i><div class="swb"><b>#8B5CF6</b><span>رای‌گیری</span></div></div>
+          <div class="sw"><i style="background:#EDE9FE"></i><div class="swb"><b>#EDE9FE</b><span>پس‌زمینه رای‌گیری</span></div></div>
+          <div class="sw"><i style="background:#6D28D9"></i><div class="swb"><b>#6D28D9</b><span>متن رای‌گیری</span></div></div>
+        </div>
+
+        <div class="kit-h">خنثی · Neutrals</div>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:#0F172A"></i><div class="swb"><b>#0F172A</b><span>متن اصلی (onSurface)</span></div></div>
+          <div class="sw"><i style="background:#5B6B7F"></i><div class="swb"><b>#5B6B7F</b><span>متن ثانویه</span></div></div>
+          <div class="sw"><i style="background:#9AA7B8"></i><div class="swb"><b>#9AA7B8</b><span>متن کم‌رنگ/آیکن</span></div></div>
+          <div class="sw"><i style="background:#C4CEDA"></i><div class="swb"><b>#C4CEDA</b><span>غیرفعال (تقویم)</span></div></div>
+          <div class="sw"><i style="background:#E4E9F0"></i><div class="swb"><b>#E4E9F0</b><span>حاشیه (outline)</span></div></div>
+          <div class="sw"><i style="background:#EEF2F7"></i><div class="swb"><b>#EEF2F7</b><span>حاشیه روشن/چیپ خاکستری</span></div></div>
+          <div class="sw"><i style="background:#F5F7FA"></i><div class="swb"><b>#F5F7FA</b><span>پس‌زمینه صفحه</span></div></div>
+          <div class="sw"><i style="background:#F7FAFC"></i><div class="swb"><b>#F7FAFC</b><span>سطح نرم داخلی</span></div></div>
+          <div class="sw"><i style="background:#FFFFFF;border-bottom:1px solid #E4E9F0"></i><div class="swb"><b>#FFFFFF</b><span>کارت و سطوح</span></div></div>
+        </div>
+
+        <div class="kit-h">رنگ آواتارها · Avatar Palette</div>
+        <div class="sw-grid">
+          <div class="sw"><i style="background:#0EA5E9"></i><div class="swb"><b>#0EA5E9</b><span>آواتار ۱</span></div></div>
+          <div class="sw"><i style="background:#F97316"></i><div class="swb"><b>#F97316</b><span>آواتار ۲</span></div></div>
+          <div class="sw"><i style="background:#8B5CF6"></i><div class="swb"><b>#8B5CF6</b><span>آواتار ۳</span></div></div>
+          <div class="sw"><i style="background:#EC4899"></i><div class="swb"><b>#EC4899</b><span>آواتار ۴</span></div></div>
+          <div class="sw"><i style="background:#22C55E"></i><div class="swb"><b>#22C55E</b><span>آواتار ۵</span></div></div>
+          <div class="sw"><i style="background:#64748B"></i><div class="swb"><b>#64748B</b><span>آواتار ۶</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 31: COLORSCHEME -->
+    <div class="frame">
+      <div class="flabel"><b>31</b> نگاشت ColorScheme فلاتر · Material 3</div>
+      <div class="screen kit">
+        <div class="kit-title">🧩 نگاشت رنگ‌ها به ColorScheme</div>
+        <div class="kit-sub">آماده برای کپی در <bdi dir="ltr">ColorScheme(...)</bdi> داخل ThemeData — لایت‌مود</div>
+
+        <div class="trow2"><span class="pname">primary</span><span class="dot" style="background:#0D9488"></span><span class="hex">#0D9488</span><span class="use">دکمه اصلی، آیکن فعال، استپر</span></div>
+        <div class="trow2"><span class="pname">onPrimary</span><span class="dot" style="background:#FFFFFF"></span><span class="hex">#FFFFFF</span><span class="use">متن و آیکن روی رنگ اصلی</span></div>
+        <div class="trow2"><span class="pname">primaryContainer</span><span class="dot" style="background:#CCFBF1"></span><span class="hex">#CCFBF1</span><span class="use">پس‌زمینه چیپ و تب فعال</span></div>
+        <div class="trow2"><span class="pname">onPrimaryContainer</span><span class="dot" style="background:#0F766E"></span><span class="hex">#0F766E</span><span class="use">متن چیپ فعال، لینک‌ها</span></div>
+        <div class="trow2"><span class="pname">secondary</span><span class="dot" style="background:#F59E0B"></span><span class="hex">#F59E0B</span><span class="use">تأکید: امتیاز، زمان، ستاره</span></div>
+        <div class="trow2"><span class="pname">onSecondary</span><span class="dot" style="background:#FFFFFF"></span><span class="hex">#FFFFFF</span><span class="use">متن روی رنگ تأکید</span></div>
+        <div class="trow2"><span class="pname">secondaryContainer</span><span class="dot" style="background:#FEF3C7"></span><span class="hex">#FEF3C7</span><span class="use">پس‌زمینه چیپ کهربایی/هشدار</span></div>
+        <div class="trow2"><span class="pname">onSecondaryContainer</span><span class="dot" style="background:#B45309"></span><span class="hex">#B45309</span><span class="use">متن چیپ کهربایی</span></div>
+        <div class="trow2"><span class="pname">tertiary</span><span class="dot" style="background:#8B5CF6"></span><span class="hex">#8B5CF6</span><span class="use">رنگ بخش رای‌گیری</span></div>
+        <div class="trow2"><span class="pname">onTertiary</span><span class="dot" style="background:#FFFFFF"></span><span class="hex">#FFFFFF</span><span class="use">متن روی بنفش</span></div>
+        <div class="trow2"><span class="pname">tertiaryContainer</span><span class="dot" style="background:#EDE9FE"></span><span class="hex">#EDE9FE</span><span class="use">پس‌زمینه آیکن رای‌گیری</span></div>
+        <div class="trow2"><span class="pname">onTertiaryContainer</span><span class="dot" style="background:#6D28D9"></span><span class="hex">#6D28D9</span><span class="use">متن رای‌گیری</span></div>
+        <div class="trow2"><span class="pname">error</span><span class="dot" style="background:#DC2626"></span><span class="hex">#DC2626</span><span class="use">خطا، حذف دوست، ترک سفر</span></div>
+        <div class="trow2"><span class="pname">onError</span><span class="dot" style="background:#FFFFFF"></span><span class="hex">#FFFFFF</span><span class="use">متن روی خطا</span></div>
+        <div class="trow2"><span class="pname">errorContainer</span><span class="dot" style="background:#FEE2E2"></span><span class="hex">#FEE2E2</span><span class="use">پس‌زمینه چیپ و دکمه خطا</span></div>
+        <div class="trow2"><span class="pname">onErrorContainer</span><span class="dot" style="background:#B91C1C"></span><span class="hex">#B91C1C</span><span class="use">متن خطا</span></div>
+        <div class="trow2"><span class="pname">surface</span><span class="dot" style="background:#FFFFFF"></span><span class="hex">#FFFFFF</span><span class="use">کارت‌ها، ناوبری، ورودی‌ها</span></div>
+        <div class="trow2"><span class="pname">onSurface</span><span class="dot" style="background:#0F172A"></span><span class="hex">#0F172A</span><span class="use">متن اصلی تمام صفحات</span></div>
+        <div class="trow2"><span class="pname">onSurfaceVariant</span><span class="dot" style="background:#5B6B7F"></span><span class="hex">#5B6B7F</span><span class="use">متن ثانویه و توضیحات</span></div>
+        <div class="trow2"><span class="pname">surfaceContainerLow</span><span class="dot" style="background:#F5F7FA"></span><span class="hex">#F5F7FA</span><span class="use">پس‌زمینه اسکفلد (صفحه)</span></div>
+        <div class="trow2"><span class="pname">surfaceContainer</span><span class="dot" style="background:#F7FAFC"></span><span class="hex">#F7FAFC</span><span class="use">سطح نرم داخل کارت‌ها</span></div>
+        <div class="trow2"><span class="pname">outline</span><span class="dot" style="background:#E4E9F0"></span><span class="hex">#E4E9F0</span><span class="use">حاشیه کارت، ورودی، دکمه خطی</span></div>
+        <div class="trow2"><span class="pname">outlineVariant</span><span class="dot" style="background:#EEF2F7"></span><span class="hex">#EEF2F7</span><span class="use">دیوایدر و حاشیه خیلی روشن</span></div>
+        <div class="trow2"><span class="pname">inverseSurface</span><span class="dot" style="background:#0F172A"></span><span class="hex">#0F172A</span><span class="use">سطح معکوس (اسنک‌بار)</span></div>
+        <div class="trow2"><span class="pname">onInverseSurface</span><span class="dot" style="background:#F5F7FA"></span><span class="hex">#F5F7FA</span><span class="use">متن روی سطح معکوس</span></div>
+        <div class="trow2"><span class="pname">inversePrimary</span><span class="dot" style="background:#5EEAD4"></span><span class="hex">#5EEAD4</span><span class="use">نسخه روشن پرایمری برای دارک</span></div>
+        <div class="kit-note">💡 در دارک‌مود، نگاشت معادل در فایل <bdi dir="ltr">app_theme.dart</bdi> (بخش ③ همین پاسخ) تعریف شده است: پس‌زمینه #0F172A، متن #E2E8F0 و پرایمری روشن‌تر #2DD4BF برای کنتراست کافی.</div>
+      </div>
+    </div>
+
+    <!-- 32: TYPOGRAPHY -->
+    <div class="frame">
+      <div class="flabel"><b>32</b> تایپوگرافی · Vazirmatn</div>
+      <div class="screen kit">
+        <div class="kit-title">🔤 تایپوگرافی — فونت وزیرمتن</div>
+        <div class="kit-sub"><bdi dir="ltr">fontFamily: 'Vazirmatn'</bdi> — پشتیبانی کامل از فارسی و ارقام فارسی (۰–۹)</div>
+
+        <div class="card" style="text-align:center;padding:22px 16px;margin-bottom:14px">
+          <div style="font-size:44px;font-weight:900;line-height:1.3">همسفر</div>
+          <div style="font-size:11px;color:var(--t3);font-weight:700;margin-top:6px"><bdi dir="ltr">Vazirmatn</bdi> — فونت tunggal پیش‌فرض تمام صفحات برنامه</div>
+        </div>
+
+        <div class="kit-h">وزن‌های مورد استفاده</div>
+        <div class="w-grid">
+          <div class="wt"><b style="font-weight:400">همسفر</b><span>۴۰۰ · Regular<br>نادر در طراحی</span></div>
+          <div class="wt"><b style="font-weight:500">همسفر</b><span>۵۰۰ · Medium<br>پشتیبان</span></div>
+          <div class="wt"><b style="font-weight:700">همسفر</b><span>۷۰۰ · Bold<br>لیبل فیلدها</span></div>
+          <div class="wt"><b style="font-weight:800">همسفر</b><span>۸۰۰ · ExtraBold<br>عناوین/دکمه‌ها</span></div>
+          <div class="wt"><b style="font-weight:900">همسفر</b><span>۹۰۰ · Black<br>عناوین بزرگ</span></div>
+        </div>
+
+        <div class="kit-h">بازه اندازه‌ها</div>
+        <div class="card" style="padding:14px">
+          <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap">
+            <span style="font-size:38px;font-weight:900">۳۸</span>
+            <span style="font-size:22px;font-weight:900">۲۲</span>
+            <span style="font-size:17px;font-weight:900">۱۷</span>
+            <span style="font-size:14px;font-weight:800">۱۴</span>
+            <span style="font-size:12px;font-weight:700;color:var(--t2)">۱۲</span>
+            <span style="font-size:10px;font-weight:700;color:var(--t3)">۱۰</span>
+          </div>
+          <div style="font-size:9px;color:var(--t3);font-weight:700;margin-top:8px">کوچک‌ترین: ۹.۵sp (کپشن) · بزرگ‌ترین: ۳۸sp (نام اپ در اسپلش)</div>
+        </div>
+        <div class="kit-note">📐 طبق استاندارد پروژه، همه اندازه‌ها در فلاتر با پسوند <bdi dir="ltr">.sp</bdi> از پکیج <bdi dir="ltr">flutter_screenutil</bdi> نوشته می‌شوند تا ریسپانسیو باشند (مبنا: عرض ۳۷۵).</div>
+      </div>
+    </div>
+
+    <!-- 33: TEXTTHEME -->
+    <div class="frame">
+      <div class="flabel"><b>33</b> TextTheme کامل فلاتر · 15 سبک</div>
+      <div class="screen kit">
+        <div class="kit-title">📝 نگاشت کامل به TextTheme</div>
+        <div class="kit-sub">هر ۱۵ سبک متون متریال ۳ — نمونه هر سبک با همان اندازه واقعی نمایش داده شده است</div>
+
+        <div class="tsrow"><span class="tname">displayLarge</span><span class="tmeta">38sp · w900</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:30px;font-weight:900">همسفر</span></div>
+        <div class="tsrow"><span class="tname">displayMedium</span><span class="tmeta">30sp · w900</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:26px;font-weight:900">هماهنگی سفر</span></div>
+        <div class="tsrow"><span class="tname">displaySmall</span><span class="tmeta">24sp · w900</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:22px;font-weight:900">سفر شما ایجاد شد!</span></div>
+        <div class="tsrow"><span class="tname">headlineLarge</span><span class="tmeta">22sp · w900</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:20px;font-weight:900">خوش برگشتی! 👋</span></div>
+        <div class="tsrow"><span class="tname">headlineMedium</span><span class="tmeta">20sp · w800</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:18px;font-weight:800">ایجاد حساب کاربری</span></div>
+        <div class="tsrow"><span class="tname">headlineSmall</span><span class="tmeta">18sp · w800</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:17px;font-weight:800">سفرها 🧭</span></div>
+        <div class="tsrow"><span class="tname">titleLarge</span><span class="tmeta">17sp · w900</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:16px;font-weight:900">سفر جنگل‌گردی شمال 🌲</span></div>
+        <div class="tsrow"><span class="tname">titleMedium</span><span class="tmeta">15sp · w800</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:15px;font-weight:800">جزئیات سفر</span></div>
+        <div class="tsrow"><span class="tname">titleSmall</span><span class="tmeta">14sp · w800</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:14px;font-weight:800">سفر فعلی</span></div>
+        <div class="tsrow"><span class="tname">bodyLarge</span><span class="tmeta">13.5sp · w600</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:13.5px;font-weight:600">توضیحات بلند و پاراگراف‌ها (ارتفاع خط ۲.۱)</span></div>
+        <div class="tsrow"><span class="tname">bodyMedium</span><span class="tmeta">12.5sp · w600</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:12.5px;font-weight:600">مقدار ورودی‌ها و متن اصلی بدنه</span></div>
+        <div class="tsrow"><span class="tname">bodySmall</span><span class="tmeta">11.5sp · w600</span><span class="tdot" style="background:#5B6B7F"></span><span class="tsample" style="font-size:11.5px;font-weight:600;color:#5B6B7F">متن کمک‌هاش و ردیف‌های فرعی</span></div>
+        <div class="tsrow"><span class="tname">labelLarge</span><span class="tmeta">14sp · w800</span><span class="tdot" style="background:#0F172A"></span><span class="tsample" style="font-size:14px;font-weight:800">ورود به حساب (متن دکمه‌ها)</span></div>
+        <div class="tsrow"><span class="tname">labelMedium</span><span class="tmeta">12sp · w700</span><span class="tdot" style="background:#5B6B7F"></span><span class="tsample" style="font-size:12px;font-weight:700;color:#5B6B7F">لیبل فیلدها (رمز عبور)</span></div>
+        <div class="tsrow"><span class="tname">labelSmall</span><span class="tmeta">10sp · w700</span><span class="tdot" style="background:#5B6B7F"></span><span class="tsample" style="font-size:10px;font-weight:700;color:#5B6B7F">متن چیپ‌ها و کپشن‌های کوچک</span></div>
+
+        <div class="kit-note">🎨 رنگ پیش‌فرض: نمایشی/عنوانی/بدنه بزرگ ← <bdi dir="ltr">onSurface #0F172A</bdi> · کمکی/لیبل/چیپ ← <bdi dir="ltr">onSurfaceVariant #5B6B7F</bdi> · در دارک‌مود به‌ترتیب #E2E8F0 و #94A3B8.</div>
+      </div>
+    </div>
+
+    <!-- 34: TOKENS & COMPONENTS -->
+    <div class="frame">
+      <div class="flabel"><b>34</b> توکن‌های ابعادی و پیش‌نمایش کامپوننت‌ها</div>
+      <div class="screen kit">
+        <div class="kit-title">📐 شعاع، سایه، فاصله و کامپوننت‌ها</div>
+        <div class="kit-sub">مقادیر ثابت طراحی برای استفاده یکپارچه در ویجت‌ها</div>
+
+        <div class="kit-h">شعاع گوشه · BorderRadius</div>
+        <div class="tok-grid">
+          <div class="tok"><div class="demo" style="border-radius:999px"></div><b>999.r</b><span>چیپ، پیل، دکمه‌های گرد</span></div>
+          <div class="tok"><div class="demo" style="border-radius:22px"></div><b>22.r</b><span>قاب صفحه، لوگوی اسپلش</span></div>
+          <div class="tok"><div class="demo" style="border-radius:20px"></div><b>20.r</b><span>کارت اصلی، هدر سفر</span></div>
+          <div class="tok"><div class="demo" style="border-radius:16px"></div><b>16.r</b><span>کارت داخلی، کاشی گزینه</span></div>
+          <div class="tok"><div class="demo" style="border-radius:14px"></div><b>14.r</b><span>دکمه، ورودی، دکمه آیکونی</span></div>
+          <div class="tok"><div class="demo" style="border-radius:10px"></div><b>10.r</b><span>ردیف‌های کوچک، تقویم</span></div>
+        </div>
+
+        <div class="kit-h">سایه‌ها · Shadows</div>
+        <div class="tok-grid">
+          <div class="tok"><div class="demo" style="background:#fff;border-color:var(--line);box-shadow:0 6px 18px rgba(15,23,42,.05)"></div><b>کارت</b><span dir="ltr" style="font-size:8px">0 6px 18px · 5%</span></div>
+          <div class="tok"><div class="demo" style="background:linear-gradient(135deg,#14B8A6,#0D9488);border:none;box-shadow:0 8px 20px rgba(13,148,136,.3)"></div><b>دکمه اصلی</b><span dir="ltr" style="font-size:8px">0 8px 20px · 30%</span></div>
+          <div class="tok"><div class="demo" style="background:#fff;border-color:var(--line);box-shadow:0 10px 22px rgba(15,23,42,.12)"></div><b>شناور (نقشه/کد)</b><span dir="ltr" style="font-size:8px">0 10px 22px · 12%</span></div>
+        </div>
+
+        <div class="kit-h">مقیاس فاصله · Spacing (مبنای ۴)</div>
+        <div class="card" style="padding:14px">
+          <div class="sp-row">
+            <div class="sp-box" style="width:4px;height:4px"></div>
+            <div class="sp-box" style="width:8px;height:8px"></div>
+            <div class="sp-box" style="width:10px;height:10px"></div>
+            <div class="sp-box" style="width:12px;height:12px"></div>
+            <div class="sp-box" style="width:16px;height:16px"></div>
+            <div class="sp-box" style="width:20px;height:20px"></div>
+            <div class="sp-box" style="width:24px;height:24px"></div>
+            <span style="font-size:9px;color:var(--t3);font-weight:700;margin-inline-start:6px">۴ · ۸ · ۱۰ · ۱۲ · ۱۶ · ۲۰ · ۲۴</span>
+          </div>
+        </div>
+
+        <div class="kit-h">پیش‌نمایش کامپوننت‌ها</div>
+        <div class="comp-row">
+          <div style="flex:1"><button class="btn" style="padding:11px">دکمه اصلی</button></div>
+          <div style="flex:1"><button class="btn btn-line" style="padding:11px">دکمه خطی</button></div>
+          <div style="flex:1"><button class="btn btn-danger" style="padding:11px">دکمه خطر</button></div>
+        </div>
+        <div class="comp-row">
+          <span class="chip chip-amber">در حال آماده‌سازی</span>
+          <span class="chip chip-green">عضوگیری باز</span>
+          <span class="chip chip-teal">لیدر</span>
+          <span class="chip chip-red">خطا</span>
+          <span class="chip chip-gray">پایان یافته</span>
+        </div>
+        <div class="comp-row" style="display:block">
+          <div class="inp" style="margin-bottom:8px"><svg><use href="#i-search"/></svg><span class="ph">حالت عادی — ورودی جستجو</span></div>
+          <div class="inp focus"><svg style="color:var(--pd)"><use href="#i-search"/></svg> حالت فوکوس — حاشیه پرایمری + هاله</div>
+        </div>
+        <div class="kit-note">✅ ارجاع این توکن‌ها در کد فلاتر: شعاع‌ها با <bdi dir="ltr">.r</bdi>، فاصله‌ها با <bdi dir="ltr">.w / .h</bdi>، سایه‌ها داخل <bdi dir="ltr">BoxShadow</bdi> و رنگ‌ها از کلاس <bdi dir="ltr">AppColors</bdi> (بخش ②).</div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <div class="footer-note">
+  <b>طراحی کامل شد ✅</b> — این فایل اکنون شامل هر ۲۹ فریم پروژه «همسفر» است: اسپلش، احراز هویت، خانه (۲ حالت)، جزئیات سفر، سفرها و جستجو، رویداد کامل ایجاد سفر (۵ مرحله + موفقیت و کد دعوت)، رای‌گیری، پرداخت و بودجه، وظایف، دوستان (۴ صفحه)، پروفایل کاربر، روزهای آزاد، وسایل من، تنظیمات و گزارش باگ.<br>
+  <b>گام بعدی:</b> تبدیل این طراحی به پروژه فلاتر (معماری Clean + Bloc + ThemeData برای لایت/دارک‌مود + پسوند‌های flutter_screenutil) به‌صورت بخش‌بخش.
+</div>
+
+</div>
+</body>
+</html>
