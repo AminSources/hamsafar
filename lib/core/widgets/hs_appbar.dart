@@ -7,10 +7,17 @@ import 'package:hamsafar/core/widgets/txt.dart';
 
 class HsAppbar extends StatelessWidget {
   final String? title;
+  final String? subtitle;
   final bool? hasBack;
   final Widget? leading;
 
-  const HsAppbar({super.key, this.title, this.hasBack, this.leading});
+  const HsAppbar({
+    super.key,
+    this.title,
+    this.hasBack,
+    this.leading,
+    this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +27,44 @@ class HsAppbar extends StatelessWidget {
         children: [
           //* back button
           hasBack ?? false
-              ? HsContainer(
-                  width: 40.w,
-                  height: 40.w,
-                  onTap: () => context.pop(),
-                  child: Center(child: Icon(Icons.chevron_left_sharp)),
+              ? Row(
+                  children: [
+                    HsContainer(
+                      width: 40.w,
+                      height: 40.w,
+                      onTap: () => context.pop(),
+                      child: Center(child: Icon(Icons.chevron_left_sharp)),
+                    ),
+
+                    //* space
+                    SizedBox(width: 16.w),
+                  ],
                 )
               : const SizedBox.shrink(),
 
-          //* space
-          SizedBox(width: 16.w),
-
           //* title
-          txt(title ?? "title", style: context.textTheme.headlineLarge),
+          subtitle != null
+              ? Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    txt(
+                      title ?? "title",
+                      style: context.textTheme.headlineLarge,
+                    ),
+
+                    SizedBox(height: 2.h),
+
+                    txt(
+                      subtitle ?? "subtitle",
+                      style: context.textTheme.bodyMedium,
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                )
+              : txt(title ?? "title", style: context.textTheme.headlineLarge),
+
+          //* space
+          const Spacer(),
 
           //* leading
           leading ?? SizedBox.shrink(),

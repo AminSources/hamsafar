@@ -3,6 +3,7 @@ import 'package:hamsafar/features/auth_feature/presentation/pages/login_page.dar
 import 'package:hamsafar/features/auth_feature/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/register_page.dart';
+import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/splash_feature/presentation/pages/splash_page.dart';
 
 class AppRoutes {
@@ -25,6 +26,7 @@ class AppRoutes {
         path: "/onboarding",
         builder: (context, state) => const OnboardingPage(),
       ),
+      GoRoute(path: "/home", builder: (context, state) => const HomePage()),
     ],
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
@@ -131,7 +132,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
                 SizedBox(height: 40.h),
 
-                HsButton(onTap: () {}, child: const txt('ادامه')),
+                HsButton(
+                  onTap: () {
+                    //? go home page
+                    context.go("/home");
+                  },
+                  child: const txt('ادامه'),
+                ),
               ],
             ),
           ),

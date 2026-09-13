@@ -8,6 +8,12 @@ class HsContainer extends StatelessWidget {
   final double? radius;
   final Widget? child;
   final VoidCallback? onTap;
+  final Color? color;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final Gradient? gradient;
+  final Alignment? alignment;
+  final Color? borderColor;
 
   const HsContainer({
     super.key,
@@ -16,6 +22,12 @@ class HsContainer extends StatelessWidget {
     this.child,
     this.onTap,
     this.radius,
+    this.color,
+    this.padding,
+    this.margin,
+    this.gradient,
+    this.alignment,
+    this.borderColor,
   });
 
   @override
@@ -24,10 +36,17 @@ class HsContainer extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(radius ?? 10.r),
       child: Container(
-        width: width ?? 40.w,
-        height: height ?? 40.w,
+        alignment: alignment,
+        width: width,
+        height: height,
+        padding: padding,
+        margin: margin,
         decoration: BoxDecoration(
-          border: Border.all(color: context.colorScheme.onSurfaceVariant),
+          color: color,
+          gradient: gradient,
+          border: Border.all(
+            color: borderColor ?? context.colorScheme.onSurfaceVariant,
+          ),
           borderRadius: BorderRadius.circular(radius ?? 10.r),
         ),
         child: child,
