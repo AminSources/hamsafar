@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hamsafar/locator.dart';
 
 void main() {
+  //? init app
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //? init locator
+  setupLocator();
+
   //? on run app
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => sl<BottomNavCubit>())],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

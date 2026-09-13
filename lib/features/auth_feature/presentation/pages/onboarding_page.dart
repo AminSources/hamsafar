@@ -135,7 +135,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 HsButton(
                   onTap: () {
                     //? go home page
-                    context.go("/home");
+                    context.go("/main-wrapper");
                   },
                   child: const txt('ادامه'),
                 ),
