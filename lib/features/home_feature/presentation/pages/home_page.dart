@@ -9,7 +9,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_action_cards_row.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_activities.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_trip_card.dart';
-import 'package:hamsafar/features/home_feature/presentation/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/section_header.dart';
 
 enum HomeTripStatus { preparing, inTrip }
 

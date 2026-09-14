@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/home_feature/presentation/widgets/member_tile.dart';
+import 'package:hamsafar/features/trips_feature/presentation/widgets/member_tile.dart';
 
 class TdMembers extends StatelessWidget {
   const TdMembers({super.key});
