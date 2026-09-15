@@ -10,6 +10,7 @@ class HsAppbar extends StatelessWidget {
   final String? subtitle;
   final bool? hasBack;
   final Widget? leading;
+  final VoidCallback? onTapBackButton;
 
   const HsAppbar({
     super.key,
@@ -17,6 +18,7 @@ class HsAppbar extends StatelessWidget {
     this.hasBack,
     this.leading,
     this.subtitle,
+    this.onTapBackButton,
   });
 
   @override
@@ -32,7 +34,7 @@ class HsAppbar extends StatelessWidget {
                     HsContainer(
                       width: 40.w,
                       height: 40.w,
-                      onTap: () => context.pop(),
+                      onTap: onTapBackButton ?? () => context.pop(),
                       child: Center(child: Icon(Icons.chevron_left_sharp)),
                     ),
 

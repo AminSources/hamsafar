@@ -4,6 +4,8 @@ import 'package:hamsafar/features/auth_feature/presentation/pages/onboarding_pag
 import 'package:hamsafar/features/auth_feature/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
+import 'package:hamsafar/features/trip_creation_feature/presentation/pages/trip_creation_wrapper.dart';
+import 'package:hamsafar/features/trip_creation_feature/presentation/pages/trip_success_page.dart';
 import 'package:hamsafar/features/trips_feature/presentation/pages/trip_details_page.dart';
 import 'package:hamsafar/features/main_wrapper_feature/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash_feature/presentation/pages/splash_page.dart';
@@ -47,6 +49,14 @@ class AppRoutes {
       GoRoute(
         path: "/trip-search",
         builder: (context, state) => const TripSearchPage(),
+      ),
+      GoRoute(
+        path: "/trip-create",
+        builder: (context, state) => const TripCreationWrapper(),
+      ),
+      GoRoute(
+        path: "/trip-success",
+        builder: (context, state) => const TripSuccessPage(),
       ),
     ],
   );

@@ -40,7 +40,10 @@ class TripsPage extends StatelessWidget {
                 width: double.infinity,
                 height: 50.h,
                 child: FilledButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    //? push trip creation page
+                    context.push('/trip-create');
+                  },
                   icon: Icon(Icons.add, size: 20.sp, color: Colors.white),
                   label: txt(
                     'ایجاد سفر جدید',
@@ -59,7 +62,6 @@ class TripsPage extends StatelessWidget {
                 status: 'در حال آماده‌سازی',
                 statusColor: context.colorScheme.primaryContainer,
                 statusTextColor: context.colorScheme.primary,
-
                 badge: '۳ روز مانده',
                 badgeColor: context.colorScheme.secondary,
                 badgeTextColor: context.colorScheme.onSecondary,
