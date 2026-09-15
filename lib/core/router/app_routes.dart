@@ -5,6 +5,10 @@ import 'package:hamsafar/features/auth_feature/presentation/pages/recovery_passw
 import 'package:hamsafar/features/auth_feature/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends_feature/presentation/pages/friend_profile_page.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
+import 'package:hamsafar/features/profile_feature/presentation/pages/available_days_page.dart';
+import 'package:hamsafar/features/profile_feature/presentation/pages/my_items_page.dart';
+import 'package:hamsafar/features/settings_feature/presentation/pages/bug_report_page.dart';
+import 'package:hamsafar/features/settings_feature/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination_feature/presentation/pages/trip_coordination_budget_page.dart';
 import 'package:hamsafar/features/trip_coordination_feature/presentation/pages/trip_tasks_page.dart';
 import 'package:hamsafar/features/trip_coordination_feature/presentation/pages/trip_vote_page.dart';
@@ -77,6 +81,22 @@ class AppRoutes {
       GoRoute(
         path: "/friend-profile",
         builder: (context, state) => const FriendProfilePage(),
+      ),
+      GoRoute(
+        path: "/available-days",
+        builder: (context, state) => const AvailableDaysPage(),
+      ),
+      GoRoute(
+        path: '/my-items',
+        builder: (context, state) => const MyItemsPage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/bug-report',
+        builder: (context, state) => const BugReportPage(),
       ),
     ],
   );
