@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hamsafar/core/cubit/bottom_nav_cubit.dart';
-import 'package:hamsafar/features/friends_feature/presentation/widgets/friends_page.dart';
+import 'package:hamsafar/features/friends_feature/presentation/pages/friends_wrapper.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile_feature/presentation/pages/profile_page.dart';
 import 'package:hamsafar/features/trips_feature/presentation/pages/trips_page.dart';
@@ -39,7 +39,7 @@ class _MainWrapperState extends State<MainWrapper> {
           children: const [
             HomePage(),
             TripsPage(),
-            FriendsPage(),
+            FriendsWrapper(),
             ProfilePage(),
           ],
         ),

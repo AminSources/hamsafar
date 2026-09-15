@@ -5,6 +5,7 @@ import 'package:hamsafar/core/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hamsafar/features/friends_feature/presentation/cubit/friends_tab_bar_cubit.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:hamsafar/locator.dart';
 
@@ -21,6 +22,7 @@ void main() {
       providers: [
         BlocProvider(create: (_) => sl<BottomNavCubit>()),
         BlocProvider(create: (_) => sl<TripStepperCubit>()),
+        BlocProvider(create: (_) => sl<FriendsTabBarCubit>()),
       ],
       child: const MyApp(),
     ),

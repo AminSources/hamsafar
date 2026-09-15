@@ -3,6 +3,7 @@ import 'package:hamsafar/features/auth_feature/presentation/pages/login_page.dar
 import 'package:hamsafar/features/auth_feature/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth_feature/presentation/pages/register_page.dart';
+import 'package:hamsafar/features/friends_feature/presentation/pages/friend_profile_page.dart';
 import 'package:hamsafar/features/home_feature/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/trip_coordination_feature/presentation/pages/trip_coordination_budget_page.dart';
 import 'package:hamsafar/features/trip_coordination_feature/presentation/pages/trip_tasks_page.dart';
@@ -72,6 +73,10 @@ class AppRoutes {
       GoRoute(
         path: "/trip-tasks",
         builder: (context, state) => const TripTasksPage(),
+      ),
+      GoRoute(
+        path: "/friend-profile",
+        builder: (context, state) => const FriendProfilePage(),
       ),
     ],
   );
