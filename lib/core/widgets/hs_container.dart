@@ -32,24 +32,25 @@ class HsContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(radius ?? 10.r),
-      child: Container(
-        alignment: alignment,
-        width: width,
-        height: height,
-        padding: padding,
-        margin: margin,
-        decoration: BoxDecoration(
-          color: color,
-          gradient: gradient,
-          border: Border.all(
-            color: borderColor ?? context.colorScheme.onSurfaceVariant,
+    return Padding(
+      padding: margin ?? EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(radius ?? 10.r),
+        child: Ink(
+          width: width,
+          height: height,
+          padding: padding,
+          decoration: BoxDecoration(
+            color: color,
+            gradient: gradient,
+            border: Border.all(
+              color: borderColor ?? context.colorScheme.surfaceContainerHigh,
+            ),
+            borderRadius: BorderRadius.circular(radius ?? 10.r),
           ),
-          borderRadius: BorderRadius.circular(radius ?? 10.r),
+          child: Align(alignment: alignment ?? Alignment.center, child: child),
         ),
-        child: child,
       ),
     );
   }

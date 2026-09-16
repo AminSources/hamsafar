@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hamsafar/core/enums/hs_button_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
+import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_members.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_rules.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_trip_card.dart';
+import 'package:hamsafar/features/trips_feature/presentation/widgets/trip_details_snack_bar.dart';
 
 class TripDetailsPage extends StatelessWidget {
   final bool? isJoined;
@@ -25,7 +29,7 @@ class TripDetailsPage extends StatelessWidget {
               //* appbar
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
-                child: HsAppbar(
+                child: HsAppBar(
                   title: 'جزئیات سفر',
                   hasBack: true,
                   leading: HsContainer(
@@ -44,32 +48,40 @@ class TripDetailsPage extends StatelessWidget {
 
               //* TD members list
               TdMembers(),
-              SizedBox(height: 24.h),
+              SizedBox(height: 14.h),
 
               //* TD rules list
-              TdRules(),
+              TdRules(
+                rules: [
+                  'حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)',
+                  'لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است',
+                  'تقسیم مساوی هزینه‌ها و احترام به طبیعت 🌱',
+                ],
+              ),
               SizedBox(height: 24.h),
 
               //* TD exit trip button
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: context.colorScheme.error),
-                  ),
-                  icon: Icon(
-                    Icons.logout,
-                    size: 18.sp,
-                    color: context.colorScheme.error,
-                  ),
-                  label: txt(
-                    isJoined! ? 'ترک سفر' : "درخواست عضویت",
-                    color: context.colorScheme.error,
-                    fontWeight: FontWeight.w800,
-                    size: 14.sp,
-                  ),
+              HsButton(
+                hsButtonMode: isJoined!
+                    ? HsButtonMode.outline
+                    : HsButtonMode.filled,
+                borderColor: context.colorScheme.error,
+                onTap: () {
+                  //? exit/join trip and close the page
+                  context.pop();
+
+                  //? show snackbar
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    TripDetailsSnackBar(
+                      isJoined: isJoined!,
+                    ).toSnackBar(context),
+                  );
+                },
+                child: txt(
+                  isJoined! ? 'ترک سفر' : "درخواست عضویت",
+                  color: isJoined! ? context.colorScheme.error : Colors.white,
+                  fontWeight: FontWeight.w800,
+                  size: 14.sp,
                 ),
               ),
               SizedBox(height: 24.h),

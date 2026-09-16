@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/member_tile_status_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class MemberTile extends StatelessWidget {
   final String name;
   final String username;
   final Color avatarColor;
   final String letter;
-  final String status;
-  final Color chipBg;
-  final Color chipFg;
-  final IconData? chipIcon;
+
+  final MemberTileStatus? status;
+  final String? statusLabel;
 
   const MemberTile({
     super.key,
@@ -20,13 +23,39 @@ class MemberTile extends StatelessWidget {
     required this.avatarColor,
     required this.letter,
     required this.status,
-    required this.chipBg,
-    required this.chipFg,
-    this.chipIcon,
+
+    this.statusLabel,
   });
 
   @override
   Widget build(BuildContext context) {
+    //? chip icon , chip bg , chip fg
+    IconData chipIcon;
+    Color chipBg;
+    Color chipFg;
+    switch (status) {
+      case MemberTileStatus.leader:
+        chipIcon = LucideIcons.crown;
+        chipBg = context.colorScheme.secondaryContainer;
+        chipFg = context.colorScheme.onSecondaryContainer;
+        break;
+      case MemberTileStatus.confirmed:
+        chipIcon = LucideIcons.circleCheck;
+        chipBg = AppColors.successContainer;
+        chipFg = AppColors.onSuccessContainer;
+        break;
+      case MemberTileStatus.pending:
+        chipIcon = LucideIcons.clock;
+        chipBg = context.colorScheme.onSecondaryContainer;
+        chipFg = context.colorScheme.secondaryContainer;
+        break;
+      default:
+        chipIcon = LucideIcons.info;
+        chipBg = context.colorScheme.tertiary;
+        chipFg = context.colorScheme.onTertiary;
+    }
+
+    //
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
@@ -66,27 +95,11 @@ class MemberTile extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-            decoration: BoxDecoration(
-              color: chipBg,
-              borderRadius: BorderRadius.circular(999.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (chipIcon != null) ...[
-                  Icon(chipIcon, size: 12.sp, color: chipFg),
-                  SizedBox(width: 4.w),
-                ],
-                txt(
-                  status,
-                  size: 10.5.sp,
-                  color: chipFg,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
-            ),
+          HsBadge(
+            label: statusLabel ?? "نامشخص",
+            backgroundColor: chipBg,
+            foregroundColor: chipFg,
+            icon: chipIcon,
           ),
         ],
       ),

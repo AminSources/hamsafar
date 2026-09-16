@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/features/friends_feature/presentation/cubit/friends_tab_bar_cubit.dart';
 import 'package:hamsafar/features/friends_feature/presentation/pages/friends_page.dart';
 import 'package:hamsafar/features/friends_feature/presentation/pages/friends_requests_page.dart';
@@ -51,7 +51,7 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
                   return Column(
                     children: [
                       //* app bar
-                      HsAppbar(title: "دوستان من"),
+                      HsAppBar(title: "دوستان من"),
 
                       //* tabbar section
                       FriendsTabBar(tabbarIndex: state),

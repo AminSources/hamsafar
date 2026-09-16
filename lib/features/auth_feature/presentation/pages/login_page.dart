@@ -1,10 +1,11 @@
-// lib/features/auth/presentation/pages/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
+import 'package:hamsafar/features/auth_feature/presentation/widgets/login_avatar.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -52,20 +53,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 SizedBox(height: 40.h),
 
-                Container(
-                  width: 70.w,
-                  height: 70.h,
-                  decoration: BoxDecoration(
-                    gradient: context.verticalGradient,
-                    borderRadius: BorderRadius.circular(15.r),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.route_outlined,
-                      size: context.textTheme.displayLarge!.fontSize,
-                    ),
-                  ),
-                ),
+                LoginAvatar(),
                 SizedBox(height: 16.h),
 
                 txt('خوش برگشتی! 👋', style: context.textTheme.headlineLarge),
@@ -81,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   decoration: const InputDecoration(
                     hintText: 'ایمیل',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIcon: Icon(LucideIcons.mail),
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -90,12 +78,10 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: _obscureText,
                   decoration: InputDecoration(
                     hintText: 'رمز عبور',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(LucideIcons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureText
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                        _obscureText ? LucideIcons.eyeClosed : LucideIcons.eye,
                         color: context.colorScheme.onSurfaceVariant,
                       ),
                       onPressed: () =>
@@ -148,14 +134,15 @@ class _LoginPageState extends State<LoginPage> {
                 OutlinedButton(
                   onPressed: () {},
                   child: Row(
+                    spacing: 12.w,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.g_mobiledata,
-                        size: 24.sp,
-                        color: context.colorScheme.onSurface,
+                      Image.asset(
+                        "lib/assets/images/google_icon.png",
+                        width: 24.w,
+                        height: 24.w,
+                        fit: BoxFit.fill,
                       ),
-                      SizedBox(width: 8.w),
                       const txt('ورود با گوگل'),
                     ],
                   ),

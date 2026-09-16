@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:hamsafar/core/widgets/hs_badge.dart';
+import 'package:hamsafar/core/widgets/trip_info_table.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/home_feature/presentation/widgets/home_chip.dart';
-import 'package:hamsafar/features/home_feature/presentation/widgets/home_preparing_info.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class TdTripCard extends StatelessWidget {
   const TdTripCard({super.key});
@@ -31,16 +32,16 @@ class TdTripCard extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              HomeChip(
+              HsBadge(
                 label: 'در حال آماده‌سازی',
-                bg: Colors.white.withValues(alpha: 0.18),
-                fg: Colors.white,
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
+                foregroundColor: Colors.white,
               ),
 
-              HomeChip(
+              HsBadge(
                 label: '۳ روز مانده',
-                bg: context.colorScheme.secondary,
-                fg: context.colorScheme.onSecondary,
+                backgroundColor: context.colorScheme.secondary,
+                foregroundColor: context.colorScheme.onSecondary,
               ),
             ],
           ),
@@ -54,11 +55,7 @@ class TdTripCard extends StatelessWidget {
           SizedBox(height: 5.h),
           Row(
             children: [
-              Icon(
-                Icons.location_on_outlined,
-                size: 15.sp,
-                color: Colors.white70,
-              ),
+              Icon(LucideIcons.mapPin, size: 15.sp, color: Colors.white70),
               SizedBox(width: 4.w),
               Expanded(
                 child: txt(
@@ -70,7 +67,13 @@ class TdTripCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          HomePreparingInfo(),
+          TripInfoTable(
+            borderColor: Colors.white.withValues(alpha: 0.18),
+            labels: ["تاریخ", "زمان حرکت", "اعضا"],
+            values: ["۱۵ تا ۱۷ اردیبهشت", "۰۷:۰۰", '۶ نفر'],
+            labelColor: Colors.white.withValues(alpha: 0.7),
+            valueColor: Colors.white,
+          ),
         ],
       ),
     );

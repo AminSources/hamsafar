@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/auth_feature/presentation/widgets/onboarding_header.dart';
+import 'package:hamsafar/features/auth_feature/presentation/widgets/onboarding_profile_avatar.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -51,77 +53,35 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: txt(
-                    'پروفایلت رو کامل کن ✨',
-                    style: context.textTheme.headlineLarge,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Center(
-                  child: txt(
-                    'این اطلاعات به دوستانت کمک می‌کند تو را پیدا کنند',
-                    style: context.textTheme.bodyMedium,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                //* header
+                OnboardingHeader(),
                 SizedBox(height: 32.h),
 
-                Center(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50.r,
-                        backgroundColor: context.colorScheme.primaryContainer,
-                        child: Icon(
-                          Icons.person,
-                          size: 50.sp,
-                          color: context.colorScheme.primary,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: EdgeInsets.all(6.r),
-                          decoration: BoxDecoration(
-                            color: context.colorScheme.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: context.colorScheme.surface,
-                              width: 2.w,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            size: 20.sp,
-                            color: context.colorScheme.onPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                //* profile avatar
+                OnboardingProfileAvatar(),
                 SizedBox(height: 32.h),
 
+                //* name field
                 TextFormField(
                   focusNode: nameFocusNode,
                   decoration: const InputDecoration(
                     hintText: 'نام و نام خانوادگی',
-                    prefixIcon: Icon(Icons.person_outline),
+                    prefixIcon: Icon(LucideIcons.userRound),
                   ),
                 ),
                 SizedBox(height: 16.h),
 
+                //* user name field
                 TextFormField(
                   focusNode: userNameFocusNode,
                   decoration: const InputDecoration(
                     hintText: 'نام کاربری',
-                    prefixIcon: Icon(Icons.alternate_email),
+                    prefixIcon: Icon(LucideIcons.atSign),
                   ),
                 ),
                 SizedBox(height: 16.h),
 
+                //* bio field
                 TextFormField(
                   focusNode: bioFocusNode,
                   maxLines: 3,
@@ -132,6 +92,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 ),
                 SizedBox(height: 40.h),
 
+                //* continue button
                 HsButton(
                   onTap: () {
                     //? go home page

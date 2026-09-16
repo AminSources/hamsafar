@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/cubit/trip_stepper_cubit.dart';
@@ -84,7 +84,7 @@ class _TripCreationWrapperState extends State<TripCreationWrapper> {
                       horizontal: 20.w,
                       vertical: 16.h,
                     ),
-                    child: HsAppbar(
+                    child: HsAppBar(
                       title: "ایجاد سفر جدید",
                       hasBack: true,
                       onTapBackButton: () {

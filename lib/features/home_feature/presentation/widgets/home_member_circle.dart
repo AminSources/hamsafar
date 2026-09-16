@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
 class HomeMemberCircle extends StatelessWidget {
@@ -17,7 +18,10 @@ class HomeMemberCircle extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: bg,
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(
+          color: context.colorScheme.surfaceContainerHigh,
+          width: 2,
+        ),
       ),
       child: Center(
         child: txt(label, size: 11.sp, color: fg, fontWeight: FontWeight.w800),

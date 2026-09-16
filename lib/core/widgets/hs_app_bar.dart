@@ -5,14 +5,14 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class HsAppbar extends StatelessWidget {
+class HsAppBar extends StatelessWidget {
   final String? title;
   final String? subtitle;
   final bool? hasBack;
   final Widget? leading;
   final VoidCallback? onTapBackButton;
 
-  const HsAppbar({
+  const HsAppBar({
     super.key,
     this.title,
     this.hasBack,

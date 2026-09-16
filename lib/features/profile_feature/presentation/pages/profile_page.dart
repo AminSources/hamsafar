@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
@@ -20,7 +20,7 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //* appbar
-              HsAppbar(title: 'پروفایل 👤'),
+              HsAppBar(title: 'پروفایل 👤'),
               SizedBox(height: 24.h),
 
               //* profile header card

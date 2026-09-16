@@ -1,9 +1,9 @@
-// lib/features/home/presentation/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_action_cards_row.dart';
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //* appbar
-              HsAppbar(
+              HsAppBar(
                 title: _isInTrip ? 'سفر خوبی داشته باشی!' : 'سلام، سارا! 👋',
                 subtitle: _isInTrip
                     ? 'روز دوم از سفر شمال'
@@ -95,7 +95,10 @@ class _HomePageState extends State<HomePage> {
               SectionHeader(
                 title: "سفر فعلی",
                 actionLabel: "جزئیات کامل",
-                onTap: () {},
+                onTap: () {
+                  //? navigate to trip details
+                  context.push('/trip-detail');
+                },
               ),
               SizedBox(height: 12.h),
 

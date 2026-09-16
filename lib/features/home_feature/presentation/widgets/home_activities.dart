@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_activity_tile.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class HomeActivities extends StatelessWidget {
   final bool isInTrip;
@@ -16,14 +17,14 @@ class HomeActivities extends StatelessWidget {
           HomeActivityTile(
             title: 'لیدر پرداخت نگار را تأیید کرد',
             time: '۲۰ دقیقه پیش',
-            icon: Icons.verified_outlined,
+            icon: LucideIcons.info,
             color: AppColors.success,
           ),
           SizedBox(height: 10.h),
           HomeActivityTile(
             title: 'وظیفه «خرید صبحانه» انجام شد',
             time: '۲ ساعت پیش',
-            icon: Icons.check_circle_outline,
+            icon: LucideIcons.circleCheck,
             color: AppColors.primary,
           ),
         ],

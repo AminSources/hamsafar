@@ -17,7 +17,7 @@ class FriendsPage extends StatelessWidget {
         4,
         (index) => InkWell(
           onTap: () {
-            //? push to firend profile page
+            //? push to friend profile page
             context.push("/friend-profile");
           },
           child: HsContainer(

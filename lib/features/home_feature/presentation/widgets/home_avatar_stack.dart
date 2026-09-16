@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_member_circle.dart';
@@ -23,14 +24,15 @@ class HomeAvatarStack extends StatelessWidget {
                   child: HomeMemberCircle(
                     label: letters[i],
                     bg: AppColors.avatars[i],
+                    fg: Colors.white,
                   ),
                 ),
               Positioned(
                 right: letters.length * 22.w,
                 child: HomeMemberCircle(
                   label: '+۲',
-                  bg: Colors.white,
-                  fg: AppColors.primaryDark,
+                  bg: context.colorScheme.surfaceContainerHigh,
+                  fg: context.colorScheme.primaryFixed,
                 ),
               ),
             ],

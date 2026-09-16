@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -70,7 +71,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   focusNode: emailFocusNode,
                   decoration: const InputDecoration(
                     hintText: 'ایمیل',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    prefixIcon: Icon(LucideIcons.mail),
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -79,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   decoration: const InputDecoration(
                     hintText: 'رمز عبور',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: Icon(LucideIcons.lock),
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -88,7 +89,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                   decoration: const InputDecoration(
                     hintText: 'تأیید رمز عبور',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: Icon(LucideIcons.lock),
                   ),
                 ),
                 SizedBox(height: 24.h),

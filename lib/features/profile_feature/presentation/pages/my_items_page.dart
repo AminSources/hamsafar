@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
@@ -47,7 +47,7 @@ class _MyItemsPageState extends State<MyItemsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //* appbar
-              HsAppbar(title: 'وسایل من 🎒', hasBack: true),
+              HsAppBar(title: 'وسایل من 🎒', hasBack: true),
               SizedBox(height: 16.h),
 
               //* description box

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/note_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
-import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
+import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/trip_item.dart';
 
 class TripSearchPage extends StatelessWidget {
@@ -17,7 +18,7 @@ class TripSearchPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HsAppbar(title: 'جستجوی سفر', hasBack: true),
+              HsAppBar(title: 'جستجوی سفر', hasBack: true),
               SizedBox(height: 20.h),
 
               TextField(
@@ -72,29 +73,9 @@ class TripSearchPage extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              Container(
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  color: context.colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 18.sp,
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: txt(
-                        'برای مشاهده جزئیات و ارسال درخواست، روی هر سفر بزنید',
-                        size: 12.sp,
-                        color: context.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
+              HsNote(
+                note: 'برای مشاهده جزئیات و ارسال درخواست، روی هر سفر بزنید',
+                noteMode: NoteMode.info,
               ),
               SizedBox(height: 24.h),
             ],

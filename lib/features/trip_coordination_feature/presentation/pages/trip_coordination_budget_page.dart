@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
@@ -21,7 +21,7 @@ class TripCoordinationBudgetPage extends StatelessWidget {
               //* appbar
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
-                child: const HsAppbar(title: 'پرداخت و بودجه', hasBack: true),
+                child: const HsAppBar(title: 'پرداخت و بودجه', hasBack: true),
               ),
 
               //* pending badge

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
+import 'package:hamsafar/features/auth_feature/presentation/widgets/recovery_avatar.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class RecoveryPasswordPage extends StatelessWidget {
   const RecoveryPasswordPage({super.key});
@@ -15,29 +17,13 @@ class RecoveryPasswordPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              HsAppbar(title: "", hasBack: true),
+              HsAppBar(title: "", hasBack: true),
 
               SizedBox(height: 40.h),
 
-              Center(
-                child: Container(
-                  width: 70.w,
-                  height: 70.h,
-                  decoration: BoxDecoration(
-                    color: context.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(15.r),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.key_rounded,
-                      size: context.textTheme.displayLarge!.fontSize,
-                      color: context.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-              ),
+              RecoveryAvatar(),
               SizedBox(height: 16.h),
 
               Center(
@@ -58,7 +44,7 @@ class RecoveryPasswordPage extends StatelessWidget {
               TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'ایمیل',
-                  prefixIcon: Icon(Icons.email_outlined),
+                  prefixIcon: Icon(LucideIcons.mail),
                 ),
               ),
               SizedBox(height: 32.h),

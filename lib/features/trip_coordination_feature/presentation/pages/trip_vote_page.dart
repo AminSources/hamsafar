@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_appbar.dart';
+import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
@@ -21,7 +21,7 @@ class TripVotePage extends StatelessWidget {
               //* appbar
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h),
-                child: const HsAppbar(
+                child: const HsAppBar(
                   title: 'رای‌گیری سفر فعال',
                   hasBack: true,
                 ),
