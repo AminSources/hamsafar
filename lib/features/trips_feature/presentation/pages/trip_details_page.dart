@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/enums/hs_button_enums.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
@@ -10,7 +11,8 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_members.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_rules.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/td_trip_card.dart';
-import 'package:hamsafar/features/trips_feature/presentation/widgets/trip_details_snack_bar.dart';
+import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class TripDetailsPage extends StatelessWidget {
   final bool? isJoined;
@@ -72,8 +74,16 @@ class TripDetailsPage extends StatelessWidget {
 
                   //? show snackbar
                   ScaffoldMessenger.of(context).showSnackBar(
-                    TripDetailsSnackBar(
-                      isJoined: isJoined!,
+                    HsSnackBar(
+                      text: isJoined!
+                          ? "شما سفر را ترک کردید"
+                          : "درخواست عضویت شما ارسال شد",
+                      mode: isJoined!
+                          ? HsSnackBarMode.error
+                          : HsSnackBarMode.success,
+                      icon: isJoined!
+                          ? LucideIcons.userRoundMinus
+                          : LucideIcons.userRoundPlus,
                     ).toSnackBar(context),
                   );
                 },

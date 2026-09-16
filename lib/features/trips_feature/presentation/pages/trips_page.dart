@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
+import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/section_header.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/trip_item.dart';
@@ -36,21 +37,16 @@ class TripsPage extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    //? push trip creation page
-                    context.push('/trip-create');
-                  },
-                  icon: Icon(Icons.add, size: 20.sp, color: Colors.white),
-                  label: txt(
-                    'ایجاد سفر جدید',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    size: 14.sp,
-                  ),
+              HsButton(
+                onTap: () {
+                  //? push trip creation page
+                  context.push('/trip-create');
+                },
+                child: txt(
+                  'ایجاد سفر جدید',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  size: 14.sp,
                 ),
               ),
               SizedBox(height: 24.h),

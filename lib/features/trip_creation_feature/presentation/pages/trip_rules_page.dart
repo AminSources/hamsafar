@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_container.dart';
+import 'package:hamsafar/core/widgets/hs_note.dart';
+import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/trip_creation_feature/presentation/widgets/trip_rule_tile.dart';
 
 class TripRulesPage extends StatelessWidget {
   const TripRulesPage({super.key});
@@ -12,6 +15,7 @@ class TripRulesPage extends StatelessWidget {
     return Padding(
       padding: .symmetric(horizontal: 20.w),
       child: Column(
+        crossAxisAlignment: .start,
         children: [
           //* add rule input row
           Row(
@@ -30,7 +34,15 @@ class TripRulesPage extends StatelessWidget {
                 width: 100.w,
                 height: 50.h,
                 child: FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    //? show snack bar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      HsSnackBar(
+                        text: "قانون جدید اضافه شد",
+                        mode: HsSnackBarMode.success,
+                      ).toSnackBar(context),
+                    );
+                  },
                   child: txt(
                     'افزودن',
                     color: Colors.white,
@@ -52,134 +64,30 @@ class TripRulesPage extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
 
-          //* rule 1
-          HsContainer(
-            width: double.infinity,
-            padding: EdgeInsets.all(14.w),
-            color: context.colorScheme.surface,
-            radius: 14.r,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.gavel,
-                  size: 20.sp,
-                  color: context.colorScheme.primary,
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: txt(
-                    'حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)',
-                    size: 12.5.sp,
-                    fontWeight: FontWeight.w600,
-                    color: context.colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Icons.close,
-                  size: 18.sp,
-                  color: context.colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10.h),
-
-          //* rule 2
-          HsContainer(
-            width: double.infinity,
-            padding: EdgeInsets.all(14.w),
-            color: context.colorScheme.surface,
-            radius: 14.r,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.gavel,
-                  size: 20.sp,
-                  color: context.colorScheme.primary,
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: txt(
+          //* rules list
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
+                child: TripRuleTile(
+                  rule: [
+                    "حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)",
                     'لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است',
-                    size: 12.5.sp,
-                    fontWeight: FontWeight.w600,
-                    color: context.colorScheme.onSurface,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Icons.close,
-                  size: 18.sp,
-                  color: context.colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 10.h),
-
-          //* rule 3
-          HsContainer(
-            width: double.infinity,
-            padding: EdgeInsets.all(14.w),
-            color: context.colorScheme.surface,
-            radius: 14.r,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.gavel,
-                  size: 20.sp,
-                  color: context.colorScheme.primary,
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: txt(
                     'برگشت زودتر از موعد، فقط با هماهنگی لیدر مجاز است',
-                    size: 12.5.sp,
-                    fontWeight: FontWeight.w600,
-                    color: context.colorScheme.onSurface,
-                  ),
+                  ][index],
                 ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Icons.close,
-                  size: 18.sp,
-                  color: context.colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
+              );
+            },
           ),
           SizedBox(height: 20.h),
 
           //* info note
-          HsContainer(
-            width: double.infinity,
-            padding: EdgeInsets.all(12.w),
-            color: context.colorScheme.secondaryContainer,
-            borderColor: context.colorScheme.secondary,
-            radius: 10.r,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 18.sp,
-                  color: context.colorScheme.onSecondaryContainer,
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: txt(
-                    'قوانین برای جلوگیری از مشکلات حین سفر (برگشت زودهنگام، اختلاف مالی و...) تعیین می‌شوند و همه اعضا پس از عضویت آن‌ها را تأیید می‌کنند.',
-                    size: 11.sp,
-                    fontWeight: FontWeight.w600,
-                    color: context.colorScheme.onSecondaryContainer,
-                  ),
-                ),
-              ],
-            ),
+          HsNote(
+            note:
+                'قوانین برای جلوگیری از مشکلات حین سفر (برگشت زودهنگام، اختلاف مالی و...) تعیین می‌شوند و همه اعضا پس از عضویت آن‌ها را تأیید می‌کنند.',
           ),
           SizedBox(height: 24.h),
         ],

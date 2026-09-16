@@ -50,7 +50,12 @@ class HsNote extends StatelessWidget {
           Icon(Icons.info_outline, size: 18.sp, color: noteFg),
           SizedBox(width: 8.w),
           Expanded(
-            child: txt(note, size: 12.sp, color: noteFg),
+            child: txt(
+              note,
+              size: 12.sp,
+              color: noteFg,
+              textAlign: TextAlign.justify,
+            ),
           ),
         ],
       ),

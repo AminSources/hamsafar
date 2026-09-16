@@ -7,11 +7,13 @@ import 'package:hamsafar/core/widgets/txt.dart';
 class DateTimeOption extends StatelessWidget {
   final String title;
   final bool selected;
+  final VoidCallback? onTap;
 
   const DateTimeOption({
     super.key,
     required this.title,
     required this.selected,
+    this.onTap,
   });
 
   @override
@@ -24,6 +26,7 @@ class DateTimeOption extends StatelessWidget {
             : context.colorScheme.surface,
         borderColor: selected ? context.colorScheme.primary : null,
         radius: 14.r,
+        onTap: onTap,
         child: Row(
           children: [
             Icon(
