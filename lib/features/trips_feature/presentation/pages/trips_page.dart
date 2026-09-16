@@ -66,7 +66,7 @@ class TripsPage extends StatelessWidget {
                 members: '۶ عضو · لیدر: سارا محمدی',
               ),
 
-              SizedBox(height: 24.h),
+              SizedBox(height: 65.h),
             ],
           ),
         ),

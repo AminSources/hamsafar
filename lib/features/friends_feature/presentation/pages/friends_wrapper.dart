@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/features/friends_feature/presentation/cubit/friends_tab_bar_cubit.dart';
-import 'package:hamsafar/features/friends_feature/presentation/pages/friends_page.dart';
+import 'package:hamsafar/features/friends_feature/presentation/pages/my_friends_page.dart';
 import 'package:hamsafar/features/friends_feature/presentation/pages/friends_requests_page.dart';
 import 'package:hamsafar/features/friends_feature/presentation/pages/friends_search_page.dart';
 import 'package:hamsafar/features/friends_feature/presentation/widgets/friends_tab_bar.dart';
@@ -17,12 +17,12 @@ class FriendsWrapper extends StatefulWidget {
 
 class _FriendsWrapperState extends State<FriendsWrapper> {
   final List<Widget> _pages = const [
-    FriendsPage(),
+    MyFriendsPage(),
     FriendsRequestsPage(),
     FriendsSearchPage(),
   ];
 
-  Widget _pageContent = FriendsPage();
+  Widget _pageContent = MyFriendsPage();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +58,8 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
 
                       //* page contents
                       _pageContent,
+
+                      SizedBox(height: 65.h),
                     ],
                   );
                 },

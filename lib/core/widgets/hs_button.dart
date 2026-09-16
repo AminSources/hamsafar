@@ -10,6 +10,7 @@ class HsButton extends StatelessWidget {
   final VoidCallback? onTap;
   final HsButtonMode? hsButtonMode;
   final Color? borderColor;
+  final Color? backgroundColor;
 
   const HsButton({
     super.key,
@@ -19,6 +20,7 @@ class HsButton extends StatelessWidget {
     this.onTap,
     this.hsButtonMode = HsButtonMode.filled,
     this.borderColor,
+    this.backgroundColor,
   });
 
   @override
@@ -31,6 +33,7 @@ class HsButton extends StatelessWidget {
         width: width,
         height: height ?? 50.h,
         decoration: BoxDecoration(
+          color: backgroundColor,
           gradient: isFilled ? context.horizontalGradient : null,
           border: isFilled
               ? null

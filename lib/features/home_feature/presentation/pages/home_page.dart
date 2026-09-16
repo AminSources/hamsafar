@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
 
               //* recent activities list
               HomeActivities(isInTrip: _isInTrip),
-              SizedBox(height: 8.h),
+              SizedBox(height: 65.h),
             ],
           ),
         ),
