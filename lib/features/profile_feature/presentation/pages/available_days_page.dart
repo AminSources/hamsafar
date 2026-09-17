@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hamsafar/core/enums/note_enums.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
+import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
+import 'package:hamsafar/core/widgets/hs_note.dart';
+import 'package:hamsafar/core/widgets/section_header.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/profile_feature/presentation/widgets/profile_available_day_chip.dart';
+import 'package:hamsafar/features/profile_feature/presentation/widgets/time_range_tile.dart';
 
 class AvailableDaysPage extends StatefulWidget {
   const AvailableDaysPage({super.key});
@@ -14,7 +21,15 @@ class AvailableDaysPage extends StatefulWidget {
 
 class _AvailableDaysPageState extends State<AvailableDaysPage> {
   //* day labels
-  final List<String> _days = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+  final List<String> _days = [
+    'شنبه',
+    'یکشنبه',
+    'دوشنبه',
+    'سه شنبه',
+    'چهارشنبه',
+    'پنجشنبه',
+    'جمعه',
+  ];
 
   //* selected states: Wed, Thu, Fri selected by default
   final List<bool> _selectedDays = [
@@ -72,21 +87,15 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
               SizedBox(height: 16.h),
 
               //* description box
-              HsContainer(
-                padding: EdgeInsets.all(16.w),
-                radius: 12.r,
-                color: context.colorScheme.primaryContainer,
-                borderColor: Colors.transparent,
-                child: txt(
-                  'روزهای آزاد هفته‌ات را انتخاب کن تا هماهنگی زمان سفرها راحت‌تر انجام شود.',
-                  style: context.textTheme.bodyMedium,
-                  color: context.colorScheme.onPrimaryContainer,
-                ),
+              HsNote(
+                note:
+                    'روزهای آزاد هفته‌ات را انتخاب کن تا هماهنگی زمان سفرها راحت‌تر انجام شود.',
+                noteMode: NoteMode.success,
               ),
               SizedBox(height: 24.h),
 
               //* days section title
-              txt('روزهای هفته', style: context.textTheme.titleMedium),
+              SectionHeader(title: "روزهای هفته"),
               SizedBox(height: 16.h),
 
               //* days grid
@@ -95,189 +104,53 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
                 runSpacing: 8.h,
                 children: List.generate(
                   7,
-                  (index) => GestureDetector(
-                    onTap: () {
+                  (index) => ProfileAvailableDayChip(
+                    title: _days[index],
+                    isSelected: _selectedDays[index],
+                    onSelect: (value) {
                       setState(() {
-                        _selectedDays[index] = !_selectedDays[index];
+                        _selectedDays[index] = !value;
                       });
                     },
-                    child: Container(
-                      width: 44.w,
-                      height: 44.w,
-                      decoration: BoxDecoration(
-                        color: _selectedDays[index]
-                            ? context.colorScheme.primary
-                            : context.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(
-                          color: _selectedDays[index]
-                              ? context.colorScheme.primary
-                              : context.colorScheme.outline,
-                        ),
-                      ),
-                      child: Center(
-                        child: txt(
-                          _days[index],
-                          style: context.textTheme.titleSmall,
-                          color: _selectedDays[index]
-                              ? context.colorScheme.onPrimary
-                              : context.colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ),
               SizedBox(height: 24.h),
 
               //* time range section title
-              txt('بازه زمانی', style: context.textTheme.titleMedium),
-              SizedBox(height: 4.h),
-
-              //* time range subtitle
-              txt(
-                'روزهای انتخابی در این بازه آزاد هستید',
-                style: context.textTheme.bodySmall,
-                color: context.colorScheme.onSurfaceVariant,
-              ),
+              SectionHeader(title: "بازه زمانی "),
               SizedBox(height: 16.h),
 
               //* time pickers row
               HsContainer(
                 padding: EdgeInsets.all(16.w),
-                radius: 14.r,
                 color: context.colorScheme.surface,
                 child: Row(
-                  children: [
-                    //* start time column
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          txt(
-                            'از ساعت',
-                            style: context.textTheme.bodySmall,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                          SizedBox(height: 8.h),
-
-                          //* start time picker
-                          GestureDetector(
-                            onTap: () => _selectTime(context, true),
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 14.w,
-                                vertical: 12.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: txt(
-                                _formatTime(_startTime),
-                                style: context.textTheme.titleSmall,
-                                color: context.colorScheme.onPrimaryContainer,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  spacing: 12.w,
+                  children: List.generate(
+                    2,
+                    (index) => TimeRangeTile(
+                      title: ["از ساعت", "تا ساعت"][index],
+                      value: _formatTime([_startTime, _endTime][index]),
+                      onTap: () {
+                        _selectTime(context, [true, false][index]);
+                      },
                     ),
-                    SizedBox(width: 12.w),
-
-                    //* arrow icon
-                    Icon(
-                      Icons.arrow_back_rounded,
-                      color: context.colorScheme.onSurfaceVariant,
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 12.w),
-
-                    //* end time column
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          txt(
-                            'تا ساعت',
-                            style: context.textTheme.bodySmall,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                          SizedBox(height: 8.h),
-
-                          //* end time picker
-                          GestureDetector(
-                            onTap: () => _selectTime(context, false),
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 14.w,
-                                vertical: 12.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: context.colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(10.r),
-                              ),
-                              child: txt(
-                                _formatTime(_endTime),
-                                style: context.textTheme.titleSmall,
-                                color: context.colorScheme.onPrimaryContainer,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               SizedBox(height: 24.h),
 
               //* info note box
-              HsContainer(
-                padding: EdgeInsets.all(16.w),
-                radius: 12.r,
-                color: context.colorScheme.secondaryContainer,
-                borderColor: Colors.transparent,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: context.colorScheme.onSecondaryContainer,
-                      size: 20.sp,
-                    ),
-                    SizedBox(width: 12.w),
-
-                    //* info text
-                    Expanded(
-                      child: txt(
-                        'روزهای آزاد شما در پروفایلتان به دوستان نمایش داده می‌شود و لیدر هنگام برنامه‌ریزی سفر آن‌ها را در نظر می‌گیرد.',
-                        style: context.textTheme.bodySmall,
-                        color: context.colorScheme.onSecondaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
+              HsNote(
+                note:
+                    'روزهای آزاد شما در پروفایلتان به دوستان نمایش داده می‌شود و لیدر هنگام برنامه‌ریزی سفر آن‌ها را در نظر می‌گیرد.',
+                noteMode: NoteMode.info,
               ),
               SizedBox(height: 32.h),
 
               //* save button
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: FilledButton(
-                  onPressed: () {},
-                  child: txt(
-                    'ذخیره تغییرات',
-                    style: context.textTheme.labelLarge,
-                    color: context.colorScheme.onPrimary,
-                  ),
-                ),
-              ),
+              HsButton(onTap: () => context.pop(), child: txt("ذخیره تغییرات")),
               SizedBox(height: 24.h),
             ],
           ),

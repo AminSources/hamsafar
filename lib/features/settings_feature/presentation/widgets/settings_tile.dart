@@ -4,18 +4,20 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class ProfileMenuTile extends StatelessWidget {
+class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData icon;
   final VoidCallback? onTap;
+  final Widget? trailing;
 
-  const ProfileMenuTile({
+  const SettingsTile({
     super.key,
     required this.title,
     this.subtitle,
     required this.icon,
     this.onTap,
+    this.trailing,
   });
 
   @override
@@ -27,7 +29,7 @@ class ProfileMenuTile extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          //* icon box
+          //* icon
           Container(
             width: 40.w,
             height: 40.w,
@@ -48,11 +50,18 @@ class ProfileMenuTile extends StatelessWidget {
 
                 if (subtitle != null) ...[
                   SizedBox(height: 4.h),
-                  txt(subtitle!, style: context.textTheme.bodySmall),
+                  txt(
+                    subtitle!,
+                    style: context.textTheme.bodySmall,
+                    color: context.colorScheme.onSurfaceVariant,
+                  ),
                 ],
               ],
             ),
           ),
+
+          //* trailing
+          trailing ?? const SizedBox.shrink(),
 
           //* chevron
           Icon(
