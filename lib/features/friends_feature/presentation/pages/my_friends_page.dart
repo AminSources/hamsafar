@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/friend_enums.dart';
+import 'package:hamsafar/features/friends_feature/enums/friend_type.dart';
 import 'package:hamsafar/features/friends_feature/presentation/widgets/friends_tile.dart';
 
 class MyFriendsPage extends StatelessWidget {
@@ -19,7 +19,7 @@ class MyFriendsPage extends StatelessWidget {
           userName: ['@mahdi_r', '@negar_a', '@ali_k', '@elnaz_sh'][index],
           rate: ['۴.۸', '۴.۹', '۴.۶', '۴.۵'][index],
           tripCount: [12, 8, 6, 4][index],
-          friendType: FriendType.friend,
+          friendType: FriendType.alreadyFriend,
         ),
       ),
     );

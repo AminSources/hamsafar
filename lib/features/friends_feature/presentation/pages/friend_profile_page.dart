@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/enums/hs_button_enums.dart';
+import 'package:hamsafar/core/enums/hs_button_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
@@ -148,7 +148,7 @@ class FriendProfilePage extends StatelessWidget {
               HsButton(
                 width: double.infinity,
                 height: 50.h,
-                hsButtonMode: HsButtonMode.outline,
+                hsButtonType: HsButtonType.outline,
                 borderColor: context.colorScheme.error,
                 onTap: () {
                   //? close page

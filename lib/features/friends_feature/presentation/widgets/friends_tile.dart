@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/enums/friend_enums.dart';
+import 'package:hamsafar/features/friends_feature/enums/friend_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
@@ -67,8 +67,8 @@ class FriendsTile extends StatelessWidget {
                   //* name
                   txt(name, fontWeight: FontWeight.w800, size: 14.sp),
 
-                  if (friendType == FriendType.friend ||
-                      friendType == FriendType.send) ...[
+                  if (friendType == FriendType.alreadyFriend ||
+                      friendType == FriendType.sentRequest) ...[
                     //* username
                     txt(
                       userName,
@@ -102,8 +102,9 @@ class FriendsTile extends StatelessWidget {
               const Spacer(),
 
               //* tile button
-              if (friendType == FriendType.friend) const FriendsRemoveButton(),
-              if (friendType == FriendType.send)
+              if (friendType == FriendType.alreadyFriend)
+                const FriendsRemoveButton(),
+              if (friendType == FriendType.sentRequest)
                 HsBadge(
                   label: "در انتظار",
                   backgroundColor: context.colorScheme.onSecondaryContainer,
@@ -113,11 +114,11 @@ class FriendsTile extends StatelessWidget {
           ),
 
           //* tile button
-          if (friendType == FriendType.receive) ...[
+          if (friendType == FriendType.receivedRequest) ...[
             SizedBox(height: 12.h),
             const FriendsReceviedReqButton(),
           ],
-          if (friendType == FriendType.request) ...[
+          if (friendType == FriendType.searched) ...[
             SizedBox(height: 12.h),
             FriendsRequestButton(
               isSended: isSended ?? false,

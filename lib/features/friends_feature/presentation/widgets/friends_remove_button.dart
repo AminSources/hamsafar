@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
-import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsRemoveButton extends StatelessWidget {
@@ -16,12 +17,9 @@ class FriendsRemoveButton extends StatelessWidget {
       height: 40.w,
       onTap: () {
         //? show remove snack bar
-        ScaffoldMessenger.of(context).showSnackBar(
-          HsSnackBar(
-            text: "دوست حذف شد",
-            icon: LucideIcons.userRoundMinus,
-            mode: HsSnackBarMode.error,
-          ).toSnackBar(context),
+        context.showHsSnackBar(
+          text: "دوست حذف شد",
+          hsSnackBarType: HsSnackBarType.error,
         );
       },
       child: Icon(

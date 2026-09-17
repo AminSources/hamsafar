@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/hs_button_enums.dart';
-import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
+import 'package:hamsafar/core/enums/hs_button_type.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
-import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+
 import 'package:hamsafar/core/widgets/txt.dart';
 
 class FriendsReceviedReqButton extends StatelessWidget {
@@ -21,14 +22,12 @@ class FriendsReceviedReqButton extends StatelessWidget {
             height: 40.h,
             onTap: () {
               //? show accepr snack bar
-              ScaffoldMessenger.of(context).showSnackBar(
-                HsSnackBar(
-                  text: "درخواست کاربر مورد نظر پذیرفته شد",
-                  mode: HsSnackBarMode.success,
-                ).toSnackBar(context),
+              context.showHsSnackBar(
+                text: "درخواست کاربر مورد نظر پذیرفته شد",
+                hsSnackBarType: HsSnackBarType.success,
               );
             },
-            hsButtonMode: HsButtonMode.outline,
+            hsButtonType: HsButtonType.outline,
             borderColor: context.colorScheme.primary,
             child: txt("پذیرفتن", color: context.colorScheme.primary),
           ),
@@ -40,14 +39,12 @@ class FriendsReceviedReqButton extends StatelessWidget {
             height: 40.h,
             onTap: () {
               //? show reject snack bar
-              ScaffoldMessenger.of(context).showSnackBar(
-                HsSnackBar(
-                  text: "درخواست کاربر مورد نظر رد شد",
-                  mode: HsSnackBarMode.error,
-                ).toSnackBar(context),
+              context.showHsSnackBar(
+                text: "درخواست کاربر مورد نظر رد شد",
+                hsSnackBarType: HsSnackBarType.error,
               );
             },
-            hsButtonMode: HsButtonMode.outline,
+            hsButtonType: HsButtonType.outline,
             borderColor: context.colorScheme.error,
             child: txt("رد کردن", color: context.colorScheme.error),
           ),

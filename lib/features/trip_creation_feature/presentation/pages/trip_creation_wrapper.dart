@@ -37,8 +37,6 @@ class _TripCreationWrapperState extends State<TripCreationWrapper> {
     "دعوت اعضا از لیست دوستان",
   ];
 
-  Widget _stepContent = TripCommonPage();
-
   @override
   void initState() {
     super.initState();
@@ -56,26 +54,6 @@ class _TripCreationWrapperState extends State<TripCreationWrapper> {
         child: SafeArea(
           child: BlocBuilder<TripStepperCubit, int>(
             builder: (context, state) {
-              switch (state) {
-                case 0:
-                  _stepContent = _pages[0];
-                  break;
-                case 1:
-                  _stepContent = _pages[1];
-                  break;
-                case 2:
-                  _stepContent = _pages[2];
-                  break;
-                case 3:
-                  _stepContent = _pages[3];
-                  break;
-                case 4:
-                  _stepContent = _pages[4];
-                  break;
-                default:
-                  _stepContent = _pages[0];
-              }
-
               return Column(
                 children: [
                   //* appbar
@@ -108,7 +86,7 @@ class _TripCreationWrapperState extends State<TripCreationWrapper> {
                   SizedBox(height: 20.h),
 
                   //* step content
-                  _stepContent,
+                  _pages[state],
 
                   //* continue button
                   Padding(

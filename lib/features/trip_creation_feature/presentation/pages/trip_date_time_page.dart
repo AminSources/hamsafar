@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/cubit/trip_date_coordination_cubit.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/widgets/date_time_option.dart';
@@ -96,7 +96,7 @@ class TripDateTimePage extends StatelessWidget {
                     HsNote(
                       note:
                           "در حالت (رای گیری) زمان و تاریخ حرکت و برگشت با رای گیری از اعضا انتخاب میشود، میتوانید یک مورد یا همه را باهم به رای گیری گذاشته میشود.",
-                      noteMode: NoteMode.warning,
+                      noteMode: HsNoteType.warning,
                     ),
 
               SizedBox(height: 24.h),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile_feature/presentation/widgets/profile_available_day_chip.dart';
 import 'package:hamsafar/features/profile_feature/presentation/widgets/time_range_tile.dart';
@@ -90,12 +90,12 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
               HsNote(
                 note:
                     'روزهای آزاد هفته‌ات را انتخاب کن تا هماهنگی زمان سفرها راحت‌تر انجام شود.',
-                noteMode: NoteMode.success,
+                noteMode: HsNoteType.success,
               ),
               SizedBox(height: 24.h),
 
               //* days section title
-              SectionHeader(title: "روزهای هفته"),
+              HsHeader(title: "روزهای هفته"),
               SizedBox(height: 16.h),
 
               //* days grid
@@ -118,7 +118,7 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
               SizedBox(height: 24.h),
 
               //* time range section title
-              SectionHeader(title: "بازه زمانی "),
+              HsHeader(title: "بازه زمانی "),
               SizedBox(height: 16.h),
 
               //* time pickers row
@@ -145,7 +145,7 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
               HsNote(
                 note:
                     'روزهای آزاد شما در پروفایلتان به دوستان نمایش داده می‌شود و لیدر هنگام برنامه‌ریزی سفر آن‌ها را در نظر می‌گیرد.',
-                noteMode: NoteMode.info,
+                noteMode: HsNoteType.info,
               ),
               SizedBox(height: 32.h),
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
 class HsNote extends StatelessWidget {
   final String note;
-  final NoteMode? noteMode;
+  final HsNoteType? noteMode;
 
   const HsNote({super.key, required this.note, this.noteMode});
 
@@ -17,19 +17,19 @@ class HsNote extends StatelessWidget {
     Color noteFg;
 
     switch (noteMode) {
-      case NoteMode.info:
+      case HsNoteType.info:
         noteBg = context.colorScheme.surfaceContainer;
         noteFg = context.colorScheme.onSurfaceVariant;
         break;
-      case NoteMode.warning:
+      case HsNoteType.warning:
         noteBg = context.colorScheme.onSecondaryContainer;
         noteFg = context.colorScheme.onSecondary;
         break;
-      case NoteMode.error:
+      case HsNoteType.error:
         noteBg = context.colorScheme.errorContainer;
         noteFg = context.colorScheme.onErrorContainer;
         break;
-      case NoteMode.success:
+      case HsNoteType.success:
         noteBg = context.colorScheme.onPrimaryContainer;
         noteFg = context.colorScheme.onPrimary;
         break;

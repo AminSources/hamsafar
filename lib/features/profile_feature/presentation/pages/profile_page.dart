@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/enums/hs_button_enums.dart';
+import 'package:hamsafar/core/enums/hs_button_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile_feature/presentation/widgets/profile_card.dart';
 import 'package:hamsafar/features/profile_feature/presentation/widgets/profile_menu_tile.dart';
@@ -53,7 +53,7 @@ class ProfilePage extends StatelessWidget {
               SizedBox(height: 24.h),
 
               //* settings section title
-              SectionHeader(title: "تنظیمات"),
+              HsHeader(title: "تنظیمات"),
               SizedBox(height: 12.h),
 
               //* app settings item
@@ -76,7 +76,7 @@ class ProfilePage extends StatelessWidget {
 
               //* logout button
               HsButton(
-                hsButtonMode: HsButtonMode.outline,
+                hsButtonType: HsButtonType.outline,
                 borderColor: context.colorScheme.error,
                 child: Row(
                   mainAxisAlignment: .center,

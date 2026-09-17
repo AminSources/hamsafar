@@ -3,13 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class InfoTableItem extends StatelessWidget {
+class InfoBoxItem extends StatelessWidget {
   final String label;
   final String value;
   final Color? labelColor;
   final Color? valueColor;
 
-  const InfoTableItem({
+  const InfoBoxItem({
     super.key,
     required this.label,
     required this.value,

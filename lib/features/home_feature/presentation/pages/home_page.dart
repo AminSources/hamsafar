@@ -9,7 +9,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_action_cards_row.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_activities.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_trip_card.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 
 enum HomeTripStatus { preparing, inTrip }
 
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 24.h),
 
               //* section header
-              SectionHeader(
+              HsHeader(
                 title: "سفر فعلی",
                 actionLabel: "جزئیات کامل",
                 onTap: () {
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 24.h),
 
               //* recent activities header
-              SectionHeader(title: 'فعالیت‌های اخیر'),
+              HsHeader(title: 'فعالیت‌های اخیر'),
               SizedBox(height: 12.h),
 
               //* recent activities list

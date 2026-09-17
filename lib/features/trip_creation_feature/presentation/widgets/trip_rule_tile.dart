@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
-import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -44,12 +45,10 @@ class TripRuleTile extends StatelessWidget {
           IconButton(
             onPressed: () {
               //? show snack bar
-              ScaffoldMessenger.of(context).showSnackBar(
-                HsSnackBar(
-                  text: "قانون حذف شد",
-                  mode: HsSnackBarMode.error,
-                  icon: LucideIcons.trash,
-                ).toSnackBar(context),
+              context.showHsSnackBar(
+                text: "درخواست کاربر مورد نظر پذیرفته شد",
+                icon: LucideIcons.trash,
+                hsSnackBarType: HsSnackBarType.error,
               );
             },
             icon: Icon(

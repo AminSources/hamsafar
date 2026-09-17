@@ -1,0 +1,1 @@
+enum HsButtonType { filled, outline }

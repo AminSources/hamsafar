@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/features/settings_feature/presentation/widgets/settings_footer.dart';
 import 'package:hamsafar/features/settings_feature/presentation/widgets/settings_tile.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -25,7 +25,7 @@ class SettingsPage extends StatelessWidget {
               SizedBox(height: 24.h),
 
               //* app settings section title
-              SectionHeader(title: 'تنظیمات برنامه'),
+              HsHeader(title: 'تنظیمات برنامه'),
               SizedBox(height: 12.h),
 
               //* language setting
@@ -57,7 +57,7 @@ class SettingsPage extends StatelessWidget {
               SizedBox(height: 24.h),
 
               //* account and support section title
-              SectionHeader(title: "حساب کاربری و پشتیبانی"),
+              HsHeader(title: "حساب کاربری و پشتیبانی"),
               SizedBox(height: 12.h),
 
               //* report bug item

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/member_tile_status_enums.dart';
+import 'package:hamsafar/features/trip_creation_feature/enums/member_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
@@ -13,7 +13,7 @@ class MemberTile extends StatelessWidget {
   final Color avatarColor;
   final String letter;
 
-  final MemberTileStatus? status;
+  final MemberType? status;
   final String? statusLabel;
 
   const MemberTile({
@@ -34,17 +34,17 @@ class MemberTile extends StatelessWidget {
     Color chipBg;
     Color chipFg;
     switch (status) {
-      case MemberTileStatus.leader:
+      case MemberType.leader:
         chipIcon = LucideIcons.crown;
         chipBg = context.colorScheme.secondaryContainer;
         chipFg = context.colorScheme.onSecondaryContainer;
         break;
-      case MemberTileStatus.confirmed:
+      case MemberType.confirmed:
         chipIcon = LucideIcons.circleCheck;
         chipBg = AppColors.successContainer;
         chipFg = AppColors.onSuccessContainer;
         break;
-      case MemberTileStatus.pending:
+      case MemberType.pending:
         chipIcon = LucideIcons.clock;
         chipBg = context.colorScheme.onSecondaryContainer;
         chipFg = context.colorScheme.secondaryContainer;

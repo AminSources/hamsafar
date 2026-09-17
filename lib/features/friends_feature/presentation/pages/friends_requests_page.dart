@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/friend_enums.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/features/friends_feature/enums/friend_type.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/features/friends_feature/presentation/widgets/friends_tile.dart';
 
 class FriendsRequestsPage extends StatelessWidget {
@@ -18,7 +18,7 @@ class FriendsRequestsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //* received requests section
-            SectionHeader(title: 'دریافتی (۲)'),
+            HsHeader(title: 'دریافتی (۲)'),
 
             SizedBox(height: 12.h),
 
@@ -35,7 +35,7 @@ class FriendsRequestsPage extends StatelessWidget {
                     userName: ["@rashid_q", "@elnaz_sh"][index],
                     rate: ["۴.۸", "۴.۹"][index],
                     tripCount: [2, 15][index],
-                    friendType: FriendType.receive,
+                    friendType: FriendType.receivedRequest,
                   ),
                 );
               }),
@@ -44,7 +44,7 @@ class FriendsRequestsPage extends StatelessWidget {
             SizedBox(height: 24.h),
 
             //* sent requests section
-            SectionHeader(title: 'درخواست‌های ارسالی'),
+            HsHeader(title: 'درخواست‌های ارسالی'),
 
             SizedBox(height: 12.h),
 
@@ -60,7 +60,7 @@ class FriendsRequestsPage extends StatelessWidget {
                     userName: ["@rashid_q", "@elnaz_sh"][index],
                     rate: ["۴.۸", "۴.۹"][index],
                     tripCount: [2, 15][index],
-                    friendType: FriendType.send,
+                    friendType: FriendType.sentRequest,
                   ),
                 );
               }),
@@ -72,7 +72,7 @@ class FriendsRequestsPage extends StatelessWidget {
             HsNote(
               note:
                   'پس از پذیرفته شدن درخواست، دوست به لیست «دوستان من» اضافه می‌شود',
-              noteMode: NoteMode.success,
+              noteMode: HsNoteType.success,
             ),
           ],
         ),

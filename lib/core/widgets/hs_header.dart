@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class SectionHeader extends StatelessWidget {
+class HsHeader extends StatelessWidget {
   final String title;
   final String? actionLabel;
   final VoidCallback? onTap;
 
-  const SectionHeader({
+  const HsHeader({
     super.key,
     required this.title,
     this.actionLabel,

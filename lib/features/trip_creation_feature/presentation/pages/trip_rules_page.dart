@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/widgets/trip_rule_tile.dart';
 
@@ -36,11 +37,9 @@ class TripRulesPage extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () {
                     //? show snack bar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      HsSnackBar(
-                        text: "قانون جدید اضافه شد",
-                        mode: HsSnackBarMode.success,
-                      ).toSnackBar(context),
+                    context.showHsSnackBar(
+                      text: "قانون جدید اضافه شد",
+                      hsSnackBarType: HsSnackBarType.success,
                     );
                   },
                   child: txt(

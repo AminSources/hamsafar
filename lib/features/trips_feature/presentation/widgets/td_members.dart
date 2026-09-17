@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/member_tile_status_enums.dart';
+import 'package:hamsafar/features/trip_creation_feature/enums/member_type.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/features/trips_feature/presentation/widgets/member_tile.dart';
 
 class TdMembers extends StatelessWidget {
@@ -14,7 +14,7 @@ class TdMembers extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //* section header
-        SectionHeader(title: "اعضای سفر (۶)", actionLabel: "همه"),
+        HsHeader(title: "اعضای سفر (۶)", actionLabel: "همه"),
         SizedBox(height: 12.h),
 
         //* Members list
@@ -46,10 +46,10 @@ class TdMembers extends StatelessWidget {
                 "در انتظار پرداخت",
               ][index],
               status: [
-                MemberTileStatus.leader,
-                MemberTileStatus.confirmed,
-                MemberTileStatus.confirmed,
-                MemberTileStatus.pending,
+                MemberType.leader,
+                MemberType.confirmed,
+                MemberType.confirmed,
+                MemberType.pending,
               ][index],
             ),
           ),

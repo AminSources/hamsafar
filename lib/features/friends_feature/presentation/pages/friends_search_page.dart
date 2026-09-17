@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/friend_enums.dart';
-import 'package:hamsafar/core/enums/hs_snack_bar_enums.dart';
+import 'package:hamsafar/features/friends_feature/enums/friend_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_snack_bar.dart';
+
 import 'package:hamsafar/features/friends_feature/presentation/widgets/friends_tile.dart';
 
 class FriendsSearchPage extends StatelessWidget {
@@ -40,17 +40,12 @@ class FriendsSearchPage extends StatelessWidget {
                 userName: ["@rashid_q", "@elnaz_sh"][index],
                 rate: ["۴.۸", "۴.۹"][index],
                 tripCount: [2, 15][index],
-                friendType: FriendType.request,
+                friendType: FriendType.searched,
                 isSended: [false, true][index],
                 onSend: index == 0
                     ? (value) {
                         //? show send req snack bar
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          HsSnackBar(
-                            text: "درخواست شما ارسال شد",
-                            mode: HsSnackBarMode.info,
-                          ).toSnackBar(context),
-                        );
+                        context.showHsSnackBar(text: "درخواست شما ارسال شد");
                       }
                     : null,
               ),

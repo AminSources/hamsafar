@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/core/widgets/section_header.dart';
+import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/features/trip_creation_feature/presentation/widgets/trip_friend_tile.dart';
 
 class TripInvitationPage extends StatelessWidget {
@@ -31,7 +31,7 @@ class TripInvitationPage extends StatelessWidget {
           SizedBox(height: 20.h),
 
           //* friends header
-          SectionHeader(title: "لیست دوستان"),
+          HsHeader(title: "لیست دوستان"),
           SizedBox(height: 12.h),
 
           //* friends list
@@ -66,7 +66,7 @@ class TripInvitationPage extends StatelessWidget {
           //* info note
           HsNote(
             note: 'دعوت‌شدگان می‌توانند عضویت را بپذیرند یا رد کنند',
-            noteMode: NoteMode.warning,
+            noteMode: HsNoteType.warning,
           ),
           SizedBox(height: 24.h),
         ],

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
-import 'package:hamsafar/core/widgets/trip_info_table.dart';
+import 'package:hamsafar/core/widgets/hs_info_box.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -67,7 +67,7 @@ class TdTripCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 16.h),
-          TripInfoTable(
+          HsInfoBox(
             borderColor: Colors.white.withValues(alpha: 0.18),
             labels: ["تاریخ", "زمان حرکت", "اعضا"],
             values: ["۱۵ تا ۱۷ اردیبهشت", "۰۷:۰۰", '۶ نفر'],

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
-import 'package:hamsafar/core/widgets/trip_info_table.dart';
+import 'package:hamsafar/core/widgets/hs_info_box.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home_feature/presentation/widgets/home_avatar_stack.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -79,7 +79,7 @@ class HomeTripCard extends StatelessWidget {
           SizedBox(height: 16.h),
 
           //* trip info
-          TripInfoTable(
+          HsInfoBox(
             labels: isInTrip
                 ? ["تاریخ", "زمان برگشت", "اعضا"]
                 : ["تاریخ", "زمان حرکت", "اعضا"],

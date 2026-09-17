@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/enums/note_enums.dart';
+import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
@@ -75,7 +75,7 @@ class TripSearchPage extends StatelessWidget {
 
               HsNote(
                 note: 'برای مشاهده جزئیات و ارسال درخواست، روی هر سفر بزنید',
-                noteMode: NoteMode.info,
+                noteMode: HsNoteType.info,
               ),
               SizedBox(height: 24.h),
             ],
