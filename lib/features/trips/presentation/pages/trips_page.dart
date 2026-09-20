@@ -6,7 +6,7 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_header.dart';
-import 'package:hamsafar/features/trips/presentation/widgets/trip_item.dart';
+import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 class TripsPage extends StatelessWidget {
   const TripsPage({super.key});
@@ -54,16 +54,13 @@ class TripsPage extends StatelessWidget {
               HsHeader(title: 'سفرهای من'),
               SizedBox(height: 12.h),
 
-              TripItem(
-                status: 'در حال آماده‌سازی',
-                statusColor: context.colorScheme.primaryContainer,
-                statusTextColor: context.colorScheme.primary,
-                badge: '۳ روز مانده',
-                badgeColor: context.colorScheme.secondary,
-                badgeTextColor: context.colorScheme.onSecondary,
-                title: 'سفر جنگل‌گردی شمال 🌲',
-                date: '۱۵ تا ۱۷ اردیبهشت ۱۴۰۴',
-                members: '۶ عضو · لیدر: سارا محمدی',
+              TripTile(
+                isInTrip: true,
+                tripName: 'سفر جنگل‌گردی شمال 🌲',
+                date: '۱۵ تا ۱۷ اردیبهشت ',
+                members: 6,
+                leaderName: "سارا محمدی",
+                time: "18:00",
               ),
 
               SizedBox(height: 65.h),

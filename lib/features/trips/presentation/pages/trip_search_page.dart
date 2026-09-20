@@ -4,7 +4,7 @@ import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/features/trips/presentation/widgets/trip_item.dart';
+import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 class TripSearchPage extends StatelessWidget {
   const TripSearchPage({super.key});
@@ -34,42 +34,20 @@ class TripSearchPage extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
 
-              TripItem(
-                status: "عضوگیری باز",
-                statusColor: context.colorScheme.primaryContainer,
-                statusTextColor: context.colorScheme.primary,
-                badge: '۳ روز مانده',
-                badgeColor: context.colorScheme.secondary,
-                badgeTextColor: context.colorScheme.onSecondary,
-                title: 'سفر جنگل‌گردی شمال 🌲',
-                date: '۱۵ تا ۱۷ اردیبهشت ۱۴۰۴',
-                members: '۶ عضو · لیدر: سارا محمدی',
-              ),
-              SizedBox(height: 12.h),
-
-              TripItem(
-                status: 'در حال آماده‌سازی',
-                statusColor: context.colorScheme.primaryContainer,
-                statusTextColor: context.colorScheme.primary,
-                badge: '۳ روز مانده',
-                badgeColor: context.colorScheme.secondary,
-                badgeTextColor: context.colorScheme.onSecondary,
-                title: 'سفر جنگل‌گردی شمال 🌲',
-                date: '۱۵ تا ۱۷ اردیبهشت ۱۴۰۴',
-                members: '۶ عضو · لیدر: سارا محمدی',
-              ),
-              SizedBox(height: 12.h),
-
-              TripItem(
-                status: 'در حال آماده‌سازی',
-                statusColor: context.colorScheme.primaryContainer,
-                statusTextColor: context.colorScheme.primary,
-                badge: '۳ روز مانده',
-                badgeColor: context.colorScheme.secondary,
-                badgeTextColor: context.colorScheme.onSecondary,
-                title: 'سفر جنگل‌گردی شمال 🌲',
-                date: '۱۵ تا ۱۷ اردیبهشت ۱۴۰۴',
-                members: '۶ عضو · لیدر: سارا محمدی',
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
+                  child: TripTile(
+                    isInTrip: true,
+                    tripName: 'سفر جنگل‌گردی شمال 🌲',
+                    date: '۱۵ تا ۱۷ اردیبهشت ',
+                    members: 6,
+                    leaderName: "سارا محمدی",
+                    time: "18:00",
+                  ),
+                ),
               ),
               SizedBox(height: 16.h),
 

@@ -9,9 +9,9 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trips/presentation/widgets/td_members.dart';
-import 'package:hamsafar/features/trips/presentation/widgets/td_rules.dart';
-import 'package:hamsafar/features/trips/presentation/widgets/td_trip_card.dart';
+import 'package:hamsafar/features/trips/presentation/widgets/trip_members_section.dart';
+import 'package:hamsafar/features/trips/presentation/widgets/trip_rules_section.dart';
+import 'package:hamsafar/features/trips/presentation/widgets/trip_summary_card.dart';
 
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -45,22 +45,16 @@ class TripDetailsPage extends StatelessWidget {
                 ),
               ),
 
-              //* TD trip card
-              TdTripCard(),
+              //* trip summary card
+              TripSummaryCard(),
               SizedBox(height: 24.h),
 
               //* TD members list
-              TdMembers(),
+              TripMembersSection(),
               SizedBox(height: 14.h),
 
               //* TD rules list
-              TdRules(
-                rules: [
-                  'حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)',
-                  'لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است',
-                  'تقسیم مساوی هزینه‌ها و احترام به طبیعت 🌱',
-                ],
-              ),
+              TripRulesSection(),
               SizedBox(height: 24.h),
 
               //* TD exit trip button

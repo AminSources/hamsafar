@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/auth/presentation/widgets/onboarding_header.dart';
-import 'package:hamsafar/features/auth/presentation/widgets/onboarding_profile_avatar.dart';
+import 'package:hamsafar/features/auth/presentation/widgets/onboarding_avatar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -58,7 +58,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 SizedBox(height: 32.h),
 
                 //* profile avatar
-                OnboardingProfileAvatar(),
+                OnboardingAvatar(),
                 SizedBox(height: 32.h),
 
                 //* name field

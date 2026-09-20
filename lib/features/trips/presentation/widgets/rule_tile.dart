@@ -4,10 +4,10 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class RulesTile extends StatelessWidget {
+class RuleTile extends StatelessWidget {
   final String rule;
 
-  const RulesTile({super.key, required this.rule});
+  const RuleTile({super.key, required this.rule});
 
   @override
   Widget build(BuildContext context) {

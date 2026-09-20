@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
+import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
-import 'package:hamsafar/features/auth/presentation/widgets/recovery_avatar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class RecoveryPasswordPage extends StatelessWidget {
@@ -23,7 +24,11 @@ class RecoveryPasswordPage extends StatelessWidget {
 
               SizedBox(height: 40.h),
 
-              RecoveryAvatar(),
+              HsAvatar(
+                size: 70.w,
+                type: HsAvatarType.icon,
+                label: Icon(LucideIcons.rotateCcwKey, size: 36.sp),
+              ),
               SizedBox(height: 16.h),
 
               Center(

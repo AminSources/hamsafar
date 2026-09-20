@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
-import 'package:hamsafar/features/auth/presentation/widgets/login_avatar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class LoginPage extends StatefulWidget {
@@ -53,7 +53,10 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 SizedBox(height: 40.h),
 
-                LoginAvatar(),
+                HsAvatar(
+                  size: 60.w,
+                  label: Icon(LucideIcons.backpack, size: 34.sp),
+                ),
                 SizedBox(height: 16.h),
 
                 txt('خوش برگشتی! 👋', style: context.textTheme.headlineLarge),
