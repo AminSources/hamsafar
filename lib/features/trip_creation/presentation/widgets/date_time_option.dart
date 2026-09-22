@@ -4,12 +4,12 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class DateTimeOption extends StatelessWidget {
+class ScheduleOption extends StatelessWidget {
   final String title;
   final bool selected;
   final VoidCallback? onTap;
 
-  const DateTimeOption({
+  const ScheduleOption({
     super.key,
     required this.title,
     required this.selected,

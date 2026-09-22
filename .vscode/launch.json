@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (lib\\core\\widgets\\hs_container.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib\\core\\widgets\\hs_container.dart"
+        }
+    ]
+}

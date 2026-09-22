@@ -4,12 +4,11 @@ import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_rule_tile.dart';
+import 'package:hamsafar/features/trip_creation/presentation/widgets/rule_tile.dart';
 
-class TripRulesPage extends StatelessWidget {
-  const TripRulesPage({super.key});
+class TripRulesSetupPage extends StatelessWidget {
+  const TripRulesSetupPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +70,7 @@ class TripRulesPage extends StatelessWidget {
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
-                child: TripRuleTile(
+                child: RuleTile(
                   rule: [
                     "حضور به‌موقع در محل تجمع (۱۵ دقیقه قبل از حرکت)",
                     'لغو برنامه کمتر از ۴۸ ساعت قبل از سفر ممنوع است',

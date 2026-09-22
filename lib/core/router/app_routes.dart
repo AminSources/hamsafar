@@ -9,7 +9,7 @@ import 'package:hamsafar/features/profile/presentation/pages/available_days_page
 import 'package:hamsafar/features/profile/presentation/pages/my_items_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
-import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_coordination_budget_page.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_tasks_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_vote_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_creation_wrapper.dart';
@@ -72,7 +72,7 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/trip-budget",
-        builder: (context, state) => const TripCoordinationBudgetPage(),
+        builder: (context, state) => const TripBudgetPage(),
       ),
       GoRoute(
         path: "/trip-tasks",

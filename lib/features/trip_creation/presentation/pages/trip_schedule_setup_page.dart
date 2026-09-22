@@ -7,8 +7,8 @@ import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coo
 import 'package:hamsafar/features/trip_creation/presentation/widgets/date_time_option.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_input.dart';
 
-class TripDateTimePage extends StatelessWidget {
-  const TripDateTimePage({super.key});
+class TripScheduleSetupPage extends StatelessWidget {
+  const TripScheduleSetupPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class TripDateTimePage extends StatelessWidget {
                 spacing: 10.w,
                 children: [
                   //* option 1 - fixed
-                  DateTimeOption(
+                  ScheduleOption(
                     title: "تعیین قطعی",
                     selected: state,
                     onTap: () {
@@ -33,7 +33,7 @@ class TripDateTimePage extends StatelessWidget {
                   ),
 
                   //* option 2 - voting
-                  DateTimeOption(
+                  ScheduleOption(
                     title: "رای گیری از اعضا",
                     selected: !state,
                     onTap: () {

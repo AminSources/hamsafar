@@ -1,1 +1,1 @@
-enum HsBadgeType { none, success, warning }
+enum HsBadgeType { none, success, warning, error }

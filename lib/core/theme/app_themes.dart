@@ -261,6 +261,11 @@ class AppTheme {
         ),
       ),
       dividerTheme: DividerThemeData(color: scheme.outline, thickness: 1),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: scheme.primary,
+        linearTrackColor: scheme.outline,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
     );
   }
 }

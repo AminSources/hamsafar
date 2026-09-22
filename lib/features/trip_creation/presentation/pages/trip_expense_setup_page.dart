@@ -4,11 +4,10 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_budget_summary_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class TripBudgetPage extends StatelessWidget {
-  const TripBudgetPage({super.key});
+class TripExpenseSetupPage extends StatelessWidget {
+  const TripExpenseSetupPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +27,6 @@ class TripBudgetPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: .start,
         children: [
-          //* budget summary card
-          TripBudgetSummaryCard(),
-          SizedBox(height: 20.h),
-
           //* total estimated cost input
           txt(
             'هزینه تخمینی کل',

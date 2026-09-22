@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/widgets/hs_avatar.dart';
+import 'package:hamsafar/core/widgets/hs_tile.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
 class HomeActivityTile extends StatelessWidget {
@@ -19,36 +22,36 @@ class HomeActivityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: context.colorScheme.outlineVariant),
-      ),
+    return HsTile(
       child: Row(
         children: [
-          Container(
-            width: 38.w,
-            height: 38.w,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 19.sp, color: color),
+          //* activity icon
+          HsAvatar(
+            type: HsAvatarType.none,
+            label: Icon(icon),
+            labelSize: 18.sp,
+            labelColor: color,
+            color: color.withValues(alpha: 0.12),
+            isCircle: true,
+            size: 40.w,
           ),
           SizedBox(width: 12.w),
+
+          //* activity details
           Expanded(
             child: Column(
+              spacing: 2.h,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                //* activity title
                 txt(
                   title,
                   size: 12.5.sp,
                   fontWeight: FontWeight.w700,
                   color: context.colorScheme.onSurface,
                 ),
-                SizedBox(height: 2.h),
+
+                //* activity time
                 txt(
                   time,
                   size: 10.5.sp,

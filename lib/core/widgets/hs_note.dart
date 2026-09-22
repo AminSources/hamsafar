@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/core/widgets/hs_icon_label.dart';
 
 class HsNote extends StatelessWidget {
   final String note;
@@ -45,20 +45,7 @@ class HsNote extends StatelessWidget {
         color: noteBg,
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: Row(
-        children: [
-          Icon(Icons.info_outline, size: 18.sp, color: noteFg),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: txt(
-              note,
-              size: 12.sp,
-              color: noteFg,
-              textAlign: TextAlign.justify,
-            ),
-          ),
-        ],
-      ),
+      child: HsIconLabel(label: note, icon: Icons.info_outline, color: noteFg),
     );
   }
 }

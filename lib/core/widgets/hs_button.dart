@@ -26,23 +26,29 @@ class HsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFilled = hsButtonType == HsButtonType.filled;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(15.r),
-      child: Ink(
-        width: width,
-        height: height ?? 50.h,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          gradient: isFilled ? context.horizontalGradient : null,
-          border: isFilled
-              ? null
-              : Border.all(
-                  color: borderColor ?? context.colorScheme.onSurfaceVariant,
-                ),
-          borderRadius: BorderRadius.circular(15.r),
+    return SizedBox(
+      width: width,
+      height: height ?? 50.h,
+      child: Material(
+        type: MaterialType.transparency,
+        borderRadius: BorderRadius.circular(15.r),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            gradient: isFilled ? context.horizontalGradient : null,
+            border: isFilled
+                ? null
+                : Border.all(
+                    color: borderColor ?? context.colorScheme.onSurfaceVariant,
+                  ),
+            borderRadius: BorderRadius.circular(15.r),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(15.r),
+            child: Center(child: child),
+          ),
         ),
-        child: Center(child: child),
       ),
     );
   }

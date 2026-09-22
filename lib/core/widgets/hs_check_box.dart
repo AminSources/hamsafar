@@ -15,7 +15,7 @@ class HsCheckBox extends StatelessWidget {
       borderRadius: BorderRadius.circular(99.r),
       child: Ink(
         width: 24.w,
-        height: 24.h,
+        height: 24.w,
         decoration: BoxDecoration(
           color: value ? context.colorScheme.primary : null,
           border: Border.all(color: context.colorScheme.outline),

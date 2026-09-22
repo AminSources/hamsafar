@@ -6,11 +6,11 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
-import 'package:hamsafar/features/trip_creation/presentation/pages/trip_budget_page.dart';
+import 'package:hamsafar/features/trip_creation/presentation/pages/trip_expense_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_common_page.dart';
-import 'package:hamsafar/features/trip_creation/presentation/pages/trip_date_time_page.dart';
+import 'package:hamsafar/features/trip_creation/presentation/pages/trip_schedule_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_invitation_page.dart';
-import 'package:hamsafar/features/trip_creation/presentation/pages/trip_rules_page.dart';
+import 'package:hamsafar/features/trip_creation/presentation/pages/trip_rules_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_stepper.dart';
 
 class TripCreationWrapper extends StatefulWidget {
@@ -23,9 +23,9 @@ class TripCreationWrapper extends StatefulWidget {
 class _TripCreationWrapperState extends State<TripCreationWrapper> {
   final List<Widget> _pages = [
     TripCommonPage(),
-    TripDateTimePage(),
-    TripBudgetPage(),
-    TripRulesPage(),
+    TripScheduleSetupPage(),
+    TripExpenseSetupPage(),
+    TripRulesSetupPage(),
     TripInvitationPage(),
   ];
 

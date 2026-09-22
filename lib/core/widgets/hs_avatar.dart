@@ -7,6 +7,7 @@ class HsAvatar extends StatelessWidget {
   final double? size;
   final Widget? label;
   final double? labelSize;
+  final Color? labelColor;
   final bool? isCircle;
   final Color? color;
   final HsAvatarType? type;
@@ -16,6 +17,7 @@ class HsAvatar extends StatelessWidget {
     this.size,
     this.label,
     this.labelSize,
+    this.labelColor,
     this.isCircle,
     this.color,
     this.type = HsAvatarType.none,
@@ -33,10 +35,10 @@ class HsAvatar extends StatelessWidget {
         isCircleAvatar = true;
       case HsAvatarType.icon:
         foregroundColor = context.colorScheme.primary;
-        backgroundColor = context.colorScheme.primaryContainer;
+        backgroundColor = context.colorScheme.onPrimary;
         isCircleAvatar = false;
       default:
-        foregroundColor = Colors.white;
+        foregroundColor = labelColor ?? Colors.white;
         backgroundColor = color ?? context.colorScheme.primary;
         isCircleAvatar = isCircle ?? false;
     }
