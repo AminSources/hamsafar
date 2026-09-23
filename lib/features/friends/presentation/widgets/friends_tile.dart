@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hamsafar/core/enums/hs_avatar_type.dart';
+import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/widgets/hs_avatar.dart';
+import 'package:hamsafar/core/widgets/hs_tile.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
-import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_recevied_req_button.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_remove_button.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_request_button.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tile_info.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsTile extends StatelessWidget {
   final String name;
@@ -34,10 +37,7 @@ class FriendsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HsContainer(
-      padding: EdgeInsets.all(16.w),
-      radius: 16.r,
-      color: context.colorScheme.surface,
+    return HsTile(
       onTap: () {
         //? push to friend profile page
         context.push("/friend-profile");
@@ -47,15 +47,11 @@ class FriendsTile extends StatelessWidget {
           Row(
             children: [
               //* avatar
-              CircleAvatar(
-                radius: 25.r,
-                backgroundColor: AppColors.avatars[1],
-                child: txt(
-                  name[0],
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                  size: 18.sp,
-                ),
+              HsAvatar(
+                size: 44.w,
+                label: txt(name[0], size: 16.sp),
+                color: getAvatarColor(name),
+                type: HsAvatarType.profile,
               ),
 
               SizedBox(width: 12.w),
@@ -107,6 +103,7 @@ class FriendsTile extends StatelessWidget {
               if (friendType == FriendType.sentRequest)
                 HsBadge(
                   label: "در انتظار",
+                  icon: LucideIcons.clock,
                   backgroundColor: context.colorScheme.onSecondaryContainer,
                   foregroundColor: context.colorScheme.secondaryContainer,
                 ),

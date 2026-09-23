@@ -6,7 +6,7 @@ import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page.dart';
 import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
-import 'package:hamsafar/features/profile/presentation/pages/my_items_page.dart';
+import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
@@ -88,7 +88,7 @@ class AppRoutes {
       ),
       GoRoute(
         path: '/my-items',
-        builder: (context, state) => const MyItemsPage(),
+        builder: (context, state) => const MyToolsPage(),
       ),
       GoRoute(
         path: '/settings',

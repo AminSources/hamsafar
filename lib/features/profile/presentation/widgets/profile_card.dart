@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/profile/presentation/widgets/profile_summary.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class ProfileCard extends StatelessWidget {
   const ProfileCard({super.key});
@@ -17,15 +21,11 @@ class ProfileCard extends StatelessWidget {
       child: Column(
         children: [
           //* avatar
-          CircleAvatar(
-            radius: 40.r,
-            backgroundColor: AppColors.avatars[0],
-            child: txt(
-              'س',
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              size: 24.sp,
-            ),
+          HsAvatar(
+            size: 70.w,
+            label: txt('س', size: 20.sp),
+            color: getAvatarColor("سارا محمدی"),
+            type: HsAvatarType.profile,
           ),
           SizedBox(height: 16.h),
 
@@ -46,54 +46,27 @@ class ProfileCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //* rating stat
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: context.colorScheme.secondary,
-                        size: 18.sp,
-                      ),
-                      SizedBox(width: 4.w),
-                      txt('۴.۹', style: context.textTheme.titleMedium),
-                    ],
-                  ),
-                  SizedBox(height: 4.h),
-                  txt(
-                    'امتیاز من',
-                    style: context.textTheme.bodySmall,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+              ProfileSummary(
+                value: '۴.۹',
+                title: "امتیاز من",
+                icon: Icons.star_rounded,
+                iconColor: context.colorScheme.secondary,
               ),
               SizedBox(width: 32.w),
 
               //* trips stat
-              Column(
-                children: [
-                  txt('۱۲', style: context.textTheme.titleMedium),
-                  SizedBox(height: 4.h),
-                  txt(
-                    'تعداد سفرها',
-                    style: context.textTheme.bodySmall,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+              ProfileSummary(
+                value: '۱۲',
+                title: 'تعداد سفرها',
+                icon: LucideIcons.mapPinCheck,
               ),
               SizedBox(width: 32.w),
 
               //* friends stat
-              Column(
-                children: [
-                  txt('۸', style: context.textTheme.titleMedium),
-                  SizedBox(height: 4.h),
-                  txt(
-                    'دوستان',
-                    style: context.textTheme.bodySmall,
-                    color: context.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+              ProfileSummary(
+                value: '۸',
+                title: 'دوستان',
+                icon: LucideIcons.usersRound,
               ),
             ],
           ),

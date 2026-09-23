@@ -61,36 +61,3 @@ class _FriendsTabBarState extends State<FriendsTabBar> {
     );
   }
 }
-
-// Expanded(
-//             child: Container(
-//               padding: EdgeInsets.symmetric(vertical: 10.h),
-//               decoration: BoxDecoration(
-//                 color: context.colorScheme.primary,
-//                 borderRadius: BorderRadius.circular(8.r),
-//               ),
-//               child: Center(
-//                 child: txt(
-//                   'دوستان من',
-//                   color: context.colorScheme.onPrimary,
-//                   fontWeight: FontWeight.w700,
-//                   size: 12.sp,
-//                 ),
-//               ),
-//             ),
-//           ),
-
-//           //* requests tab
-//           Expanded(
-//             child: Container(
-//               padding: EdgeInsets.symmetric(vertical: 10.h),
-//               child: Center(
-//                 child: txt(
-//                   'درخواست‌ها',
-//                   color: context.colorScheme.onSurfaceVariant,
-//                   fontWeight: FontWeight.w700,
-//                   size: 12.sp,
-//                 ),
-//               ),
-//             ),
-//           ),

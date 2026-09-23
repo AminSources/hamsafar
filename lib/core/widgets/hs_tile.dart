@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 
 class HsTile extends StatelessWidget {
@@ -19,6 +20,7 @@ class HsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HsContainer(
+      color: context.colorScheme.surface,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       onTap: onTap,
       child: Row(

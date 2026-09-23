@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:hamsafar/core/utils/avatar_color_util.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
@@ -19,7 +19,7 @@ class FriendsProfileCard extends StatelessWidget {
           //* avatar
           CircleAvatar(
             radius: 40.r,
-            backgroundColor: AppColors.avatars[1],
+            backgroundColor: getAvatarColor('نگار احمدی'),
             child: txt(
               'ن',
               color: Colors.white,

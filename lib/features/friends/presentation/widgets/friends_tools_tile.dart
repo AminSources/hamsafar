@@ -3,11 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class FriendsItemTile extends StatelessWidget {
+class FriendsToolsTile extends StatelessWidget {
   final String itemName;
   final IconData icon;
 
-  const FriendsItemTile({
+  const FriendsToolsTile({
     super.key,
     required this.itemName,
     required this.icon,

@@ -40,6 +40,7 @@ class HsNote extends StatelessWidget {
     }
 
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
         color: noteBg,

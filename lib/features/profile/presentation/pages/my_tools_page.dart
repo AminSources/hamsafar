@@ -5,16 +5,16 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/profile/presentation/widgets/item_tile.dart';
+import 'package:hamsafar/features/profile/presentation/widgets/tool_tile.dart';
 
-class MyItemsPage extends StatefulWidget {
-  const MyItemsPage({super.key});
+class MyToolsPage extends StatefulWidget {
+  const MyToolsPage({super.key});
 
   @override
-  State<MyItemsPage> createState() => _MyItemsPageState();
+  State<MyToolsPage> createState() => _MyToolsPageState();
 }
 
-class _MyItemsPageState extends State<MyItemsPage> {
+class _MyToolsPageState extends State<MyToolsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +44,8 @@ class _MyItemsPageState extends State<MyItemsPage> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
-                    child: ItemTile(
-                      itemName: [
+                    child: ToolTile(
+                      toolName: [
                         "چادر",
                         "گاز",
                         "زیر انداز",
@@ -53,7 +53,7 @@ class _MyItemsPageState extends State<MyItemsPage> {
                         "دوربین عکاسی",
                         "پتو",
                       ][index],
-                      itemStatus: [
+                      toolStatus: [
                         true,
                         true,
                         false,

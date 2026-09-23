@@ -8,7 +8,8 @@ class HsIconLabel extends StatelessWidget {
   final IconData icon;
   final Color? color;
   final double? spacing;
-  final double? size;
+  final double? iconSize;
+  final double? labelSize;
   final Color? iconColor;
   final Color? labelColor;
 
@@ -18,41 +19,42 @@ class HsIconLabel extends StatelessWidget {
     required this.icon,
     this.color,
     this.spacing,
-    this.size,
     this.iconColor,
     this.labelColor,
+    this.iconSize,
+    this.labelSize,
   });
 
-  ({Color? newLabelColor, Color? newIconColor}) get copyWith {
+  ({Color? labelClr, Color? iconClr}) get _resolvedColors {
     if (color != null) {
-      return (newLabelColor: color, newIconColor: color);
+      return (labelClr: color, iconClr: color);
     }
-
-    return (
-      newLabelColor: color ?? labelColor,
-      newIconColor: color ?? iconColor,
-    );
+    return (labelClr: labelColor, iconClr: iconColor);
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = _resolvedColors;
+
     return Row(
-      mainAxisSize: .min,
-      spacing: 8.w,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      spacing: spacing ?? 8.w,
       children: [
         //* icon
         Icon(
           icon,
-          size: 16.sp,
-          color: copyWith.newIconColor ?? context.colorScheme.inverseSurface,
+          size: iconSize,
+          color: colors.iconClr ?? context.colorScheme.inverseSurface,
         ),
 
         //* txt
         Flexible(
           child: txt(
             label,
+            size: labelSize,
             style: context.textTheme.bodyLarge,
-            color: copyWith.newLabelColor ?? context.colorScheme.inverseSurface,
+            color: colors.labelClr ?? context.colorScheme.inverseSurface,
           ),
         ),
       ],
