@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
-import 'package:hamsafar/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page.dart';
@@ -19,12 +19,39 @@ import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.d
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppRoutes {
   AppRoutes._();
 
   static final GoRouter router = GoRouter(
     initialLocation: "/splash",
+
+    redirect: (context, state) {
+      final currentPath = state.matchedLocation;
+
+      if (currentPath == '/splash') {
+        return null;
+      }
+
+      final session = Supabase.instance.client.auth.currentSession;
+      final isAuthRoute =
+          currentPath == '/login' ||
+          currentPath == '/register' ||
+          currentPath == '/recovery' ||
+          currentPath == '/onboarding';
+
+      if (session == null && !isAuthRoute) {
+        return '/login';
+      }
+
+      if (session != null && isAuthRoute) {
+        return '/main-wrapper';
+      }
+
+      return null;
+    },
+
     routes: <RouteBase>[
       GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),

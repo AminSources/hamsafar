@@ -5,6 +5,7 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -22,13 +23,19 @@ class _SplashPageState extends State<SplashPage> {
     _navigateToLogin();
   }
 
-  //? navigate to login page after 2 seconds
+  //? navigate
   Future<void> _navigateToLogin() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
+
+    final session = Supabase.instance.client.auth.currentSession;
 
     if (!mounted) return;
 
-    context.go("/login");
+    if (session != null) {
+      context.go('/main-wrapper');
+    } else {
+      context.go('/login');
+    }
   }
 
   @override

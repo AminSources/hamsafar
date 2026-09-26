@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:hamsafar/locator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  //? init app
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  //? load .env
+  await dotenv.load(fileName: ".env");
+
+  //? inti supabase
+  await Supabase.initialize(
+    url: dotenv.env["SUPABASE_URL"]!,
+    publishableKey: dotenv.env["SUPABASE_ANON_KEY"]!,
+  );
+
   //? init locator
-  setupLocator();
+  await setupLocator();
 
   //? on run app
   runApp(
@@ -25,6 +37,11 @@ void main() {
         BlocProvider(create: (_) => sl<TripStepperCubit>()),
         BlocProvider(create: (_) => sl<FriendsTabBarCubit>()),
         BlocProvider(create: (_) => sl<TripDateCoordinationCubit>()),
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        // BlocProvider<AuthBloc>(
+        //   create: (context) => sl<AuthBloc>()..add(AuthCheckStatusEvent()),
+        // ),
+        BlocProvider(create: (context) => sl<ProfileBloc>()),
       ],
       child: const MyApp(),
     ),
