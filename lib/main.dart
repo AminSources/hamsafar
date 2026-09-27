@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
@@ -37,11 +38,9 @@ void main() async {
         BlocProvider(create: (_) => sl<TripStepperCubit>()),
         BlocProvider(create: (_) => sl<FriendsTabBarCubit>()),
         BlocProvider(create: (_) => sl<TripDateCoordinationCubit>()),
-        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
-        // BlocProvider<AuthBloc>(
-        //   create: (context) => sl<AuthBloc>()..add(AuthCheckStatusEvent()),
-        // ),
+        BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<ProfileBloc>()),
+        BlocProvider(create: (context) => sl<HomeBloc>()),
       ],
       child: const MyApp(),
     ),

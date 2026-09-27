@@ -6,6 +6,11 @@ import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.
 import 'package:hamsafar/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hamsafar/features/home/data/data_source/remote/supabase_home_datasource.dart';
+import 'package:hamsafar/features/home/data/repositories/home_repository_impl.dart';
+import 'package:hamsafar/features/home/domain/repositories/home_repository.dart';
+import 'package:hamsafar/features/home/domain/usecases/get_home_usecase.dart';
+import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
 import 'package:hamsafar/features/profile/data/data_source/remote/supabase_profile_datasource.dart';
@@ -30,6 +35,9 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<SupabaseProfileDatasource>(
     () => SupabaseProfileDatasource(supabaseClient: sl<SupabaseClient>()),
   );
+  sl.registerLazySingleton<SupabaseHomeDatasource>(
+    () => SupabaseHomeDatasource(supabaseClient: sl<SupabaseClient>()),
+  );
 
   //* repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -40,6 +48,11 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<ProfileRepository>(
     () => ProfileRepositoryImpl(
       supabaseProfileDatasource: sl<SupabaseProfileDatasource>(),
+    ),
+  );
+  sl.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(
+      supabaseHomeDatasource: sl<SupabaseHomeDatasource>(),
     ),
   );
 
@@ -55,6 +68,9 @@ Future<void> setupLocator() async {
   );
   sl.registerLazySingleton<EditProfileUsecase>(
     () => EditProfileUsecase(profileRepository: sl<ProfileRepository>()),
+  );
+  sl.registerLazySingleton<GetHomeUsecase>(
+    () => GetHomeUsecase(homeRepository: sl<HomeRepository>()),
   );
 
   //* Blocs / Cubits
@@ -73,5 +89,8 @@ Future<void> setupLocator() async {
   );
   sl.registerLazySingleton<ProfileBloc>(
     () => ProfileBloc(editProfileUsecase: sl<EditProfileUsecase>()),
+  );
+  sl.registerLazySingleton<HomeBloc>(
+    () => HomeBloc(getHomeUsecase: sl<GetHomeUsecase>()),
   );
 }

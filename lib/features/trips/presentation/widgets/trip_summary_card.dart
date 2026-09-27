@@ -54,10 +54,7 @@ class TripSummaryCard extends StatelessWidget {
           spacing: 12.w,
           children: [
             //* date
-            HsIconLabel(
-              label: "تاریخ: ۱۷ اردیبهشت",
-              icon: LucideIcons.calendar,
-            ),
+            HsIconLabel(label: "۱۷ اردیبهشت", icon: LucideIcons.calendar),
 
             //* time
             HsIconLabel(label: "ساعت: ۱۸:۰۰", icon: LucideIcons.clock),
