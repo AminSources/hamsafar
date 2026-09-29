@@ -10,6 +10,7 @@ import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:hamsafar/locator.dart';
@@ -34,13 +35,14 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => sl<BottomNavCubit>()),
-        BlocProvider(create: (_) => sl<TripStepperCubit>()),
-        BlocProvider(create: (_) => sl<FriendsTabBarCubit>()),
-        BlocProvider(create: (_) => sl<TripDateCoordinationCubit>()),
+        BlocProvider(create: (context) => sl<BottomNavCubit>()),
+        BlocProvider(create: (context) => sl<TripStepperCubit>()),
+        BlocProvider(create: (context) => sl<FriendsTabBarCubit>()),
+        BlocProvider(create: (context) => sl<TripDateCoordinationCubit>()),
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<ProfileBloc>()),
         BlocProvider(create: (context) => sl<HomeBloc>()),
+        BlocProvider(create: (context) => sl<ProfileAvatarCubit>()),
       ],
       child: const MyApp(),
     ),

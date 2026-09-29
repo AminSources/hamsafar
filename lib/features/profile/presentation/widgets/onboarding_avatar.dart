@@ -10,23 +10,28 @@ class OnboardingAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        alignment: AlignmentGeometry.bottomRight,
-        children: [
-          //* circle avatar
-          HsAvatar(
-            size: 90.w,
-            type: HsAvatarType.profile,
-            label: Icon(LucideIcons.userRound, size: 40.sp),
-          ),
+      child: InkWell(
+        onTap: () {
+          showDialog(context: context, builder: (context) => const SizedBox());
+        },
+        child: Stack(
+          alignment: AlignmentGeometry.bottomRight,
+          children: [
+            //* circle avatar
+            HsAvatar(
+              size: 90.w,
+              type: HsAvatarType.profile,
+              label: Icon(LucideIcons.userRound, size: 40.sp),
+            ),
 
-          //* edit button
-          HsAvatar(
-            size: 30.w,
-            type: HsAvatarType.icon,
-            label: Icon(LucideIcons.edit, size: 16.sp),
-          ),
-        ],
+            //* edit button
+            HsAvatar(
+              size: 30.w,
+              type: HsAvatarType.icon,
+              label: Icon(LucideIcons.edit, size: 16.sp),
+            ),
+          ],
+        ),
       ),
     );
   }

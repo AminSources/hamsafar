@@ -18,6 +18,7 @@ import 'package:hamsafar/features/profile/data/repositories/profile_repository_i
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
 import 'package:hamsafar/features/profile/domain/usecases/edit_profile_usecase.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -93,4 +94,5 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<HomeBloc>(
     () => HomeBloc(getHomeUsecase: sl<GetHomeUsecase>()),
   );
+  sl.registerLazySingleton<ProfileAvatarCubit>(() => ProfileAvatarCubit());
 }

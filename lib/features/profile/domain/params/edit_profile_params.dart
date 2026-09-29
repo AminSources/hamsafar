@@ -1,11 +1,19 @@
 class EditProfileParams {
   final String userName;
-  final String displayName;
+  final String firstName;
+  final String lastName;
+  final String avatarIcon;
   final String? bio;
+  final double? rate;
+  final int? tripCount;
 
   EditProfileParams({
     required this.userName,
-    required this.displayName,
-    required this.bio,
+    this.bio,
+    required this.firstName,
+    required this.lastName,
+    required this.avatarIcon,
+    this.rate,
+    this.tripCount,
   });
 }

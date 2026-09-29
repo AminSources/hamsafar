@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile/domain/params/edit_profile_params.dart';
@@ -19,20 +20,24 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _firstNameFocusNode = FocusNode();
+  final FocusNode _lastNameFocusNode = FocusNode();
   final FocusNode _userNameFocusNode = FocusNode();
   final FocusNode _bioFocusNode = FocusNode();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _nameFocusNode.dispose();
+    _firstNameFocusNode.dispose();
+    _lastNameFocusNode.dispose();
     _userNameFocusNode.dispose();
     _bioFocusNode.dispose();
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _userNameController.dispose();
     _bioController.dispose();
     super.dispose();
@@ -45,7 +50,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: GestureDetector(
           onTap: () {
             //? unfocus text field when tap anywhere of page
-            _nameFocusNode.unfocus();
+            _firstNameFocusNode.unfocus();
+            _lastNameFocusNode.unfocus();
             _userNameFocusNode.unfocus();
             _bioFocusNode.unfocus();
           },
@@ -74,20 +80,41 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       OnboardingAvatar(),
                       SizedBox(height: 32.h),
 
-                      //* name field
+                      //* frist name field
                       TextFormField(
-                        controller: _nameController,
-                        focusNode: _nameFocusNode,
+                        controller: _firstNameController,
+                        focusNode: _firstNameFocusNode,
                         decoration: const InputDecoration(
-                          hintText: 'نام و نام خانوادگی',
+                          hintText: 'نام',
                           prefixIcon: Icon(LucideIcons.userRound),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "نام و نام خانوادگی الزامی است";
+                            return "نام الزامی است";
                           }
-                          if (value.length >= 20) {
-                            return "نام و نام خانوادگی طولانی است";
+                          if (value.length >= 10) {
+                            return "نام طولانی است";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      //* last name field
+                      TextFormField(
+                        controller: _lastNameController,
+                        focusNode: _lastNameFocusNode,
+                        decoration: const InputDecoration(
+                          hintText: 'نام خانوادگی',
+                          prefixIcon: Icon(LucideIcons.userRound),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "نام خانوادگی الزامی است";
+                          }
+                          if (value.length >= 10) {
+                            return "نام خانوادگی طولانی است";
                           }
                           return null;
                         },
@@ -139,8 +166,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               EditProfileEvent(
                                 EditProfileParams(
                                   userName: _userNameController.text,
-                                  displayName: _nameController.text,
+                                  firstName: _firstNameController.text,
+                                  lastName: _lastNameController.text,
                                   bio: _bioController.text,
+                                  //TODO remeber fix this
+                                  avatarIcon: AvatarConverter.iconDataToString(
+                                    iconData: LucideIcons.tent,
+                                  ),
                                 ),
                               ),
                             );
