@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile/domain/params/edit_profile_params.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/onboarding_header.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/onboarding_avatar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -169,9 +170,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                   firstName: _firstNameController.text,
                                   lastName: _lastNameController.text,
                                   bio: _bioController.text,
-                                  //TODO remeber fix this
                                   avatarIcon: AvatarConverter.iconDataToString(
-                                    iconData: LucideIcons.tent,
+                                    iconData: context
+                                        .read<ProfileAvatarCubit>()
+                                        .state,
                                   ),
                                 ),
                               ),

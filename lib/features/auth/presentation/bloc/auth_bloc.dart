@@ -6,6 +6,7 @@ import 'package:hamsafar/features/auth/domain/params/sign_in_params.dart';
 import 'package:hamsafar/features/auth/domain/params/sign_up_params.dart';
 import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/login_usecase.dart';
+import 'package:hamsafar/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/sign_up_usecase.dart';
 
 part 'auth_event.dart';
@@ -15,11 +16,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUsecase loginUsecase;
   final SignUpUsecase signUpUsecase;
   final GetCurrentUserUsecase getCurrentUserUsecase;
+  final SignOutUsecase signOutUsecase;
 
   AuthBloc({
     required this.loginUsecase,
     required this.signUpUsecase,
     required this.getCurrentUserUsecase,
+    required this.signOutUsecase,
   }) : super(AuthInitial()) {
     on<AuthEvent>((event, emit) {});
     on<AuthCheckStatusEvent>(onCheckStatus);
@@ -62,6 +65,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> onLogout(LogoutEvent event, emit) async {
-    emit(AuthInitial());
+    emit(AuthLoading());
+
+    try {
+      await signOutUsecase(NoParams());
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthFailed(e.toString()));
+    }
   }
 }

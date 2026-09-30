@@ -38,8 +38,14 @@ class _HsSvgPictureState extends State<HsSvgPicture> {
         '#${widget.targetColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 
     final modifiedSvg = rawSvg
-        .replaceAll(widget.originalColorHex!.toLowerCase(), newColorHex)
-        .replaceAll(widget.originalColorHex!.toUpperCase(), newColorHex);
+        .replaceAll(
+          widget.originalColorHex ?? "#6c63ff".toLowerCase(),
+          newColorHex,
+        )
+        .replaceAll(
+          widget.originalColorHex ?? "#6c63ff".toUpperCase(),
+          newColorHex,
+        );
 
     if (mounted) {
       setState(() {

@@ -266,6 +266,12 @@ class AppTheme {
         linearTrackColor: scheme.outline,
         borderRadius: BorderRadius.circular(10.r),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+      ),
     );
   }
 }

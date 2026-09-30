@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:hamsafar/core/router/auth_router_notifier.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
@@ -19,12 +20,43 @@ import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.d
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final authRouterNotifier = AuthRouterNotifier();
 
 class AppRoutes {
   AppRoutes._();
 
   static final GoRouter router = GoRouter(
     initialLocation: "/splash",
+    refreshListenable: authRouterNotifier,
+    redirect: (context, state) {
+      final session = Supabase.instance.client.auth.currentSession;
+
+      final isLoggedIn = session != null;
+      final location = state.matchedLocation;
+
+      final isSplash = location == '/splash';
+
+      final isAuthRoute =
+          location == '/login' ||
+          location == '/register' ||
+          location == '/recovery';
+
+      if (!isLoggedIn) {
+        if (isAuthRoute) {
+          return null;
+        }
+
+        return '/login';
+      }
+
+      if (isLoggedIn && (isSplash || isAuthRoute)) {
+        return '/main-wrapper';
+      }
+
+      return null;
+    },
 
     routes: <RouteBase>[
       GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),

@@ -4,6 +4,7 @@ import 'package:hamsafar/features/auth/data/repositories/auth_repository_impl.da
 import 'package:hamsafar/features/auth/domain/repositories/auth_repository.dart';
 import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/login_usecase.dart';
+import 'package:hamsafar/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hamsafar/features/home/data/data_source/remote/supabase_home_datasource.dart';
@@ -64,6 +65,9 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<SignUpUsecase>(
     () => SignUpUsecase(authRepository: sl<AuthRepository>()),
   );
+  sl.registerLazySingleton<SignOutUsecase>(
+    () => SignOutUsecase(authRepository: sl<AuthRepository>()),
+  );
   sl.registerLazySingleton<GetCurrentUserUsecase>(
     () => GetCurrentUserUsecase(authRepository: sl<AuthRepository>()),
   );
@@ -86,6 +90,7 @@ Future<void> setupLocator() async {
       loginUsecase: sl<LoginUsecase>(),
       signUpUsecase: sl<SignUpUsecase>(),
       getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
+      signOutUsecase: sl<SignOutUsecase>(),
     ),
   );
   sl.registerLazySingleton<ProfileBloc>(

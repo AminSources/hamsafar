@@ -21,6 +21,10 @@ class _MainWrapperState extends State<MainWrapper> {
   void initState() {
     super.initState();
     _pageController = PageController();
+
+    if (!mounted) return;
+
+    context.read<BottomNavCubit>().onChangePage(0);
   }
 
   @override
