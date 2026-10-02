@@ -18,6 +18,7 @@ import 'package:hamsafar/features/profile/data/data_source/remote/supabase_profi
 import 'package:hamsafar/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
 import 'package:hamsafar/features/profile/domain/usecases/edit_profile_usecase.dart';
+import 'package:hamsafar/features/profile/domain/usecases/get_profile_usecase.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
@@ -25,8 +26,7 @@ import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 GetIt sl = GetIt.instance;
-
-Future<void> setupLocator() async {
+void setupLocator() {
   //* supabase
   sl.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
@@ -74,6 +74,9 @@ Future<void> setupLocator() async {
   sl.registerLazySingleton<EditProfileUsecase>(
     () => EditProfileUsecase(profileRepository: sl<ProfileRepository>()),
   );
+  sl.registerLazySingleton(
+    () => GetProfileUsecase(profileRepository: sl<ProfileRepository>()),
+  );
   sl.registerLazySingleton<GetHomeUsecase>(
     () => GetHomeUsecase(homeRepository: sl<HomeRepository>()),
   );
@@ -94,7 +97,10 @@ Future<void> setupLocator() async {
     ),
   );
   sl.registerLazySingleton<ProfileBloc>(
-    () => ProfileBloc(editProfileUsecase: sl<EditProfileUsecase>()),
+    () => ProfileBloc(
+      editProfileUsecase: sl<EditProfileUsecase>(),
+      getProfileUsecase: sl<GetProfileUsecase>(),
+    ),
   );
   sl.registerLazySingleton<HomeBloc>(
     () => HomeBloc(getHomeUsecase: sl<GetHomeUsecase>()),

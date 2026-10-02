@@ -9,6 +9,9 @@ class ProfileEntity extends Equatable {
   final String bio;
   final double rate;
   final int tripCount;
+  final int friendCount;
+  final int toolCount;
+  final List<String> freeDays;
 
   const ProfileEntity({
     required this.id,
@@ -19,6 +22,9 @@ class ProfileEntity extends Equatable {
     required this.rate,
     required this.tripCount,
     required this.bio,
+    required this.friendCount,
+    required this.toolCount,
+    required this.freeDays,
   });
 
   @override
@@ -31,5 +37,8 @@ class ProfileEntity extends Equatable {
     rate,
     tripCount,
     avatarIcon,
+    friendCount,
+    toolCount,
+    freeDays,
   ];
 }

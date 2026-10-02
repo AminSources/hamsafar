@@ -3,14 +3,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/profile/domain/entities/profile_entity.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/profile_summary.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class ProfileCard extends StatelessWidget {
-  const ProfileCard({super.key});
+  final ProfileEntity profileInfo;
+
+  const ProfileCard({super.key, required this.profileInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +27,27 @@ class ProfileCard extends StatelessWidget {
           //* avatar
           HsAvatar(
             size: 70.w,
-            label: txt('س', size: 20.sp),
-            color: getAvatarColor("سارا محمدی"),
+            label: Icon(
+              AvatarConverter.stringToIconData(
+                avatarName: profileInfo.avatarIcon,
+              ),
+              size: 30.sp,
+            ),
+            color: getAvatarColor(profileInfo.firstName + profileInfo.lastName),
             type: HsAvatarType.profile,
           ),
           SizedBox(height: 16.h),
 
           //* name
-          txt('سارا محمدی', style: context.textTheme.headlineLarge),
+          txt(
+            '${profileInfo.firstName} ${profileInfo.lastName}',
+            style: context.textTheme.headlineLarge,
+          ),
           SizedBox(height: 4.h),
 
           //* username
           txt(
-            '@sara_travel',
+            '@${profileInfo.userName}',
             style: context.textTheme.bodyMedium,
             color: context.colorScheme.onSurfaceVariant,
           ),
@@ -47,7 +59,7 @@ class ProfileCard extends StatelessWidget {
             children: [
               //* rating stat
               ProfileSummary(
-                value: '۴.۹',
+                value: profileInfo.rate.toString(),
                 title: "امتیاز من",
                 icon: Icons.star_rounded,
                 iconColor: context.colorScheme.secondary,
@@ -56,7 +68,7 @@ class ProfileCard extends StatelessWidget {
 
               //* trips stat
               ProfileSummary(
-                value: '۱۲',
+                value: profileInfo.tripCount.toString(),
                 title: 'تعداد سفرها',
                 icon: LucideIcons.mapPinCheck,
               ),
@@ -64,7 +76,7 @@ class ProfileCard extends StatelessWidget {
 
               //* friends stat
               ProfileSummary(
-                value: '۸',
+                value: profileInfo.friendCount.toString(),
                 title: 'دوستان',
                 icon: LucideIcons.usersRound,
               ),

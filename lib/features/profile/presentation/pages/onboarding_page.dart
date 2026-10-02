@@ -175,6 +175,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                         .read<ProfileAvatarCubit>()
                                         .state,
                                   ),
+                                  onboardingCompleted: true,
                                 ),
                               ),
                             );

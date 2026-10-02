@@ -30,7 +30,7 @@ class AppRoutes {
   static final GoRouter router = GoRouter(
     initialLocation: "/splash",
     refreshListenable: authRouterNotifier,
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final session = Supabase.instance.client.auth.currentSession;
 
       final isLoggedIn = session != null;
@@ -43,6 +43,8 @@ class AppRoutes {
           location == '/register' ||
           location == '/recovery';
 
+      final isOnboarding = location == '/onboarding';
+
       if (!isLoggedIn) {
         if (isAuthRoute) {
           return null;
@@ -51,7 +53,25 @@ class AppRoutes {
         return '/login';
       }
 
-      if (isLoggedIn && (isSplash || isAuthRoute)) {
+      final userId = session.user.id;
+
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', userId)
+          .maybeSingle();
+
+      final onboardingCompleted = profile?['onboarding_completed'] == true;
+
+      if (!onboardingCompleted) {
+        if (isOnboarding) {
+          return null;
+        }
+
+        return '/onboarding';
+      }
+
+      if (isSplash || isAuthRoute || isOnboarding) {
         return '/main-wrapper';
       }
 

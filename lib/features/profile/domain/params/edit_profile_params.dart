@@ -6,6 +6,7 @@ class EditProfileParams {
   final String? bio;
   final double? rate;
   final int? tripCount;
+  final bool onboardingCompleted;
 
   EditProfileParams({
     required this.userName,
@@ -15,5 +16,6 @@ class EditProfileParams {
     required this.avatarIcon,
     this.rate,
     this.tripCount,
+    required this.onboardingCompleted,
   });
 }

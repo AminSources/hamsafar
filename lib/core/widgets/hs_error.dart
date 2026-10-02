@@ -4,12 +4,12 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_svg_picture.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
-class HsEmptyWidget extends StatelessWidget {
+class HsError extends StatelessWidget {
   final String illustrationPath;
   final String title;
   final String? subtitle;
 
-  const HsEmptyWidget({
+  const HsError({
     super.key,
     required this.illustrationPath,
     required this.title,

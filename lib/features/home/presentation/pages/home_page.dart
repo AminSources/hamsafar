@@ -11,7 +11,7 @@ import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
-import 'package:hamsafar/core/widgets/hs_empty_widget.dart';
+import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/home/enums/home_trip_enum.dart';
 import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(height: 65.h),
                             ],
                           )
-                        : HsEmptyWidget(
+                        : HsError(
                             illustrationPath:
                                 "lib/assets/images/empty_trip.svg",
                             title: "شما هنوز عضو سفری نشده اید",

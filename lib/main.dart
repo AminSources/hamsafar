@@ -29,7 +29,7 @@ void main() async {
   );
 
   //? init locator
-  await setupLocator();
+  setupLocator();
 
   //? on run app
   runApp(

@@ -10,6 +10,9 @@ class ProfileModel extends ProfileEntity {
     required super.rate,
     required super.tripCount,
     required super.avatarIcon,
+    required super.friendCount,
+    required super.toolCount,
+    required super.freeDays,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +25,11 @@ class ProfileModel extends ProfileEntity {
       avatarIcon: json['avatar_icon'],
       rate: (json['rate'] as num).toDouble(),
       tripCount: json['trip_count'],
+      friendCount: json['friend_count'],
+      toolCount: json['tool_count'],
+      freeDays: (json['free_days'] as List<dynamic>)
+          .map((day) => day.toString())
+          .toList(),
     );
   }
 
@@ -34,5 +42,8 @@ class ProfileModel extends ProfileEntity {
     'avatar_icon': avatarIcon,
     'rate': rate,
     'trip_count': tripCount,
+    'friend_count': friendCount,
+    'tool_count': toolCount,
+    'free_days': freeDays,
   };
 }

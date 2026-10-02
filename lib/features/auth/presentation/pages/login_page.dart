@@ -53,9 +53,6 @@ class _LoginPageState extends State<LoginPage> {
                 if (state is AuthFailed) {
                   context.showHsSnackBar(text: state.message);
                 }
-                if (state is AuthSuccess) {
-                  context.go("/main-wrapper");
-                }
               },
               builder: (context, state) {
                 return Form(

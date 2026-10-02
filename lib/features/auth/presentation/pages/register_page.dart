@@ -56,10 +56,6 @@ class _RegisterPageState extends State<RegisterPage> {
                 if (state is AuthFailed) {
                   context.showHsSnackBar(text: state.message);
                 }
-                if (state is AuthSuccess) {
-                  //? go onboarding page
-                  context.go("/onboarding");
-                }
               },
               builder: (context, state) {
                 return Form(
