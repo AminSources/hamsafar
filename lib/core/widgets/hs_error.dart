@@ -35,7 +35,11 @@ class HsError extends StatelessWidget {
 
           //* subtitle
           if (subtitle != null) ...[
-            txt(subtitle ?? "", style: context.textTheme.bodyMedium),
+            txt(
+              subtitle ?? "",
+              style: context.textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
           ],
         ],
       ),

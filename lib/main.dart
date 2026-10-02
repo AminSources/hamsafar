@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
@@ -43,6 +44,7 @@ void main() async {
         BlocProvider(create: (context) => sl<ProfileBloc>()),
         BlocProvider(create: (context) => sl<HomeBloc>()),
         BlocProvider(create: (context) => sl<ProfileAvatarCubit>()),
+        BlocProvider(create: (context) => sl<FriendsBloc>()),
       ],
       child: const MyApp(),
     ),

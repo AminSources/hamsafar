@@ -22,8 +22,6 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
     FriendsSearchPage(),
   ];
 
-  Widget _pageContent = MyFriendsPage();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,20 +32,6 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
               child: BlocBuilder<FriendsTabBarCubit, int>(
                 builder: (context, state) {
-                  switch (state) {
-                    case 0:
-                      _pageContent = _pages[0];
-                      break;
-                    case 1:
-                      _pageContent = _pages[1];
-                      break;
-                    case 2:
-                      _pageContent = _pages[2];
-                      break;
-                    default:
-                      _pageContent = _pages[0];
-                  }
-
                   return Column(
                     children: [
                       //* app bar
@@ -57,7 +41,7 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
                       FriendsTabBar(tabbarIndex: state),
 
                       //* page contents
-                      _pageContent,
+                      _pages[state],
 
                       SizedBox(height: 65.h),
                     ],

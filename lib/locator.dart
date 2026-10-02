@@ -7,6 +7,11 @@ import 'package:hamsafar/features/auth/domain/usecases/login_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:hamsafar/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hamsafar/features/friends/data/data_source/remote/supabase_friends_datasource.dart';
+import 'package:hamsafar/features/friends/data/repositories/friends_repository_impl.dart';
+import 'package:hamsafar/features/friends/domain/repositories/friends_repository.dart';
+import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/home/data/data_source/remote/supabase_home_datasource.dart';
 import 'package:hamsafar/features/home/data/repositories/home_repository_impl.dart';
 import 'package:hamsafar/features/home/domain/repositories/home_repository.dart';
@@ -40,6 +45,9 @@ void setupLocator() {
   sl.registerLazySingleton<SupabaseHomeDatasource>(
     () => SupabaseHomeDatasource(supabaseClient: sl<SupabaseClient>()),
   );
+  sl.registerLazySingleton<SupabaseFriendsDatasource>(
+    () => SupabaseFriendsDatasource(supabaseClient: sl<SupabaseClient>()),
+  );
 
   //* repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -55,6 +63,11 @@ void setupLocator() {
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepositoryImpl(
       supabaseHomeDatasource: sl<SupabaseHomeDatasource>(),
+    ),
+  );
+  sl.registerLazySingleton<FriendsRepository>(
+    () => FriendsRepositoryImpl(
+      supabaseFriendsDatasource: sl<SupabaseFriendsDatasource>(),
     ),
   );
 
@@ -79,6 +92,9 @@ void setupLocator() {
   );
   sl.registerLazySingleton<GetHomeUsecase>(
     () => GetHomeUsecase(homeRepository: sl<HomeRepository>()),
+  );
+  sl.registerLazySingleton<GetFriendsUsecase>(
+    () => GetFriendsUsecase(friendsRepository: sl<FriendsRepository>()),
   );
 
   //* Blocs / Cubits
@@ -106,4 +122,7 @@ void setupLocator() {
     () => HomeBloc(getHomeUsecase: sl<GetHomeUsecase>()),
   );
   sl.registerLazySingleton<ProfileAvatarCubit>(() => ProfileAvatarCubit());
+  sl.registerLazySingleton<FriendsBloc>(
+    () => FriendsBloc(getFriendsUsecase: sl<GetFriendsUsecase>()),
+  );
 }
