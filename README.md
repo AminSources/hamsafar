@@ -13,6 +13,8 @@ Plan together. Coordinate together. Travel together.
 [![Supabase](https://img.shields.io/badge/Backend-Supabase-3ECF8E?logo=supabase)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+<img width="600" height="300" alt="hamsafar_title_picture" src="https://github.com/user-attachments/assets/b34738e5-a190-4198-abb5-cc5e2c997199" />
+
 </div>
 
 ---
