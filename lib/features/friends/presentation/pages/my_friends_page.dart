@@ -53,10 +53,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
             itemBuilder: (context, index) => Padding(
               padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
               child: FriendsTile(
-                name: "${friends[index].firstName} ${friends[index].lastName}",
-                userName: friends[index].userName,
-                rate: friends[index].rate.toString(),
-                tripCount: friends[index].tripCount,
+                friendEntity: friends[index],
                 friendType: FriendType.alreadyFriend,
               ),
             ),

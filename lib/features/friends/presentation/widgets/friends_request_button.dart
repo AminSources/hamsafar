@@ -7,12 +7,14 @@ import 'package:hamsafar/core/widgets/txt.dart';
 
 class FriendsRequestButton extends StatelessWidget {
   final bool isSended;
+  final bool isLoading;
   final ValueChanged<bool> onSend;
 
   const FriendsRequestButton({
     super.key,
     required this.isSended,
     required this.onSend,
+    this.isLoading = false,
   });
 
   @override
@@ -22,11 +24,17 @@ class FriendsRequestButton extends StatelessWidget {
       hsButtonType: isSended ? HsButtonType.outline : HsButtonType.filled,
       backgroundColor: isSended ? context.colorScheme.surfaceContainer : null,
       borderColor: context.colorScheme.surfaceContainer,
-      onTap: () => onSend(isSended),
-      child: txt(
-        isSended ? "درخواست ارسال شد" : "ارسال درخواست دوستی",
-        color: isSended ? context.colorScheme.onSurfaceVariant : null,
-      ),
+      onTap: (isLoading || isSended) ? null : () => onSend(isSended),
+      child: isLoading
+          ? SizedBox(
+              width: 18.w,
+              height: 18.w,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            )
+          : txt(
+              isSended ? 'درخواست ارسال شد' : 'ارسال درخواست دوستی',
+              color: isSended ? context.colorScheme.onSurfaceVariant : null,
+            ),
     );
   }
 }

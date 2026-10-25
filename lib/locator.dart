@@ -10,6 +10,7 @@ import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hamsafar/features/friends/data/data_source/remote/supabase_friends_datasource.dart';
 import 'package:hamsafar/features/friends/data/repositories/friends_repository_impl.dart';
 import 'package:hamsafar/features/friends/domain/repositories/friends_repository.dart';
+import 'package:hamsafar/features/friends/domain/usecases/friend_request_usecases.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/home/data/data_source/remote/supabase_home_datasource.dart';
@@ -31,11 +32,11 @@ import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 GetIt sl = GetIt.instance;
+
 void setupLocator() {
-  //* supabase
   sl.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
-  //* data sources
+  // Data sources
   sl.registerLazySingleton<SupabaseAuthDatasource>(
     () => SupabaseAuthDatasource(supabaseClient: sl<SupabaseClient>()),
   );
@@ -49,7 +50,7 @@ void setupLocator() {
     () => SupabaseFriendsDatasource(supabaseClient: sl<SupabaseClient>()),
   );
 
-  //* repositories
+  // Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       supabaseAuthDatasource: sl<SupabaseAuthDatasource>(),
@@ -71,7 +72,7 @@ void setupLocator() {
     ),
   );
 
-  //* usecases
+  // Use cases
   sl.registerLazySingleton<LoginUsecase>(
     () => LoginUsecase(authRepository: sl<AuthRepository>()),
   );
@@ -96,8 +97,29 @@ void setupLocator() {
   sl.registerLazySingleton<GetFriendsUsecase>(
     () => GetFriendsUsecase(friendsRepository: sl<FriendsRepository>()),
   );
+  sl.registerLazySingleton<SearchFriendsUsecase>(
+    () => SearchFriendsUsecase(friendsRepository: sl<FriendsRepository>()),
+  );
+  sl.registerLazySingleton<GetPendingFriendRequestsUsecase>(
+    () => GetPendingFriendRequestsUsecase(
+      friendsRepository: sl<FriendsRepository>(),
+    ),
+  );
+  sl.registerLazySingleton<SendFriendRequestUsecase>(
+    () => SendFriendRequestUsecase(friendsRepository: sl<FriendsRepository>()),
+  );
+  sl.registerLazySingleton<RespondToFriendRequestUsecase>(
+    () => RespondToFriendRequestUsecase(
+      friendsRepository: sl<FriendsRepository>(),
+    ),
+  );
+  sl.registerLazySingleton<CancelFriendRequestUsecase>(
+    () => CancelFriendRequestUsecase(
+      friendsRepository: sl<FriendsRepository>(),
+    ),
+  );
 
-  //* Blocs / Cubits
+  // Blocs and cubits
   sl.registerLazySingleton<BottomNavCubit>(() => BottomNavCubit());
   sl.registerLazySingleton<TripStepperCubit>(() => TripStepperCubit());
   sl.registerLazySingleton<FriendsTabBarCubit>(() => FriendsTabBarCubit());
@@ -123,6 +145,14 @@ void setupLocator() {
   );
   sl.registerLazySingleton<ProfileAvatarCubit>(() => ProfileAvatarCubit());
   sl.registerLazySingleton<FriendsBloc>(
-    () => FriendsBloc(getFriendsUsecase: sl<GetFriendsUsecase>()),
+    () => FriendsBloc(
+      getFriendsUsecase: sl<GetFriendsUsecase>(),
+      searchFriendsUsecase: sl<SearchFriendsUsecase>(),
+      getPendingFriendRequestsUsecase:
+          sl<GetPendingFriendRequestsUsecase>(),
+      sendFriendRequestUsecase: sl<SendFriendRequestUsecase>(),
+      respondToFriendRequestUsecase: sl<RespondToFriendRequestUsecase>(),
+      cancelFriendRequestUsecase: sl<CancelFriendRequestUsecase>(),
+    ),
   );
 }

@@ -6,11 +6,13 @@ import 'package:hamsafar/core/widgets/txt.dart';
 class FriendsToolsTile extends StatelessWidget {
   final String itemName;
   final IconData icon;
+  final bool isAvailable;
 
   const FriendsToolsTile({
     super.key,
     required this.itemName,
     required this.icon,
+    required this.isAvailable,
   });
 
   @override
@@ -38,7 +40,9 @@ class FriendsToolsTile extends StatelessWidget {
             width: 8.w,
             height: 8.w,
             decoration: BoxDecoration(
-              color: context.colorScheme.primary,
+              color: isAvailable
+                  ? context.colorScheme.primary
+                  : context.colorScheme.onSurfaceVariant,
               shape: BoxShape.circle,
             ),
           ),

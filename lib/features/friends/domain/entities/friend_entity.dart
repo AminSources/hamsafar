@@ -12,6 +12,10 @@ class FriendEntity extends Equatable {
   final List<String> freeDays;
   final List<FriendToolEntity> tools;
 
+  /// Relationship of this profile to the currently authenticated user.
+  /// Values: none, friends, outgoing_pending, incoming_pending.
+  final String relationStatus;
+
   const FriendEntity({
     required this.id,
     required this.userName,
@@ -23,6 +27,7 @@ class FriendEntity extends Equatable {
     required this.tripCount,
     required this.freeDays,
     required this.tools,
+    this.relationStatus = 'none',
   });
 
   @override
@@ -37,6 +42,7 @@ class FriendEntity extends Equatable {
     tripCount,
     freeDays,
     tools,
+    relationStatus,
   ];
 }
 

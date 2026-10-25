@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/hs_tile.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
@@ -16,110 +18,131 @@ import 'package:hamsafar/features/friends/presentation/widgets/friends_tile_info
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsTile extends StatelessWidget {
-  final String name;
-  final String userName;
-  final String rate;
-  final int tripCount;
+  final FriendEntity friendEntity;
   final FriendType friendType;
   final bool? isSended;
   final ValueChanged<bool>? onSend;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
+  final VoidCallback? onCancelRequest;
+  final bool isActionLoading;
 
   const FriendsTile({
     super.key,
-    required this.name,
-    required this.userName,
-    required this.rate,
-    required this.tripCount,
+    required this.friendEntity,
     required this.friendType,
     this.isSended,
     this.onSend,
+    this.onAccept,
+    this.onReject,
+    this.onCancelRequest,
+    this.isActionLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final name = "${friendEntity.firstName} ${friendEntity.lastName}";
+
     return HsTile(
       onTap: () {
-        //? push to friend profile page
-        context.push("/friend-profile");
+        context.push('/friend-profile', extra: friendEntity);
       },
       child: Column(
         children: [
           Row(
             children: [
-              //* avatar
               HsAvatar(
                 size: 44.w,
-                label: txt(name[0], size: 16.sp),
+                label: Icon(
+                  AvatarConverter.stringToIconData(
+                    avatarName: friendEntity.avatarIcon,
+                  ),
+                ),
                 color: getAvatarColor(name),
                 type: HsAvatarType.profile,
               ),
-
               SizedBox(width: 12.w),
-
-              //* friend info
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //* name
-                  txt(name, fontWeight: FontWeight.w800, size: 14.sp),
-
-                  if (friendType == FriendType.alreadyFriend ||
-                      friendType == FriendType.sentRequest) ...[
-                    //* username
-                    txt(
-                      userName,
-                      color: context.colorScheme.onSurfaceVariant,
-                      size: 11.sp,
-                    ),
-
-                    SizedBox(height: 4.h),
-
-                    //* rating and trip count
-                    FriendsTileInfo(rate: rate, tripCount: tripCount),
-                  ] else
-                    Row(
-                      children: [
-                        //* username
-                        txt(
-                          userName,
-                          color: context.colorScheme.onSurfaceVariant,
-                          size: 11.sp,
-                        ),
-
-                        SizedBox(width: 12.h),
-
-                        //* rating and trip count
-                        FriendsTileInfo(rate: rate, tripCount: tripCount),
-                      ],
-                    ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    txt(name, fontWeight: FontWeight.w800, size: 14.sp),
+                    if (friendType == FriendType.alreadyFriend ||
+                        friendType == FriendType.sentRequest) ...[
+                      txt(
+                        "@${friendEntity.userName}",
+                        color: context.colorScheme.onSurfaceVariant,
+                        size: 11.sp,
+                      ),
+                      SizedBox(height: 4.h),
+                      FriendsTileInfo(
+                        rate: friendEntity.rate.toString(),
+                        tripCount: friendEntity.tripCount,
+                      ),
+                    ] else
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 12.w,
+                        runSpacing: 4.h,
+                        children: [
+                          txt(
+                            "@${friendEntity.userName}",
+                            color: context.colorScheme.onSurfaceVariant,
+                            size: 11.sp,
+                          ),
+                          FriendsTileInfo(
+                            rate: friendEntity.rate.toString(),
+                            tripCount: friendEntity.tripCount,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-
-              const Spacer(),
-
-              //* tile button
               if (friendType == FriendType.alreadyFriend)
                 const FriendsRemoveButton(),
-              if (friendType == FriendType.sentRequest)
+              if (friendType == FriendType.sentRequest) ...[
                 HsBadge(
-                  label: "در انتظار",
+                  label: 'در انتظار',
                   icon: LucideIcons.clock,
                   backgroundColor: context.colorScheme.onSecondaryContainer,
                   foregroundColor: context.colorScheme.secondaryContainer,
                 ),
+                if (onCancelRequest != null)
+                  IconButton(
+                    tooltip: 'لغو درخواست',
+                    onPressed: isActionLoading ? null : onCancelRequest,
+                    icon: isActionLoading
+                        ? SizedBox(
+                            width: 18.w,
+                            height: 18.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(
+                            Icons.close,
+                            size: 18.sp,
+                            color: context.colorScheme.error,
+                          ),
+                  ),
+              ],
             ],
           ),
-
-          //* tile button
           if (friendType == FriendType.receivedRequest) ...[
             SizedBox(height: 12.h),
-            const FriendsReceviedReqButton(),
+            FriendsReceviedReqButton(
+              onAccept: onAccept,
+              onReject: onReject,
+              isLoading: isActionLoading,
+            ),
           ],
           if (friendType == FriendType.searched) ...[
             SizedBox(height: 12.h),
             FriendsRequestButton(
               isSended: isSended ?? false,
-              onSend: isSended ?? false ? (value) {} : onSend ?? (value) {},
+              isLoading: isActionLoading,
+              onSend: onSend ?? (value) {},
             ),
           ],
         ],
