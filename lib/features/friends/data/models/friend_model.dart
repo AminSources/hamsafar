@@ -12,6 +12,7 @@ class FriendModel extends FriendEntity {
     required super.tripCount,
     required super.freeDays,
     required super.tools,
+    super.relationStatus = 'none',
   });
 
   factory FriendModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class FriendModel extends FriendEntity {
       bio: json['bio'] as String? ?? '',
       rate: (json['rate'] as num?)?.toDouble() ?? 0,
       tripCount: (json['trip_count'] as num?)?.toInt() ?? 0,
+      relationStatus: json['relation_status'] as String? ?? 'none',
       freeDays: List<String>.from(
         ((json['user_availability'] as List<dynamic>?) ?? const []).map(
           (availability) => availability['day_of_week'] as String,
@@ -47,6 +49,7 @@ class FriendModel extends FriendEntity {
       'bio': bio,
       'rate': rate,
       'trip_count': tripCount,
+      'relation_status': relationStatus,
       'user_availability': freeDays.map((day) => {'day_of_week': day}).toList(),
       'user_tools': tools
           .map((tool) => (tool as FriendToolModel).toJson())
@@ -64,13 +67,13 @@ class FriendToolModel extends FriendToolEntity {
   });
 
   factory FriendToolModel.fromJson(Map<String, dynamic> json) {
-    final tool = json['tools'] as Map<String, dynamic>;
+    final tool = json['tools'] as Map<String, dynamic>? ?? const {};
 
     return FriendToolModel(
-      id: tool['id'] as String,
-      toolName: tool['name'] as String,
-      toolIcon: tool['icon'] as String,
-      isAvailable: json['is_available'] as bool,
+      id: tool['id']?.toString() ?? '',
+      toolName: tool['name'] as String? ?? '',
+      toolIcon: tool['icon'] as String? ?? '',
+      isAvailable: json['is_available'] as bool? ?? false,
     );
   }
 

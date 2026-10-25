@@ -1,7 +1,20 @@
--- Friends request workflow. Review before applying to the linked Supabase project.
--- UI lists only pending requests; rejected/cancelled rows remain as history.
+-- Request Friends workflow for Hamsafar.
+-- Only pending requests are displayed in the UI. Rejected/cancelled rows stay
+-- in the database as history and never appear in the pending RPC results.
 
-create or replace function public.search_friend_profiles(p_query text)
+drop function if exists public.respond_to_friend_request(uuid, boolean);
+drop function if exists public.cancel_friend_request(uuid);
+drop function if exists public.get_pending_friend_request_profiles(text);
+drop function if exists public.search_friend_profiles(text);
+
+create unique index if not exists friend_requests_unique_pending_pair
+on public.friend_requests (
+  least(sender_id, receiver_id),
+  greatest(sender_id, receiver_id)
+)
+where status = 'pending';
+
+create function public.search_friend_profiles(p_query text)
 returns table (
   id uuid,
   username text,
@@ -10,7 +23,8 @@ returns table (
   avatar_icon text,
   bio text,
   rate numeric,
-  trip_count integer
+  trip_count integer,
+  relation_status text
 )
 language sql
 stable
@@ -18,7 +32,25 @@ security definer
 set search_path = ''
 as $$
   select p.id, p.username, p.first_name, p.last_name, p.avatar_icon,
-         p.bio, p.rate, p.trip_count
+         p.bio, p.rate, p.trip_count,
+         case
+           when exists (
+             select 1 from public.friendships f
+             where (f.user_id = auth.uid() and f.friend_id = p.id)
+                or (f.user_id = p.id and f.friend_id = auth.uid())
+           ) then 'friends'
+           when exists (
+             select 1 from public.friend_requests r
+             where r.sender_id = auth.uid() and r.receiver_id = p.id
+               and r.status = 'pending'
+           ) then 'outgoing_pending'
+           when exists (
+             select 1 from public.friend_requests r
+             where r.sender_id = p.id and r.receiver_id = auth.uid()
+               and r.status = 'pending'
+           ) then 'incoming_pending'
+           else 'none'
+         end as relation_status
   from public.profiles p
   where auth.uid() is not null
     and length(trim(coalesce(p_query, ''))) >= 2
@@ -49,29 +81,23 @@ begin
     where (f.user_id = v_sender_id and f.friend_id = p_receiver_id)
        or (f.user_id = p_receiver_id and f.friend_id = v_sender_id)
   ) then raise exception 'already_friends'; end if;
-
-  -- A pending request in either direction already represents this pair.
   if exists (
     select 1 from public.friend_requests r
     where r.status = 'pending'
-      and ((r.sender_id = v_sender_id and r.receiver_id = p_receiver_id)
-        or (r.sender_id = p_receiver_id and r.receiver_id = v_sender_id))
-  ) then raise exception 'request_already_pending'; end if;
-
-  -- If the other user previously requested us, direct them to accept it.
-  if exists (
-    select 1 from public.friend_requests r
-    where r.sender_id = p_receiver_id and r.receiver_id = v_sender_id
-      and r.status = 'pending'
+      and r.sender_id = p_receiver_id and r.receiver_id = v_sender_id
   ) then raise exception 'incoming_request_exists'; end if;
 
-  insert into public.friend_requests(sender_id, receiver_id, status)
-  values (v_sender_id, p_receiver_id, 'pending');
+  begin
+    insert into public.friend_requests(sender_id, receiver_id, status)
+    values (v_sender_id, p_receiver_id, 'pending');
+  exception when unique_violation then
+    raise exception 'request_already_pending';
+  end;
 end;
 $$;
 
-create or replace function public.respond_to_friend_request(
-  p_request_id uuid,
+create function public.respond_to_friend_request(
+  p_other_user_id uuid,
   p_accept boolean
 )
 returns void
@@ -81,36 +107,36 @@ set search_path = ''
 as $$
 declare
   v_user_id uuid := auth.uid();
-  v_sender_id uuid;
-  v_receiver_id uuid;
-  v_status text;
+  v_request_id bigint;
 begin
   if v_user_id is null then raise exception 'not_authenticated'; end if;
+  if p_other_user_id is null or p_other_user_id = v_user_id then
+    raise exception 'invalid_request_user';
+  end if;
 
-  select r.sender_id, r.receiver_id, r.status
-    into v_sender_id, v_receiver_id, v_status
+  select r.id into v_request_id
   from public.friend_requests r
-  where r.id = p_request_id
+  where r.sender_id = p_other_user_id
+    and r.receiver_id = v_user_id
+    and r.status = 'pending'
   for update;
 
-  if not found then raise exception 'request_not_found'; end if;
-  if v_receiver_id <> v_user_id then raise exception 'not_request_receiver'; end if;
-  if v_status <> 'pending' then raise exception 'request_not_pending'; end if;
+  if not found then raise exception 'pending_incoming_request_not_found'; end if;
 
   update public.friend_requests
   set status = case when p_accept then 'accepted' else 'rejected' end,
       responded_at = now()
-  where id = p_request_id;
+  where id = v_request_id and status = 'pending';
 
   if p_accept then
     insert into public.friendships(user_id, friend_id)
-    values (v_sender_id, v_receiver_id), (v_receiver_id, v_sender_id)
+    values (p_other_user_id, v_user_id), (v_user_id, p_other_user_id)
     on conflict (user_id, friend_id) do nothing;
   end if;
 end;
 $$;
 
-create or replace function public.cancel_friend_request(p_request_id uuid)
+create function public.cancel_friend_request(p_other_user_id uuid)
 returns void
 language plpgsql
 security definer
@@ -120,21 +146,22 @@ declare
   v_user_id uuid := auth.uid();
 begin
   if v_user_id is null then raise exception 'not_authenticated'; end if;
+  if p_other_user_id is null or p_other_user_id = v_user_id then
+    raise exception 'invalid_request_user';
+  end if;
 
   update public.friend_requests
   set status = 'cancelled', responded_at = now()
-  where id = p_request_id
-    and sender_id = v_user_id
+  where sender_id = v_user_id
+    and receiver_id = p_other_user_id
     and status = 'pending';
 
   if not found then raise exception 'pending_outgoing_request_not_found'; end if;
 end;
 $$;
 
--- Requests are returned as profile rows so the Flutter app can reuse FriendEntity.
-create or replace function public.get_pending_friend_request_profiles(p_direction text)
+create function public.get_pending_friend_request_profiles(p_direction text)
 returns table (
-  request_id uuid,
   id uuid,
   username text,
   first_name text,
@@ -155,7 +182,7 @@ begin
 
   if p_direction = 'incoming' then
     return query
-    select r.id, p.id, p.username, p.first_name, p.last_name, p.avatar_icon,
+    select p.id, p.username, p.first_name, p.last_name, p.avatar_icon,
            p.bio, p.rate, p.trip_count
     from public.friend_requests r
     join public.profiles p on p.id = r.sender_id
@@ -163,7 +190,7 @@ begin
     order by r.created_at desc;
   else
     return query
-    select r.id, p.id, p.username, p.first_name, p.last_name, p.avatar_icon,
+    select p.id, p.username, p.first_name, p.last_name, p.avatar_icon,
            p.bio, p.rate, p.trip_count
     from public.friend_requests r
     join public.profiles p on p.id = r.receiver_id
@@ -172,6 +199,10 @@ begin
   end if;
 end;
 $$;
+
+-- Mutations must use the validated functions above rather than direct table writes.
+revoke all on table public.friend_requests from anon, authenticated;
+grant select on table public.friend_requests to authenticated;
 
 revoke all on function public.search_friend_profiles(text) from public, anon;
 revoke all on function public.send_friend_request(uuid) from public, anon;

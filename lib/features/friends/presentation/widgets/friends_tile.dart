@@ -23,6 +23,10 @@ class FriendsTile extends StatelessWidget {
   final FriendType friendType;
   final bool? isSended;
   final ValueChanged<bool>? onSend;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
+  final VoidCallback? onCancelRequest;
+  final bool isActionLoading;
 
   const FriendsTile({
     super.key,
@@ -33,93 +37,106 @@ class FriendsTile extends StatelessWidget {
     required this.friendType,
     this.isSended,
     this.onSend,
+    this.onAccept,
+    this.onReject,
+    this.onCancelRequest,
+    this.isActionLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final safeName = name.isEmpty ? '?' : name;
+
     return HsTile(
       onTap: () {
-        //? push to friend profile page
-        context.push("/friend-profile");
+        context.push('/friend-profile');
       },
       child: Column(
         children: [
           Row(
             children: [
-              //* avatar
               HsAvatar(
                 size: 44.w,
-                label: txt(name[0], size: 16.sp),
-                color: getAvatarColor(name),
+                label: txt(safeName[0], size: 16.sp),
+                color: getAvatarColor(safeName),
                 type: HsAvatarType.profile,
               ),
-
               SizedBox(width: 12.w),
-
-              //* friend info
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //* name
-                  txt(name, fontWeight: FontWeight.w800, size: 14.sp),
-
-                  if (friendType == FriendType.alreadyFriend ||
-                      friendType == FriendType.sentRequest) ...[
-                    //* username
-                    txt(
-                      userName,
-                      color: context.colorScheme.onSurfaceVariant,
-                      size: 11.sp,
-                    ),
-
-                    SizedBox(height: 4.h),
-
-                    //* rating and trip count
-                    FriendsTileInfo(rate: rate, tripCount: tripCount),
-                  ] else
-                    Row(
-                      children: [
-                        //* username
-                        txt(
-                          userName,
-                          color: context.colorScheme.onSurfaceVariant,
-                          size: 11.sp,
-                        ),
-
-                        SizedBox(width: 12.h),
-
-                        //* rating and trip count
-                        FriendsTileInfo(rate: rate, tripCount: tripCount),
-                      ],
-                    ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    txt(safeName, fontWeight: FontWeight.w800, size: 14.sp),
+                    if (friendType == FriendType.alreadyFriend ||
+                        friendType == FriendType.sentRequest) ...[
+                      txt(
+                        userName,
+                        color: context.colorScheme.onSurfaceVariant,
+                        size: 11.sp,
+                      ),
+                      SizedBox(height: 4.h),
+                      FriendsTileInfo(rate: rate, tripCount: tripCount),
+                    ] else
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 12.w,
+                        runSpacing: 4.h,
+                        children: [
+                          txt(
+                            userName,
+                            color: context.colorScheme.onSurfaceVariant,
+                            size: 11.sp,
+                          ),
+                          FriendsTileInfo(rate: rate, tripCount: tripCount),
+                        ],
+                      ),
+                  ],
+                ),
               ),
-
-              const Spacer(),
-
-              //* tile button
               if (friendType == FriendType.alreadyFriend)
                 const FriendsRemoveButton(),
-              if (friendType == FriendType.sentRequest)
+              if (friendType == FriendType.sentRequest) ...[
                 HsBadge(
-                  label: "در انتظار",
+                  label: 'در انتظار',
                   icon: LucideIcons.clock,
                   backgroundColor: context.colorScheme.onSecondaryContainer,
                   foregroundColor: context.colorScheme.secondaryContainer,
                 ),
+                if (onCancelRequest != null)
+                  IconButton(
+                    tooltip: 'لغو درخواست',
+                    onPressed: isActionLoading ? null : onCancelRequest,
+                    icon: isActionLoading
+                        ? SizedBox(
+                            width: 18.w,
+                            height: 18.w,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(
+                            Icons.close,
+                            size: 18.sp,
+                            color: context.colorScheme.error,
+                          ),
+                  ),
+              ],
             ],
           ),
-
-          //* tile button
           if (friendType == FriendType.receivedRequest) ...[
             SizedBox(height: 12.h),
-            const FriendsReceviedReqButton(),
+            FriendsReceviedReqButton(
+              onAccept: onAccept,
+              onReject: onReject,
+              isLoading: isActionLoading,
+            ),
           ],
           if (friendType == FriendType.searched) ...[
             SizedBox(height: 12.h),
             FriendsRequestButton(
               isSended: isSended ?? false,
-              onSend: isSended ?? false ? (value) {} : onSend ?? (value) {},
+              isLoading: isActionLoading,
+              onSend: onSend ?? (value) {},
             ),
           ],
         ],
