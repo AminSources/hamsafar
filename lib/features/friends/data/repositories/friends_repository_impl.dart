@@ -30,8 +30,9 @@ class FriendsRepositoryImpl extends FriendsRepository {
   @override
   Future<DataState<List<FriendEntity>>> searchUsers(String query) async {
     try {
-      if (query.trim().length < 2) return const DataSuccess([]);
-      final response = await supabaseFriendsDatasource.searchUsers(query.trim());
+      final normalizedQuery = query.trim().replaceFirst(RegExp(r'^@'), '');
+      if (normalizedQuery.length < 2) return const DataSuccess([]);
+      final response = await supabaseFriendsDatasource.searchUsers(normalizedQuery);
       return DataSuccess([
         for (final row in response) FriendModel.fromJson(row),
       ]);
