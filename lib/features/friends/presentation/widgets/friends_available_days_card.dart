@@ -6,10 +6,15 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_day_chip.dart';
 
 class FriendsAvailableDaysCard extends StatelessWidget {
-  const FriendsAvailableDaysCard({super.key});
+  final List<String> freeDays;
+
+  const FriendsAvailableDaysCard({super.key, required this.freeDays});
 
   @override
   Widget build(BuildContext context) {
+    final weekdays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+    final isAvailable = weekdays.map((day) => freeDays.contains(day)).toList();
+
     return HsContainer(
       padding: EdgeInsets.all(16.w),
       radius: 16.r,
@@ -38,8 +43,8 @@ class FriendsAvailableDaysCard extends StatelessWidget {
             children: List.generate(
               7,
               (index) => FriendsDayChip(
-                dayLetter: ["ش", "ی", "د", "س", "چ", "پ", "ج"][index],
-                isActive: index > 3,
+                dayLetter: weekdays[index],
+                isActive: isAvailable[index],
                 onChange: (value) {},
               ),
             ),

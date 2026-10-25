@@ -7,7 +7,9 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsProfileAboutCard extends StatelessWidget {
-  const FriendsProfileAboutCard({super.key});
+  final String bio;
+
+  const FriendsProfileAboutCard({super.key, required this.bio});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class FriendsProfileAboutCard extends StatelessWidget {
 
           //* about text
           txt(
-            'علاقه‌مند به طبیعت‌گردی و عکاسی. معمولاً آخر هفته‌ها آزادم و وسایل کمپینگ دارم. 📷',
+            bio,
             color: context.colorScheme.onSurfaceVariant,
             size: 12.5.sp,
             fontWeight: FontWeight.w600,

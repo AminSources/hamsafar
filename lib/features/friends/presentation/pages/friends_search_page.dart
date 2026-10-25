@@ -136,25 +136,18 @@ class _FriendsSearchPageState extends State<FriendsSearchPage> {
                     _ => FriendType.searched,
                   };
                   final busy = state.busyUserId == user.id;
-                  final fullName = '${user.firstName} ${user.lastName}'.trim();
-                  final username = user.userName.startsWith('@')
-                      ? user.userName
-                      : '@${user.userName}';
 
                   return Padding(
                     padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
                     child: FriendsTile(
-                      name: fullName.isEmpty ? user.userName : fullName,
-                      userName: username,
-                      rate: user.rate.toStringAsFixed(1),
-                      tripCount: user.tripCount,
+                      friendEntity: user,
                       friendType: friendType,
                       isSended: user.relationStatus == 'outgoing_pending',
                       isActionLoading: busy,
                       onSend: friendType == FriendType.searched
                           ? (_) => context.read<FriendsBloc>().add(
-                                SendFriendRequestEvent(receiverId: user.id),
-                              )
+                              SendFriendRequestEvent(receiverId: user.id),
+                            )
                           : null,
                       onAccept: () => context.read<FriendsBloc>().add(
                         RespondToFriendRequestEvent(

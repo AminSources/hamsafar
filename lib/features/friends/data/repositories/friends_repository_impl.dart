@@ -4,6 +4,7 @@ import 'package:hamsafar/features/friends/data/data_source/remote/supabase_frien
 import 'package:hamsafar/features/friends/data/models/friend_model.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/domain/repositories/friends_repository.dart';
+import 'package:logger/logger.dart';
 
 class FriendsRepositoryImpl extends FriendsRepository {
   final SupabaseFriendsDatasource supabaseFriendsDatasource;
@@ -14,6 +15,7 @@ class FriendsRepositoryImpl extends FriendsRepository {
   Future<DataState<List<FriendEntity>>> getFriends(NoParams noParams) async {
     try {
       final response = await supabaseFriendsDatasource.getFriends();
+      Logger().d(response);
       final data = [
         for (final row in response)
           FriendModel.fromJson({
@@ -32,7 +34,9 @@ class FriendsRepositoryImpl extends FriendsRepository {
     try {
       final normalizedQuery = query.trim().replaceFirst(RegExp(r'^@'), '');
       if (normalizedQuery.length < 2) return const DataSuccess([]);
-      final response = await supabaseFriendsDatasource.searchUsers(normalizedQuery);
+      final response = await supabaseFriendsDatasource.searchUsers(
+        normalizedQuery,
+      );
       return DataSuccess([
         for (final row in response) FriendModel.fromJson(row),
       ]);
@@ -53,7 +57,9 @@ class FriendsRepositoryImpl extends FriendsRepository {
         for (final row in response)
           FriendModel.fromJson({
             ...row,
-            'relation_status': incoming ? 'incoming_pending' : 'outgoing_pending',
+            'relation_status': incoming
+                ? 'incoming_pending'
+                : 'outgoing_pending',
           }),
       ]);
     } catch (e) {

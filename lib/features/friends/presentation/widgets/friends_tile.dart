@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
 import 'package:hamsafar/core/widgets/hs_tile.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
@@ -16,10 +18,7 @@ import 'package:hamsafar/features/friends/presentation/widgets/friends_tile_info
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsTile extends StatelessWidget {
-  final String name;
-  final String userName;
-  final String rate;
-  final int tripCount;
+  final FriendEntity friendEntity;
   final FriendType friendType;
   final bool? isSended;
   final ValueChanged<bool>? onSend;
@@ -30,10 +29,7 @@ class FriendsTile extends StatelessWidget {
 
   const FriendsTile({
     super.key,
-    required this.name,
-    required this.userName,
-    required this.rate,
-    required this.tripCount,
+    required this.friendEntity,
     required this.friendType,
     this.isSended,
     this.onSend,
@@ -45,11 +41,11 @@ class FriendsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final safeName = name.isEmpty ? '?' : name;
+    final name = "${friendEntity.firstName} ${friendEntity.lastName}";
 
     return HsTile(
       onTap: () {
-        context.push('/friend-profile');
+        context.push('/friend-profile', extra: friendEntity);
       },
       child: Column(
         children: [
@@ -57,8 +53,12 @@ class FriendsTile extends StatelessWidget {
             children: [
               HsAvatar(
                 size: 44.w,
-                label: txt(safeName[0], size: 16.sp),
-                color: getAvatarColor(safeName),
+                label: Icon(
+                  AvatarConverter.stringToIconData(
+                    avatarName: friendEntity.avatarIcon,
+                  ),
+                ),
+                color: getAvatarColor(name),
                 type: HsAvatarType.profile,
               ),
               SizedBox(width: 12.w),
@@ -66,16 +66,19 @@ class FriendsTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    txt(safeName, fontWeight: FontWeight.w800, size: 14.sp),
+                    txt(name, fontWeight: FontWeight.w800, size: 14.sp),
                     if (friendType == FriendType.alreadyFriend ||
                         friendType == FriendType.sentRequest) ...[
                       txt(
-                        userName,
+                        "@${friendEntity.userName}",
                         color: context.colorScheme.onSurfaceVariant,
                         size: 11.sp,
                       ),
                       SizedBox(height: 4.h),
-                      FriendsTileInfo(rate: rate, tripCount: tripCount),
+                      FriendsTileInfo(
+                        rate: friendEntity.rate.toString(),
+                        tripCount: friendEntity.tripCount,
+                      ),
                     ] else
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -83,11 +86,14 @@ class FriendsTile extends StatelessWidget {
                         runSpacing: 4.h,
                         children: [
                           txt(
-                            userName,
+                            "@${friendEntity.userName}",
                             color: context.colorScheme.onSurfaceVariant,
                             size: 11.sp,
                           ),
-                          FriendsTileInfo(rate: rate, tripCount: tripCount),
+                          FriendsTileInfo(
+                            rate: friendEntity.rate.toString(),
+                            tripCount: friendEntity.tripCount,
+                          ),
                         ],
                       ),
                   ],

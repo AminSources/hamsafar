@@ -27,9 +27,6 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
     context.read<FriendsBloc>().add(GetFriendRequestsEvent());
   }
 
-  String _username(String username) =>
-      username.startsWith('@') ? username : '@$username';
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<FriendsBloc, FriendsState>(
@@ -83,15 +80,11 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
                   itemCount: state.incoming.length,
                   itemBuilder: (context, index) {
                     final user = state.incoming[index];
-                    final fullName =
-                        '${user.firstName} ${user.lastName}'.trim();
+
                     return Padding(
                       padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
                       child: FriendsTile(
-                        name: fullName.isEmpty ? user.userName : fullName,
-                        userName: _username(user.userName),
-                        rate: user.rate.toStringAsFixed(1),
-                        tripCount: user.tripCount,
+                        friendEntity: user,
                         friendType: FriendType.receivedRequest,
                         isActionLoading: state.busyUserId == user.id,
                         onAccept: () => context.read<FriendsBloc>().add(
@@ -122,15 +115,11 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
                   itemCount: state.outgoing.length,
                   itemBuilder: (context, index) {
                     final user = state.outgoing[index];
-                    final fullName =
-                        '${user.firstName} ${user.lastName}'.trim();
+
                     return Padding(
                       padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
                       child: FriendsTile(
-                        name: fullName.isEmpty ? user.userName : fullName,
-                        userName: _username(user.userName),
-                        rate: user.rate.toStringAsFixed(1),
-                        tripCount: user.tripCount,
+                        friendEntity: user,
                         friendType: FriendType.sentRequest,
                         isActionLoading: state.busyUserId == user.id,
                         onCancelRequest: () => context.read<FriendsBloc>().add(

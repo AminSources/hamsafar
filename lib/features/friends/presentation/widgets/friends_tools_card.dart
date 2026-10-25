@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tools_tile.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class FriendsToolsCard extends StatelessWidget {
-  const FriendsToolsCard({super.key});
+  final List<FriendToolEntity> tools;
+
+  const FriendsToolsCard({super.key, required this.tools});
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +39,16 @@ class FriendsToolsCard extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
+            itemCount: tools.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
                 child: FriendsToolsTile(
-                  itemName: ["چادر", "گاز", "دوربین", "قطب نما"][index],
-                  icon: [
-                    LucideIcons.tent,
-                    LucideIcons.flame,
-                    LucideIcons.camera,
-                    LucideIcons.compass,
-                  ][index],
+                  itemName: tools[index].toolName,
+                  icon: AvatarConverter.stringToIconData(
+                    avatarName: tools[index].toolIcon,
+                  ),
+                  isAvailable: tools[index].isAvailable,
                 ),
               );
             },

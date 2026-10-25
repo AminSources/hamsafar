@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/auth_router_notifier.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
@@ -133,7 +134,11 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/friend-profile",
-        builder: (context, state) => const FriendProfilePage(),
+        builder: (context, state) {
+          final FriendEntity friendEntity = (state.extra as FriendEntity);
+
+          return FriendProfilePage(friendEntity: friendEntity);
+        },
       ),
       GoRoute(
         path: "/available-days",
