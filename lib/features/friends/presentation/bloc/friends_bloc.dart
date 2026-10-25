@@ -123,11 +123,23 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     ));
 
     final result = await sendFriendRequestUsecase(event.receiverId);
-    if (_latestSearchQuery != previous.query) return;
+    final activeState = state;
+    if (_latestSearchQuery != previous.query ||
+        activeState is! FriendsSearchSuccess ||
+        activeState.query != previous.query ||
+        activeState.busyUserId != event.receiverId) {
+      return;
+    }
 
     if (result is DataSuccess) {
       final refreshed = await searchFriendsUsecase(previous.query);
-      if (_latestSearchQuery != previous.query) return;
+      final refreshedState = state;
+      if (_latestSearchQuery != previous.query ||
+          refreshedState is! FriendsSearchSuccess ||
+          refreshedState.query != previous.query ||
+          refreshedState.busyUserId != event.receiverId) {
+        return;
+      }
       emit(FriendsSearchSuccess(
         query: previous.query,
         users: refreshed is DataSuccess ? refreshed.data! : previous.users,
@@ -172,10 +184,22 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     );
 
     if (previous is FriendsSearchSuccess) {
-      if (_latestSearchQuery != previous.query) return;
+      final activeState = state;
+      if (_latestSearchQuery != previous.query ||
+          activeState is! FriendsSearchSuccess ||
+          activeState.query != previous.query ||
+          activeState.busyUserId != event.otherUserId) {
+        return;
+      }
       if (result is DataSuccess) {
         final refreshed = await searchFriendsUsecase(previous.query);
-        if (_latestSearchQuery != previous.query) return;
+        final refreshedState = state;
+        if (_latestSearchQuery != previous.query ||
+            refreshedState is! FriendsSearchSuccess ||
+            refreshedState.query != previous.query ||
+            refreshedState.busyUserId != event.otherUserId) {
+          return;
+        }
         emit(FriendsSearchSuccess(
           query: previous.query,
           users: refreshed is DataSuccess ? refreshed.data! : previous.users,
@@ -197,6 +221,11 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     }
 
     if (previous is FriendsRequestsSuccess) {
+      final activeState = state;
+      if (activeState is! FriendsRequestsSuccess ||
+          activeState.busyUserId != event.otherUserId) {
+        return;
+      }
       if (result is DataSuccess) {
         await _refreshRequests(
           emit,
@@ -242,10 +271,22 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     final result = await cancelFriendRequestUsecase(event.otherUserId);
 
     if (previous is FriendsSearchSuccess) {
-      if (_latestSearchQuery != previous.query) return;
+      final activeState = state;
+      if (_latestSearchQuery != previous.query ||
+          activeState is! FriendsSearchSuccess ||
+          activeState.query != previous.query ||
+          activeState.busyUserId != event.otherUserId) {
+        return;
+      }
       if (result is DataSuccess) {
         final refreshed = await searchFriendsUsecase(previous.query);
-        if (_latestSearchQuery != previous.query) return;
+        final refreshedState = state;
+        if (_latestSearchQuery != previous.query ||
+            refreshedState is! FriendsSearchSuccess ||
+            refreshedState.query != previous.query ||
+            refreshedState.busyUserId != event.otherUserId) {
+          return;
+        }
         emit(FriendsSearchSuccess(
           query: previous.query,
           users: refreshed is DataSuccess ? refreshed.data! : previous.users,
