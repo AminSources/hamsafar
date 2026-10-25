@@ -72,7 +72,7 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HsHeader(title: 'دریافتی (\${state.incoming.length})'),
+              HsHeader(title: 'دریافتی (${state.incoming.length})'),
               SizedBox(height: 12.h),
               if (state.incoming.isEmpty)
                 _emptyMessage(context, 'درخواست دریافتیِ در انتظاری ندارید.')
@@ -84,7 +84,7 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
                   itemBuilder: (context, index) {
                     final user = state.incoming[index];
                     final fullName =
-                        '\${user.firstName} \${user.lastName}'.trim();
+                        '${user.firstName} ${user.lastName}'.trim();
                     return Padding(
                       padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
                       child: FriendsTile(
@@ -123,7 +123,7 @@ class _FriendsRequestsPageState extends State<FriendsRequestsPage> {
                   itemBuilder: (context, index) {
                     final user = state.outgoing[index];
                     final fullName =
-                        '\${user.firstName} \${user.lastName}'.trim();
+                        '${user.firstName} ${user.lastName}'.trim();
                     return Padding(
                       padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
                       child: FriendsTile(
