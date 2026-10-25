@@ -54,7 +54,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     SearchFriendsEvent event,
     Emitter<FriendsState> emit,
   ) async {
-    final query = event.query.trim();
+    final query = event.query.trim().replaceFirst(RegExp(r'^@'), '');
     _latestSearchQuery = query;
     final version = ++_searchRequestVersion;
 
