@@ -136,10 +136,10 @@ class _FriendsSearchPageState extends State<FriendsSearchPage> {
                     _ => FriendType.searched,
                   };
                   final busy = state.busyUserId == user.id;
-                  final fullName = '\${user.firstName} \${user.lastName}'.trim();
+                  final fullName = '${user.firstName} ${user.lastName}'.trim();
                   final username = user.userName.startsWith('@')
                       ? user.userName
-                      : '@\${user.userName}';
+                      : '@${user.userName}';
 
                   return Padding(
                     padding: EdgeInsets.only(top: index == 0 ? 0 : 8.h),
