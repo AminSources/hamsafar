@@ -18,6 +18,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   final CancelFriendRequestUsecase cancelFriendRequestUsecase;
 
   int _searchRequestVersion = 0;
+  int _requestsRequestVersion = 0;
   String _latestSearchQuery = '';
 
   FriendsBloc({
@@ -80,15 +81,19 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     Emitter<FriendsState> emit,
   ) async {
     emit(FriendsRequestsLoading());
-    await _refreshRequests(emit);
+    final version = ++_requestsRequestVersion;
+    await _refreshRequests(emit, version: version);
   }
 
   Future<void> _refreshRequests(
     Emitter<FriendsState> emit, {
+    required int version,
     String? actionMessage,
   }) async {
     final incomingResult = await getPendingFriendRequestsUsecase(true);
     final outgoingResult = await getPendingFriendRequestsUsecase(false);
+
+    if (version != _requestsRequestVersion) return;
 
     if (incomingResult is DataSuccess && outgoingResult is DataSuccess) {
       emit(FriendsRequestsSuccess(
@@ -229,6 +234,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       if (result is DataSuccess) {
         await _refreshRequests(
           emit,
+          version: ++_requestsRequestVersion,
           actionMessage: event.accept
               ? 'درخواست دوستی پذیرفته شد.'
               : 'درخواست دوستی رد شد.',
@@ -306,9 +312,15 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     }
 
     if (previous is FriendsRequestsSuccess) {
+      final activeState = state;
+      if (activeState is! FriendsRequestsSuccess ||
+          activeState.busyUserId != event.otherUserId) {
+        return;
+      }
       if (result is DataSuccess) {
         await _refreshRequests(
           emit,
+          version: ++_requestsRequestVersion,
           actionMessage: 'درخواست ارسالی لغو شد.',
         );
       } else {
