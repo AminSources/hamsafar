@@ -39,10 +39,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   }
 
   String _date(DateTime value) =>
-      '\${value.year}/\${value.month.toString().padLeft(2, '0')}/\${value.day.toString().padLeft(2, '0')}';
+      '${value.year}/${value.month.toString().padLeft(2, '0')}/${value.day.toString().padLeft(2, '0')}';
 
   String _time(DateTime value) =>
-      '\${value.hour.toString().padLeft(2, '0')}:\${value.minute.toString().padLeft(2, '0')}';
+      '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _edit(TripEntity trip) async {
     await context.push('/trip-create', extra: trip);
@@ -56,7 +56,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('حذف سفر'),
-        content: Text('سفر «\${trip.name}» و اطلاعات وابسته به آن حذف شود؟'),
+        content: Text('سفر «${trip.name}» و اطلاعات وابسته به آن حذف شود؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -155,15 +155,15 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   ),
                   _InfoRow(
                     label: 'تاریخ رفت',
-                    value: '\${_date(trip.departureAt)} - \${_time(trip.departureAt)}',
+                    value: '${_date(trip.departureAt)} - ${_time(trip.departureAt)}',
                   ),
                   _InfoRow(
                     label: 'تاریخ برگشت',
-                    value: '\${_date(trip.returnAt)} - \${_time(trip.returnAt)}',
+                    value: '${_date(trip.returnAt)} - ${_time(trip.returnAt)}',
                   ),
                   _InfoRow(
                     label: 'بودجه',
-                    value: '\${trip.budget} تومان',
+                    value: '${trip.budget} تومان',
                   ),
                   if ((trip.meetingPoint ?? '').isNotEmpty)
                     _InfoRow(label: 'محل تجمع', value: trip.meetingPoint!),
@@ -213,7 +213,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     ),
                   SizedBox(height: 20.h),
                   txt(
-                    'اعضا (\${trip.memberCount})',
+                    'اعضا (${trip.memberCount})',
                     style: context.textTheme.titleMedium,
                   ),
                   SizedBox(height: 10.h),
