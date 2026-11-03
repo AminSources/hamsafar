@@ -7,91 +7,82 @@ import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
 import 'package:hamsafar/core/widgets/hs_tile.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class TripTile extends StatelessWidget {
-  final bool isInTrip;
-  final String tripName;
-  final String leaderName;
-  final String date;
-  final String time;
-  final int members;
+  final TripEntity trip;
+  final VoidCallback? onTap;
 
-  const TripTile({
-    super.key,
-    required this.isInTrip,
-    required this.date,
-    required this.members,
-    required this.tripName,
-    required this.leaderName,
-    required this.time,
-  });
+  const TripTile({super.key, required this.trip, this.onTap});
+
+  String _statusLabel(String status) => switch (status) {
+        'active' => 'درحال سفر',
+        'completed' => 'پایان‌یافته',
+        'cancelled' => 'لغوشده',
+        _ => 'درحال آماده‌سازی',
+      };
+
+  HsBadgeType _statusType(String status) => switch (status) {
+        'active' => HsBadgeType.success,
+        'preparing' => HsBadgeType.warning,
+        _ => HsBadgeType.none,
+      };
+
+  String _date(DateTime value) =>
+      '\${value.year}/\${value.month.toString().padLeft(2, '0')}/\${value.day.toString().padLeft(2, '0')}';
+
+  String _time(DateTime value) =>
+      '\${value.hour.toString().padLeft(2, '0')}:\${value.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
     return HsTile(
-      onTap: () {
-        //? push trip details page
-        context.push("/trip-detail", extra: false);
-      },
+      onTap: onTap ?? () => context.push('/trip-detail', extra: trip.id),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //* trip status
           Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //* trip status
               HsBadge(
-                label: isInTrip ? "درحال سفر" : "درحال اماده سازی",
+                label: _statusLabel(trip.status),
                 icon: Icons.circle,
                 iconSize: 8.sp,
-                type: isInTrip ? HsBadgeType.success : HsBadgeType.none,
+                type: _statusType(trip.status),
               ),
-
-              //* trip duration
               HsBadge(
-                label: "۳ روز مانده",
-                icon: LucideIcons.clock,
-                type: HsBadgeType.warning,
+                label: '\${trip.memberCount} عضو',
+                icon: LucideIcons.users,
               ),
             ],
           ),
           SizedBox(height: 12.h),
-
-          //* trip name
-          txt(tripName, style: context.textTheme.titleMedium),
+          txt(trip.name, style: context.textTheme.titleMedium),
           SizedBox(height: 6.h),
-
-          //* trip leader name
           HsIconLabel(
-            label: leaderName,
+            label: trip.leaderName,
             icon: LucideIcons.crown,
             iconColor: context.colorScheme.secondary,
           ),
-
-          //* date and time details
+          SizedBox(height: 4.h),
+          HsIconLabel(
+            label: trip.location,
+            icon: LucideIcons.mapPin,
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+          SizedBox(height: 10.h),
           Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //* date
               HsIconLabel(
-                label: date,
+                label: _date(trip.departureAt),
                 icon: LucideIcons.calendar,
                 color: context.colorScheme.onSurfaceVariant,
               ),
-
-              //* time
               HsIconLabel(
-                label: time,
+                label: _time(trip.departureAt),
                 icon: LucideIcons.clock,
-                color: context.colorScheme.onSurfaceVariant,
-              ),
-
-              //* trip members count
-              HsIconLabel(
-                label: "$members عضو",
-                icon: LucideIcons.userRoundGroup,
                 color: context.colorScheme.onSurfaceVariant,
               ),
             ],
