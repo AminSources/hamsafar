@@ -48,11 +48,25 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
               ),
               SizedBox(height: 8.h),
               TextFormField(
-                key: ValueKey('trip-budget-${draft.budget}'),
+                key: const ValueKey('trip-budget'),
                 initialValue: draft.budget == 0 ? '' : draft.budget.toString(),
                 keyboardType: TextInputType.number,
-                onChanged: (value) =>
-                    cubit.setBudget(int.tryParse(value.replaceAll(',', '')) ?? 0),
+                onChanged: (value) {
+                  final normalized = value
+                      .replaceAll(',', '')
+                      .replaceAll('٬', '')
+                      .replaceAll('۰', '0')
+                      .replaceAll('۱', '1')
+                      .replaceAll('۲', '2')
+                      .replaceAll('۳', '3')
+                      .replaceAll('۴', '4')
+                      .replaceAll('۵', '5')
+                      .replaceAll('۶', '6')
+                      .replaceAll('۷', '7')
+                      .replaceAll('۸', '8')
+                      .replaceAll('۹', '9');
+                  cubit.setBudget(int.tryParse(normalized) ?? 0);
+                },
                 decoration: const InputDecoration(
                   hintText: 'مثلاً ۲۷۰۰۰۰۰',
                   prefixIcon: Icon(Icons.money_rounded),
