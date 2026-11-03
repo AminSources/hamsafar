@@ -30,10 +30,10 @@ class TripTile extends StatelessWidget {
       };
 
   String _date(DateTime value) =>
-      '\${value.year}/\${value.month.toString().padLeft(2, '0')}/\${value.day.toString().padLeft(2, '0')}';
+      '${value.year}/${value.month.toString().padLeft(2, '0')}/${value.day.toString().padLeft(2, '0')}';
 
   String _time(DateTime value) =>
-      '\${value.hour.toString().padLeft(2, '0')}:\${value.minute.toString().padLeft(2, '0')}';
+      '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class TripTile extends StatelessWidget {
                 type: _statusType(trip.status),
               ),
               HsBadge(
-                label: '\${trip.memberCount} عضو',
+                label: '${trip.memberCount} عضو',
                 icon: LucideIcons.users,
               ),
             ],
