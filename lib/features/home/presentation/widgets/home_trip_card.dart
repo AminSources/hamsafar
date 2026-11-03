@@ -6,58 +6,61 @@ import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/hs_info_box.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/home/domain/entities/home_trip_entity.dart';
 import 'package:hamsafar/features/home/presentation/widgets/home_avatar_stack.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class HomeTripCard extends StatelessWidget {
+  final HomeTripEntity trip;
   final bool isInTrip;
 
-  const HomeTripCard({super.key, required this.isInTrip});
+  const HomeTripCard({
+    super.key,
+    required this.trip,
+    required this.isInTrip,
+  });
+
+  String _formatDate(DateTime date) {
+    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+  }
+
+  String _formatTime(String? time) {
+    return time?.isNotEmpty == true ? time! : '—';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final tripId = int.tryParse(trip.id);
+
     return HsContainer(
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       color: context.colorScheme.surface,
       radius: 20.r,
-      onTap: () {
-        //? push to trip details page
-        context.push('/trip-detail');
-      },
+      onTap: tripId == null
+          ? null
+          : () => context.push('/trip-detail', extra: tripId),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //* status chips
           Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               HsBadge(
                 label: isInTrip ? '🚗 در حال سفر' : 'در حال آماده‌سازی',
                 backgroundColor: context.colorScheme.surfaceContainerHigh,
                 foregroundColor: context.colorScheme.onSurface,
               ),
-              isInTrip
-                  ? HsBadge(
-                      label: 'موقعیت فعال',
-                      backgroundColor: context.colorScheme.surfaceContainer,
-                      foregroundColor: context.colorScheme.onSurface,
-                      icon: Icons.my_location,
-                    )
-                  : HsBadge(
-                      label: '۳ روز مانده',
-                      backgroundColor: context.colorScheme.secondary,
-                      foregroundColor: context.colorScheme.onSecondary,
-                    ),
+              HsBadge(
+                label: 'شروع ${_formatDate(trip.departureDate)}',
+                backgroundColor: context.colorScheme.secondary,
+                foregroundColor: context.colorScheme.onSecondary,
+              ),
             ],
           ),
           SizedBox(height: 14.h),
-
-          //* trip title
-          txt('سفر جنگل‌گردی شمال 🌲', style: context.textTheme.headlineSmall),
+          txt(trip.title, style: context.textTheme.headlineSmall),
           SizedBox(height: 5.h),
-
-          //* trip location
           Row(
             children: [
               Icon(
@@ -68,30 +71,26 @@ class HomeTripCard extends StatelessWidget {
               SizedBox(width: 4.w),
               Expanded(
                 child: txt(
-                  isInTrip
-                      ? 'اقامتگاه بوم‌گردی، کلاردشت'
-                      : 'جاده چالوس، آبشار شکرآب',
+                  trip.location.isEmpty ? 'مقصد مشخص نشده' : trip.location,
                   style: context.textTheme.bodySmall,
                 ),
               ),
             ],
           ),
           SizedBox(height: 16.h),
-
-          //* trip info
           HsInfoBox(
             labels: isInTrip
-                ? ["تاریخ", "زمان برگشت", "اعضا"]
-                : ["تاریخ", "زمان حرکت", "اعضا"],
-            values: ["۱۵ تا ۱۷ اردیبهشت", "۰۷:۰۰", '۶ نفر'],
+                ? const ['تاریخ رفت', 'زمان برگشت', 'اعضا']
+                : const ['تاریخ رفت', 'زمان حرکت', 'اعضا'],
+            values: [
+              _formatDate(trip.departureDate),
+              _formatTime(isInTrip ? trip.returnTime : trip.departureTime),
+              '${trip.memberCount} نفر',
+            ],
           ),
           SizedBox(height: 16.h),
-
-          //* divider
           Divider(color: Colors.white24, height: 1),
           SizedBox(height: 14.h),
-
-          //* members profiles stack
           HomeAvatarStack(),
         ],
       ),
