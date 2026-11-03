@@ -51,7 +51,6 @@ class TripSuccessPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.h),
-              SizedBox(height: 24.h),
               HsButton(
                 onTap: () => context.go(
                   '/trip-detail',
