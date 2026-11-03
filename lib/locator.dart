@@ -28,6 +28,11 @@ import 'package:hamsafar/features/profile/domain/usecases/get_profile_usecase.da
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trips/data/data_source/remote/supabase_trips_datasource.dart';
+import 'package:hamsafar/features/trips/data/repositories/trips_repository_impl.dart';
+import 'package:hamsafar/features/trips/domain/repositories/trips_repository.dart';
+import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -45,6 +50,9 @@ void setupLocator() {
   );
   sl.registerLazySingleton<SupabaseHomeDatasource>(
     () => SupabaseHomeDatasource(supabaseClient: sl<SupabaseClient>()),
+  );
+  sl.registerLazySingleton<SupabaseTripsDatasource>(
+    () => SupabaseTripsDatasource(supabaseClient: sl<SupabaseClient>()),
   );
   sl.registerLazySingleton<SupabaseFriendsDatasource>(
     () => SupabaseFriendsDatasource(supabaseClient: sl<SupabaseClient>()),
@@ -65,6 +73,9 @@ void setupLocator() {
     () => HomeRepositoryImpl(
       supabaseHomeDatasource: sl<SupabaseHomeDatasource>(),
     ),
+  );
+  sl.registerLazySingleton<TripsRepository>(
+    () => TripsRepositoryImpl(datasource: sl<SupabaseTripsDatasource>()),
   );
   sl.registerLazySingleton<FriendsRepository>(
     () => FriendsRepositoryImpl(
@@ -125,6 +136,10 @@ void setupLocator() {
   // Blocs and cubits
   sl.registerLazySingleton<BottomNavCubit>(() => BottomNavCubit());
   sl.registerLazySingleton<TripStepperCubit>(() => TripStepperCubit());
+  sl.registerFactory<TripDraftCubit>(() => TripDraftCubit());
+  sl.registerLazySingleton<TripsCubit>(
+    () => TripsCubit(repository: sl<TripsRepository>()),
+  );
   sl.registerLazySingleton<FriendsTabBarCubit>(() => FriendsTabBarCubit());
   sl.registerLazySingleton<TripDateCoordinationCubit>(
     () => TripDateCoordinationCubit(),
