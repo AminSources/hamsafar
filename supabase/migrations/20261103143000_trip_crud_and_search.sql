@@ -297,6 +297,16 @@ begin
 
   delete from public.trip_rules where trip_id = v_trip_id;
 
+  -- Keep pending invitations in sync when the creator edits the trip.
+  -- Accepted members are never removed by editing the invitation list.
+  delete from public.trip_members
+  where trip_id = v_trip_id
+    and user_id <> v_user_id
+    and member_status = 'pending'
+    and not (
+      user_id = any(coalesce(p_invited_user_ids, '{}'::uuid[]))
+    );
+
   insert into public.trip_rules (trip_id, rule)
   select v_trip_id, trim(rule_text)
   from unnest(coalesce(p_rules, '{}'::text[])) rule_text
