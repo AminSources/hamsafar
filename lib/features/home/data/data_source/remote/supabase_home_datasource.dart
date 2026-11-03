@@ -3,8 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseHomeDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseHomeDatasource({required SupabaseClient supabaseClient})
-      : _supabaseClient = supabaseClient;
+  SupabaseHomeDatasource({required this._supabaseClient});
 
   String get _userId {
     final userId = _supabaseClient.auth.currentUser?.id;
@@ -17,11 +16,7 @@ class SupabaseHomeDatasource {
   Future<List<Map<String, dynamic>>> getMyTrips() async {
     final response = await _supabaseClient.rpc(
       'get_trips',
-      params: {
-        'p_mode': 'mine',
-        'p_query': null,
-        'p_trip_id': null,
-      },
+      params: {'p_mode': 'mine', 'p_query': null, 'p_trip_id': null},
     );
 
     return List<Map<String, dynamic>>.from(response as List);
@@ -41,9 +36,7 @@ class SupabaseHomeDatasource {
     return profile;
   }
 
-  Map<String, dynamic>? _selectCurrentTrip(
-    List<Map<String, dynamic>> trips,
-  ) {
+  Map<String, dynamic>? _selectCurrentTrip(List<Map<String, dynamic>> trips) {
     final currentTrips = trips.where((trip) {
       final status = trip['status'] as String?;
       return status == 'active' || status == 'preparing';
@@ -69,9 +62,6 @@ class SupabaseHomeDatasource {
     final profile = await getProfile(userId: _userId);
     final trips = await getMyTrips();
 
-    return {
-      'profile': profile,
-      'current_trip': _selectCurrentTrip(trips),
-    };
+    return {'profile': profile, 'current_trip': _selectCurrentTrip(trips)};
   }
 }
