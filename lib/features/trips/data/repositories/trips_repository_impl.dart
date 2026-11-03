@@ -1,4 +1,4 @@
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trips/data/data_source/remote/supabase_trips_datasource.dart';
 import 'package:hamsafar/features/trips/data/models/trip_model.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
