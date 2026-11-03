@@ -118,6 +118,9 @@ void setupLocator() {
       friendsRepository: sl<FriendsRepository>(),
     ),
   );
+  sl.registerLazySingleton<RemoveFriendUsecase>(
+    () => RemoveFriendUsecase(friendsRepository: sl<FriendsRepository>()),
+  );
 
   // Blocs and cubits
   sl.registerLazySingleton<BottomNavCubit>(() => BottomNavCubit());
@@ -153,6 +156,7 @@ void setupLocator() {
       sendFriendRequestUsecase: sl<SendFriendRequestUsecase>(),
       respondToFriendRequestUsecase: sl<RespondToFriendRequestUsecase>(),
       cancelFriendRequestUsecase: sl<CancelFriendRequestUsecase>(),
+      removeFriendUsecase: sl<RemoveFriendUsecase>(),
     ),
   );
 }
