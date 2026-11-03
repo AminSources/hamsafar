@@ -164,6 +164,11 @@ class _FriendsSearchPageState extends State<FriendsSearchPage> {
                       onCancelRequest: () => context.read<FriendsBloc>().add(
                         CancelFriendRequestEvent(otherUserId: user.id),
                       ),
+                      onRemoveFriend: friendType == FriendType.alreadyFriend
+                          ? () => context.read<FriendsBloc>().add(
+                              RemoveFriendEvent(friendId: user.id),
+                            )
+                          : null,
                     ),
                   );
                 },
