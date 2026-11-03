@@ -8,7 +8,9 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/invite_code_card.dart';
 
 class TripSuccessPage extends StatelessWidget {
-  const TripSuccessPage({super.key});
+  final int? tripId;
+
+  const TripSuccessPage({super.key, this.tripId});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +20,7 @@ class TripSuccessPage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: Column(
             children: [
-              //* spacer top
               SizedBox(height: 40.h),
-
-              //* success icon circle
               Container(
                 width: 100.w,
                 height: 100.h,
@@ -37,8 +36,6 @@ class TripSuccessPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 24.h),
-
-              //* title
               txt(
                 'سفر شما ایجاد شد! 🎉',
                 size: 20.sp,
@@ -47,33 +44,33 @@ class TripSuccessPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 16.h),
-
-              //* description
               txt(
-                'شما لیدر سفر «سفر جنگل‌گردی شمال» هستید. پس از پذیرش اعضا، مراحل هماهنگی (رای‌گیری، وظایف و تقسیم بودجه) آغاز می‌شود.',
+                'اطلاعات سفر ذخیره شد. می‌توانید جزئیات آن را مشاهده و مدیریت کنید.',
                 size: 13.sp,
                 fontWeight: FontWeight.w600,
                 color: context.colorScheme.onSurfaceVariant,
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.h),
-
-              //* invite code card
               InviteCodeCard(),
               SizedBox(height: 24.h),
-
-              //* share button
-              HsButton(child: txt('اشتراک‌گذاری کد دعوت'), onTap: () {}),
+              HsButton(
+                onTap: () => context.go(
+                  '/trip-detail',
+                  extra: tripId,
+                ),
+                child: txt(
+                  'مشاهده جزئیات سفر',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
               SizedBox(height: 12.h),
-
-              //* go home button
               SizedBox(
                 width: double.infinity,
                 height: 50.h,
                 child: OutlinedButton(
-                  onPressed: () {
-                    context.go("/main-wrapper");
-                  },
+                  onPressed: () => context.go('/main-wrapper'),
                   child: txt(
                     'رفتن به خانه',
                     fontWeight: FontWeight.w800,
@@ -83,13 +80,10 @@ class TripSuccessPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.h),
-
-              //* hint text
-              HsNote(
-                note:
-                    'با وارد کردن این کد در «جستجوی سفر»، دوستان می‌توانند درخواست عضویت بدهند',
+              const HsNote(
+                note: 'دوستانی که انتخاب کرده‌اید، پس از ایجاد سفر دعوت‌نامه دریافت می‌کنند.',
               ),
-              Spacer(),
+              const Spacer(),
             ],
           ),
         ),
