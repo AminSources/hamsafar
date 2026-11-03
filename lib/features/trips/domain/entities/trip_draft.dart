@@ -32,7 +32,14 @@ class TripDraft extends Equatable {
     final now = DateTime.now();
     final departure = DateTime(now.year, now.month, now.day + 1, 7);
     final returning = DateTime(now.year, now.month, now.day + 2, 21);
-    return TripDraft(departureAt: departure, returnAt: returning);
+    return TripDraft(
+      departureAt: departure,
+      returnAt: returning,
+      rules: const [
+        'حضور به‌موقع در محل تجمع',
+        'تقسیم منصفانه هزینه‌ها و احترام به طبیعت',
+      ],
+    );
   }
 
   factory TripDraft.fromTrip(TripEntity trip) => TripDraft(
