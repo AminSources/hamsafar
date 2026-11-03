@@ -350,11 +350,13 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     final previous = state;
 
     if (previous is FriendsSuccess) {
+      if (previous.busyUserId != null) return;
       emit(FriendsSuccess(
         friends: previous.friends,
         busyUserId: event.friendId,
       ));
     } else if (previous is FriendsSearchSuccess) {
+      if (previous.busyUserId != null) return;
       emit(FriendsSearchSuccess(
         query: previous.query,
         users: previous.users,
