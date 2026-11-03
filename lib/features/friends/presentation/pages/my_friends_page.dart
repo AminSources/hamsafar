@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_error.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tile.dart';
@@ -23,8 +25,19 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FriendsBloc, FriendsState>(
-      builder: (context, state) {
+    return BlocListener<FriendsBloc, FriendsState>(
+      listener: (context, state) {
+        if (state is FriendsSuccess && state.actionMessage != null) {
+          context.showHsSnackBar(
+            text: state.actionMessage!,
+            hsSnackBarType: state.actionError
+                ? HsSnackBarType.error
+                : HsSnackBarType.success,
+          );
+        }
+      },
+      child: BlocBuilder<FriendsBloc, FriendsState>(
+        builder: (context, state) {
         if (state is FriendsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -55,13 +68,18 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               child: FriendsTile(
                 friendEntity: friends[index],
                 friendType: FriendType.alreadyFriend,
+                isActionLoading: state.busyUserId == friends[index].id,
+                onRemoveFriend: () => context.read<FriendsBloc>().add(
+                  RemoveFriendEvent(friendId: friends[index].id),
+                ),
               ),
             ),
           );
         }
 
         return const SizedBox.shrink();
-      },
+        },
+      ),
     );
   }
 }
