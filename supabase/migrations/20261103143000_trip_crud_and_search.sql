@@ -70,7 +70,7 @@ returns table (
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select
     t.id,
@@ -208,7 +208,7 @@ create or replace function public.save_trip(
 returns bigint
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   v_user_id uuid := (select auth.uid());
