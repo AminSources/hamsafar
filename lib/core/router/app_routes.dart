@@ -17,6 +17,7 @@ import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_vote
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_creation_wrapper.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_success_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_details_page.dart';
+import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
@@ -103,9 +104,8 @@ class AppRoutes {
       GoRoute(
         path: "/trip-detail",
         builder: (context, state) {
-          final bool isJoined = (state.extra as bool?) ?? true;
-
-          return TripDetailsPage(isJoined: isJoined);
+          final tripId = state.extra is int ? state.extra as int : null;
+          return TripDetailsPage(tripId: tripId);
         },
       ),
       GoRoute(
@@ -114,11 +114,19 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/trip-create",
-        builder: (context, state) => const TripCreationWrapper(),
+        builder: (context, state) {
+          final trip = state.extra is TripEntity
+              ? state.extra as TripEntity
+              : null;
+          return TripCreationWrapper(trip: trip);
+        },
       ),
       GoRoute(
         path: "/trip-success",
-        builder: (context, state) => const TripSuccessPage(),
+        builder: (context, state) {
+          final tripId = state.extra is int ? state.extra as int : null;
+          return TripSuccessPage(tripId: tripId);
+        },
       ),
       GoRoute(
         path: "/trip-vote",
