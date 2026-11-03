@@ -7,4 +7,9 @@ abstract class TripsRepository {
   Future<TripEntity> getTripDetails(int tripId);
   Future<int> saveTrip(TripDraft draft, {int? tripId});
   Future<void> deleteTrip(int tripId);
+  Future<void> joinTrip(int tripId);
+  Future<void> respondToInvitation(int tripId, {required bool accept});
+  Future<void> leaveTrip(int tripId);
+  Future<void> inviteToTrip(int tripId, List<String> userIds);
+  Future<void> removeTripMember(int tripId, String userId);
 }
