@@ -308,9 +308,9 @@ begin
     );
 
   insert into public.trip_rules (trip_id, rule)
-  select v_trip_id, trim(rule_text)
-  from unnest(coalesce(p_rules, '{}'::text[])) rule_text
-  where nullif(trim(rule_text), '') is not null;
+  select v_trip_id, trim(rule_values.rule_text)
+  from unnest(coalesce(p_rules, '{}'::text[])) as rule_values(rule_text)
+  where nullif(trim(rule_values.rule_text), '') is not null;
 
   insert into public.trip_members (
     trip_id, user_id, member_type, member_status
