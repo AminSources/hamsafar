@@ -19,10 +19,11 @@ class TripModel extends TripEntity {
     super.leaderName,
     super.isCreator,
     super.isMember,
+    super.currentMemberStatus,
     super.members,
   });
 
-  factory TripModel.fromJson(Map<String, dynamic> json) {
+  factory TripModel.fromJson(Map<String, dynamic> json, {String? currentMemberStatus}) {
     return TripModel(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',
@@ -41,6 +42,7 @@ class TripModel extends TripEntity {
       leaderName: json['leader_name'] as String? ?? 'کاربر هم‌سفر',
       isCreator: json['is_creator'] as bool? ?? false,
       isMember: json['is_member'] as bool? ?? false,
+      currentMemberStatus: currentMemberStatus,
       members: (json['members'] as List? ?? const [])
           .map((item) => Map<String, dynamic>.from(item as Map))
           .toList(),
