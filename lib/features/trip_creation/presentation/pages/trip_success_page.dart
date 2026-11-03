@@ -5,7 +5,6 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/widgets/invite_code_card.dart';
 
 class TripSuccessPage extends StatelessWidget {
   final int? tripId;
@@ -52,7 +51,6 @@ class TripSuccessPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.h),
-              InviteCodeCard(),
               SizedBox(height: 24.h),
               HsButton(
                 onTap: () => context.go(
