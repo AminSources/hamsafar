@@ -53,9 +53,7 @@ class SupabaseTripsDatasource {
         .select('id');
 
     if (rows.isEmpty) {
-      throw const PostgrestException(
-        message: 'trip_not_found_or_forbidden',
-      );
+      throw Exception('trip_not_found_or_forbidden');
     }
   }
 }
