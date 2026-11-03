@@ -106,4 +106,14 @@ class FriendsRepositoryImpl extends FriendsRepository {
       return DataFailed(e.toString());
     }
   }
+
+  @override
+  Future<DataState<bool>> removeFriend(String friendId) async {
+    try {
+      await supabaseFriendsDatasource.removeFriend(friendId);
+      return const DataSuccess(true);
+    } catch (e) {
+      return DataFailed(e.toString());
+    }
+  }
 }

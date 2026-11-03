@@ -13,11 +13,24 @@ final class FriendsLoading extends FriendsState {}
 
 final class FriendsSuccess extends FriendsState {
   final List<FriendEntity> friends;
+  final String? busyUserId;
+  final String? actionMessage;
+  final bool actionError;
 
-  const FriendsSuccess({required this.friends});
+  const FriendsSuccess({
+    required this.friends,
+    this.busyUserId,
+    this.actionMessage,
+    this.actionError = false,
+  });
 
   @override
-  List<Object?> get props => [friends];
+  List<Object?> get props => [
+    friends,
+    busyUserId,
+    actionMessage,
+    actionError,
+  ];
 }
 
 final class FriendsFailure extends FriendsState {

@@ -50,3 +50,13 @@ class CancelFriendRequestEvent extends FriendsEvent {
   @override
   List<Object> get props => [otherUserId];
 }
+
+
+class RemoveFriendEvent extends FriendsEvent {
+  final String friendId;
+
+  const RemoveFriendEvent({required this.friendId});
+
+  @override
+  List<Object> get props => [friendId];
+}

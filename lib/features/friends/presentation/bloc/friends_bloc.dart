@@ -16,6 +16,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
   final SendFriendRequestUsecase sendFriendRequestUsecase;
   final RespondToFriendRequestUsecase respondToFriendRequestUsecase;
   final CancelFriendRequestUsecase cancelFriendRequestUsecase;
+  final RemoveFriendUsecase removeFriendUsecase;
 
   int _searchRequestVersion = 0;
   int _requestsRequestVersion = 0;
@@ -28,6 +29,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     required this.sendFriendRequestUsecase,
     required this.respondToFriendRequestUsecase,
     required this.cancelFriendRequestUsecase,
+    required this.removeFriendUsecase,
   }) : super(FriendsInitial()) {
     on<GetFriendsEvent>(_getFriends);
     on<SearchFriendsEvent>(_searchFriends);
@@ -35,6 +37,7 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     on<SendFriendRequestEvent>(_sendFriendRequest);
     on<RespondToFriendRequestEvent>(_respondToFriendRequest);
     on<CancelFriendRequestEvent>(_cancelFriendRequest);
+    on<RemoveFriendEvent>(_removeFriend);
   }
 
   Future<void> _getFriends(
@@ -339,6 +342,97 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     if (result is DataSuccess) add(GetFriendRequestsEvent());
   }
 
+
+  Future<void> _removeFriend(
+    RemoveFriendEvent event,
+    Emitter<FriendsState> emit,
+  ) async {
+    final previous = state;
+
+    if (previous is FriendsSuccess) {
+      if (previous.busyUserId != null) return;
+      emit(FriendsSuccess(
+        friends: previous.friends,
+        busyUserId: event.friendId,
+      ));
+    } else if (previous is FriendsSearchSuccess) {
+      if (previous.busyUserId != null) return;
+      emit(FriendsSearchSuccess(
+        query: previous.query,
+        users: previous.users,
+        busyUserId: event.friendId,
+      ));
+    } else {
+      return;
+    }
+
+    final result = await removeFriendUsecase(event.friendId);
+
+    if (previous is FriendsSuccess) {
+      final activeState = state;
+      if (activeState is! FriendsSuccess ||
+          activeState.busyUserId != event.friendId) {
+        return;
+      }
+
+      if (result is DataSuccess) {
+        emit(FriendsSuccess(
+          friends: previous.friends
+              .where((friend) => friend.id != event.friendId)
+              .toList(),
+          actionMessage: 'دوست از فهرست شما حذف شد.',
+        ));
+      } else {
+        emit(FriendsSuccess(
+          friends: previous.friends,
+          actionMessage: _friendlyError(
+            result is DataFailed ? result.message ?? '' : '',
+          ),
+          actionError: true,
+        ));
+      }
+      return;
+    }
+
+    if (previous is FriendsSearchSuccess) {
+      final activeState = state;
+      if (activeState is! FriendsSearchSuccess ||
+          activeState.query != previous.query ||
+          activeState.busyUserId != event.friendId) {
+        return;
+      }
+
+      if (result is DataSuccess) {
+        final refreshed = await searchFriendsUsecase(previous.query);
+        final refreshedState = state;
+        if (refreshedState is! FriendsSearchSuccess ||
+            refreshedState.query != previous.query ||
+            refreshedState.busyUserId != event.friendId) {
+          return;
+        }
+
+        emit(FriendsSearchSuccess(
+          query: previous.query,
+          users: refreshed is DataSuccess
+              ? refreshed.data!
+              : previous.users
+                  .where((friend) => friend.id != event.friendId)
+                  .toList(),
+          actionMessage: 'دوست از فهرست شما حذف شد.',
+        ));
+      } else {
+        emit(FriendsSearchSuccess(
+          query: previous.query,
+          users: previous.users,
+          actionMessage: _friendlyError(
+            result is DataFailed ? result.message ?? '' : '',
+          ),
+          actionError: true,
+        ));
+      }
+    }
+  }
+
   String _friendlyError(String raw) {
     final message = raw.toLowerCase();
     if (message.contains('not_authenticated') ||
@@ -361,8 +455,12 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       return 'این درخواست دیگر در انتظار پاسخ نیست.';
     }
     if (message.contains('receiver_not_found') ||
-        message.contains('invalid_receiver')) {
+        message.contains('invalid_receiver') ||
+        message.contains('invalid_friend')) {
       return 'کاربر انتخاب‌شده معتبر نیست.';
+    }
+    if (message.contains('friendship_not_found')) {
+      return 'این کاربر دیگر در فهرست دوستان شما نیست.';
     }
     return 'عملیات انجام نشد. لطفاً دوباره تلاش کنید.';
   }

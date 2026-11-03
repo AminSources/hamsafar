@@ -25,6 +25,7 @@ class FriendsTile extends StatelessWidget {
   final VoidCallback? onAccept;
   final VoidCallback? onReject;
   final VoidCallback? onCancelRequest;
+  final VoidCallback? onRemoveFriend;
   final bool isActionLoading;
 
   const FriendsTile({
@@ -36,6 +37,7 @@ class FriendsTile extends StatelessWidget {
     this.onAccept,
     this.onReject,
     this.onCancelRequest,
+    this.onRemoveFriend,
     this.isActionLoading = false,
   });
 
@@ -99,8 +101,12 @@ class FriendsTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (friendType == FriendType.alreadyFriend)
-                const FriendsRemoveButton(),
+              if (friendType == FriendType.alreadyFriend &&
+                  onRemoveFriend != null)
+                FriendsRemoveButton(
+                  onRemove: onRemoveFriend!,
+                  isLoading: isActionLoading,
+                ),
               if (friendType == FriendType.sentRequest) ...[
                 HsBadge(
                   label: 'در انتظار',

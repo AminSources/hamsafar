@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
@@ -17,51 +19,68 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   @override
   void initState() {
     super.initState();
-
     context.read<FriendsBloc>().add(GetFriendsEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FriendsBloc, FriendsState>(
-      builder: (context, state) {
-        if (state is FriendsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (state is FriendsFailure) {
-          return HsError(
-            illustrationPath: "lib/assets/images/error.svg",
-            title: state.errorMessage,
+    return BlocListener<FriendsBloc, FriendsState>(
+      listener: (context, state) {
+        if (state is FriendsSuccess && state.actionMessage != null) {
+          context.showHsSnackBar(
+            text: state.actionMessage!,
+            hsSnackBarType: state.actionError
+                ? HsSnackBarType.error
+                : HsSnackBarType.success,
           );
         }
-        if (state is FriendsSuccess) {
-          final friends = state.friends;
+      },
+      child: BlocBuilder<FriendsBloc, FriendsState>(
+        builder: (context, state) {
+          if (state is FriendsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          if (friends.isEmpty) {
+          if (state is FriendsFailure) {
             return HsError(
-              illustrationPath: "lib/assets/images/empty_friend.svg",
-              title: "شما هنوز دوستی ندارید",
-              subtitle:
-                  "از قسمت جستجوی دوستان، دوستان خود را پیدا کنید و به لیست دوستان خود اضافه کنید",
+              illustrationPath: 'lib/assets/images/error.svg',
+              title: state.errorMessage,
             );
           }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: friends.length,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
-              child: FriendsTile(
-                friendEntity: friends[index],
-                friendType: FriendType.alreadyFriend,
-              ),
-            ),
-          );
-        }
+          if (state is FriendsSuccess) {
+            final friends = state.friends;
 
-        return const SizedBox.shrink();
-      },
+            if (friends.isEmpty) {
+              return HsError(
+                illustrationPath: 'lib/assets/images/empty_friend.svg',
+                title: 'شما هنوز دوستی ندارید',
+                subtitle:
+                    'از قسمت جستجوی دوستان، دوستان خود را پیدا کنید و به لیست دوستان خود اضافه کنید',
+              );
+            }
+
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: friends.length,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
+                child: FriendsTile(
+                  friendEntity: friends[index],
+                  friendType: FriendType.alreadyFriend,
+                  isActionLoading: state.busyUserId == friends[index].id,
+                  onRemoveFriend: () => context.read<FriendsBloc>().add(
+                    RemoveFriendEvent(friendId: friends[index].id),
+                  ),
+                ),
+              ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }
