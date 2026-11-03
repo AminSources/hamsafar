@@ -18,6 +18,7 @@ class TripEntity extends Equatable {
   final String leaderName;
   final bool isCreator;
   final bool isMember;
+  final String? currentMemberStatus;
   final List<Map<String, dynamic>> members;
 
   const TripEntity({
@@ -38,6 +39,7 @@ class TripEntity extends Equatable {
     this.leaderName = 'کاربر هم‌سفر',
     this.isCreator = false,
     this.isMember = false,
+    this.currentMemberStatus,
     this.members = const [],
   });
 
@@ -47,23 +49,8 @@ class TripEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        location,
-        departureAt,
-        returnAt,
-        status,
-        budget,
-        createdBy,
-        description,
-        meetingPoint,
-        scheduleType,
-        costItems,
-        rules,
-        memberCount,
-        leaderName,
-        isCreator,
-        isMember,
-        members,
-      ];
+    id, name, location, departureAt, returnAt, status, budget, createdBy,
+    description, meetingPoint, scheduleType, costItems, rules, memberCount,
+    leaderName, isCreator, isMember, currentMemberStatus, members,
+  ];
 }
