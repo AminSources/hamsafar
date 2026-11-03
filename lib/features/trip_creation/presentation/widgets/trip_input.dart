@@ -20,31 +20,36 @@ class TripInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            txt(
-              title,
-              size: 11.sp,
-              fontWeight: FontWeight.w700,
-              color: context.colorScheme.onSurfaceVariant,
-            ),
-            SizedBox(height: 6.h),
-            TextField(
-              readOnly: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          txt(
+            title,
+            size: 11.sp,
+            fontWeight: FontWeight.w700,
+            color: context.colorScheme.onSurfaceVariant,
+          ),
+          SizedBox(height: 6.h),
+          InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12.r),
+            child: InputDecorator(
               decoration: InputDecoration(
-                hintText: value,
                 prefixIcon: Icon(
                   icon,
                   size: 18.sp,
                   color: context.colorScheme.primary,
                 ),
               ),
+              child: Text(
+                value,
+                style: context.textTheme.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

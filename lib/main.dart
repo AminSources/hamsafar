@@ -13,6 +13,7 @@ import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cub
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
+import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:hamsafar/locator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -38,6 +39,7 @@ void main() async {
       providers: [
         BlocProvider(create: (context) => sl<BottomNavCubit>()),
         BlocProvider(create: (context) => sl<TripStepperCubit>()),
+        BlocProvider(create: (context) => sl<TripsCubit>()),
         BlocProvider(create: (context) => sl<FriendsTabBarCubit>()),
         BlocProvider(create: (context) => sl<TripDateCoordinationCubit>()),
         BlocProvider(create: (context) => sl<AuthBloc>()),
