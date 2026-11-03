@@ -83,4 +83,11 @@ class SupabaseFriendsDatasource {
       params: {'p_other_user_id': otherUserId},
     );
   }
+
+  Future<void> removeFriend(String friendId) async {
+    await supabaseClient.rpc(
+      'remove_friend',
+      params: {'p_friend_id': friendId},
+    );
+  }
 }
