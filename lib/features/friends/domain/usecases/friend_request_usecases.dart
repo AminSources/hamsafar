@@ -75,3 +75,15 @@ class CancelFriendRequestUsecase
     return friendsRepository.cancelFriendRequest(otherUserId: otherUserId);
   }
 }
+
+
+class RemoveFriendUsecase implements Usecase<DataState<bool>, String> {
+  final FriendsRepository friendsRepository;
+
+  RemoveFriendUsecase({required this.friendsRepository});
+
+  @override
+  Future<DataState<bool>> call(String friendId) {
+    return friendsRepository.removeFriend(friendId);
+  }
+}
