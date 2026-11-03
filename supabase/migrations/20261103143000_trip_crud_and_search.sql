@@ -321,7 +321,11 @@ begin
     from unnest(coalesce(p_invited_user_ids, '{}'::uuid[])) as invited_ids(user_id)
     where invited_ids.user_id <> v_user_id
   ) invited
-  on conflict (trip_id, user_id) do nothing;
+  on conflict (trip_id, user_id) do update
+    set
+      member_type = 'member',
+      member_status = 'pending'
+    where public.trip_members.member_status in ('rejected', 'left', 'removed');
 
   return v_trip_id;
 end;
