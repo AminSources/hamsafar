@@ -295,9 +295,9 @@ begin
   )
   select v_trip_id, invited.user_id, 'member', 'pending'
   from (
-    select distinct user_id
-    from unnest(coalesce(p_invited_user_ids, '{}'::uuid[])) user_id
-    where user_id <> v_user_id
+    select distinct invited_ids.user_id
+    from unnest(coalesce(p_invited_user_ids, '{}'::uuid[])) as invited_ids(user_id)
+    where invited_ids.user_id <> v_user_id
   ) invited
   on conflict (trip_id, user_id) do nothing;
 
@@ -314,21 +314,3 @@ grant execute on function public.save_trip(
   bigint, text, text[], text[], uuid[]
 ) to authenticated;
 
--- Allow members (but not arbitrary users) to read the trip row itself.
-drop policy if exists "Trip members can view their trips" on public.trips;
-create policy "Trip members can view their trips"
-on public.trips
-for select
-to authenticated
-using (
-  exists (
-    select 1
-    from public.trip_members tm
-    where tm.trip_id = trips.id
-      and tm.user_id = (select auth.uid())
-      and tm.member_status in ('pending', 'accepted')
-  )
-);
-
--- Ensure authenticated users can continue to use the existing tables through RLS.
--- The RPCs above deliberately expose only discoverable summaries and authorized details.
