@@ -9,15 +9,19 @@ class HomeProfileModel extends HomeProfileEntity {
 
   factory HomeProfileModel.fromJson(Map<String, dynamic> json) {
     return HomeProfileModel(
-      id: json['id'],
-      firstName: json['first_name'],
-      avatarIcon: json['avatar_icon'],
+      id: (json['id'] ?? '').toString(),
+      firstName: (json['first_name'] as String?)?.trim().isNotEmpty == true
+          ? (json['first_name'] as String).trim()
+          : 'دوست',
+      avatarIcon: (json['avatar_icon'] as String?)?.trim().isNotEmpty == true
+          ? (json['avatar_icon'] as String).trim()
+          : 'tent',
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'first_name': firstName,
-    'avatar_icon': avatarIcon,
-  };
+        'id': id,
+        'first_name': firstName,
+        'avatar_icon': avatarIcon,
+      };
 }
