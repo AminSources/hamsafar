@@ -53,6 +53,10 @@ class TripDraft extends Equatable {
         scheduleType: trip.scheduleType,
         costItems: trip.costItems,
         rules: trip.rules,
+        invitedUserIds: trip.members
+            .where((member) => member['member_status'] == 'pending')
+            .map((member) => member['id'] as String)
+            .toList(),
       );
 
   TripDraft copyWith({
