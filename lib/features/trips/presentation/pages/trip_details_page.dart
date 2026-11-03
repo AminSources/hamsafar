@@ -319,7 +319,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       },
                       icon: const Icon(Icons.logout), label: const Text('خروج از سفر'),
                     ),
-                  ] else if (!trip.isCreator && trip.currentMemberStatus == null && trip.status == 'preparing') ...[
+                  ] else if (!trip.isCreator && ['preparing', 'active'].contains(trip.status) && (trip.currentMemberStatus == null || ['left', 'rejected'].contains(trip.currentMemberStatus))) ...[
                     SizedBox(height: 12.h),
                     SizedBox(width: double.infinity, child: FilledButton.icon(
                       onPressed: () => context.read<TripsCubit>().joinTrip(trip.id),
