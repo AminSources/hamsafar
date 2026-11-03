@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
+import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tile.dart';
@@ -19,7 +19,6 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   @override
   void initState() {
     super.initState();
-
     context.read<FriendsBloc>().add(GetFriendsEvent());
   }
 
@@ -39,43 +38,45 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
       child: BlocBuilder<FriendsBloc, FriendsState>(
         builder: (context, state) {
           if (state is FriendsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
+            return const Center(child: CircularProgressIndicator());
+          }
+
           if (state is FriendsFailure) {
-          return HsError(
-            illustrationPath: "lib/assets/images/error.svg",
-            title: state.errorMessage,
-          );
-        }
+            return HsError(
+              illustrationPath: 'lib/assets/images/error.svg',
+              title: state.errorMessage,
+            );
+          }
+
           if (state is FriendsSuccess) {
             final friends = state.friends;
 
             if (friends.isEmpty) {
-            return HsError(
-              illustrationPath: "lib/assets/images/empty_friend.svg",
-              title: "شما هنوز دوستی ندارید",
-              subtitle:
-                  "از قسمت جستجوی دوستان، دوستان خود را پیدا کنید و به لیست دوستان خود اضافه کنید",
-            );
-          }
+              return HsError(
+                illustrationPath: 'lib/assets/images/empty_friend.svg',
+                title: 'شما هنوز دوستی ندارید',
+                subtitle:
+                    'از قسمت جستجوی دوستان، دوستان خود را پیدا کنید و به لیست دوستان خود اضافه کنید',
+              );
+            }
 
             return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: friends.length,
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
-              child: FriendsTile(
-                friendEntity: friends[index],
-                friendType: FriendType.alreadyFriend,
-                isActionLoading: state.busyUserId == friends[index].id,
-                onRemoveFriend: () => context.read<FriendsBloc>().add(
-                  RemoveFriendEvent(friendId: friends[index].id),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: friends.length,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
+                child: FriendsTile(
+                  friendEntity: friends[index],
+                  friendType: FriendType.alreadyFriend,
+                  isActionLoading: state.busyUserId == friends[index].id,
+                  onRemoveFriend: () => context.read<FriendsBloc>().add(
+                    RemoveFriendEvent(friendId: friends[index].id),
+                  ),
                 ),
               ),
-            ),
-          );
-        }
+            );
+          }
 
           return const SizedBox.shrink();
         },
