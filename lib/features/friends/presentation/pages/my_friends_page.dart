@@ -38,19 +38,19 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
       },
       child: BlocBuilder<FriendsBloc, FriendsState>(
         builder: (context, state) {
-        if (state is FriendsLoading) {
+          if (state is FriendsLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (state is FriendsFailure) {
+          if (state is FriendsFailure) {
           return HsError(
             illustrationPath: "lib/assets/images/error.svg",
             title: state.errorMessage,
           );
         }
-        if (state is FriendsSuccess) {
-          final friends = state.friends;
+          if (state is FriendsSuccess) {
+            final friends = state.friends;
 
-          if (friends.isEmpty) {
+            if (friends.isEmpty) {
             return HsError(
               illustrationPath: "lib/assets/images/empty_friend.svg",
               title: "شما هنوز دوستی ندارید",
@@ -59,7 +59,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
             );
           }
 
-          return ListView.builder(
+            return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: friends.length,
@@ -77,7 +77,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
           );
         }
 
-        return const SizedBox.shrink();
+          return const SizedBox.shrink();
         },
       ),
     );
