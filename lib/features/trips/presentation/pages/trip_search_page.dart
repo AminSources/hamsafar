@@ -118,7 +118,7 @@ class _TripSearchPageState extends State<TripSearchPage> {
               ),
               SizedBox(height: 16.h),
               const HsNote(
-                note: 'برای مشاهده جزئیات و ارسال درخواست عضویت، روی هر سفر بزنید.',
+                note: 'برای مشاهده جزئیات هر سفر، روی آن بزنید.',
                 noteMode: HsNoteType.info,
               ),
               SizedBox(height: 24.h),
