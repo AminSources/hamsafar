@@ -6,38 +6,40 @@ import 'package:hamsafar/features/trips/domain/repositories/trips_repository.dar
 
 class TripsRepositoryImpl implements TripsRepository {
   final SupabaseTripsDatasource datasource;
-
   TripsRepositoryImpl({required this.datasource});
 
   @override
-  Future<List<TripEntity>> getMyTrips() async {
-    final rows = await datasource.getTrips(mode: 'mine');
-    return rows.map(TripModel.fromJson).toList();
-  }
+  Future<List<TripEntity>> getMyTrips() async =>
+      (await datasource.getTrips(mode: 'mine')).map(TripModel.fromJson).toList();
 
   @override
-  Future<List<TripEntity>> searchTrips(String query) async {
-    final rows = await datasource.getTrips(mode: 'search', query: query);
-    return rows.map(TripModel.fromJson).toList();
-  }
+  Future<List<TripEntity>> searchTrips(String query) async =>
+      (await datasource.getTrips(mode: 'search', query: query)).map(TripModel.fromJson).toList();
 
   @override
   Future<TripEntity> getTripDetails(int tripId) async {
-    final rows = await datasource.getTrips(
-      mode: 'details',
-      tripId: tripId,
-    );
-    if (rows.isEmpty) {
-      throw Exception('trip_not_found_or_forbidden');
-    }
-    return TripModel.fromJson(rows.first);
+    final rows = await datasource.getTrips(mode: 'details', tripId: tripId);
+    if (rows.isEmpty) throw Exception('trip_not_found_or_forbidden');
+    final status = await datasource.getMembershipStatus(tripId);
+    return TripModel.fromJson(rows.first, currentMemberStatus: status);
   }
 
   @override
-  Future<int> saveTrip(TripDraft draft, {int? tripId}) {
-    return datasource.saveTrip(draft, tripId: tripId);
-  }
-
+  Future<int> saveTrip(TripDraft draft, {int? tripId}) =>
+      datasource.saveTrip(draft, tripId: tripId);
   @override
   Future<void> deleteTrip(int tripId) => datasource.deleteTrip(tripId);
+  @override
+  Future<void> joinTrip(int tripId) => datasource.joinTrip(tripId);
+  @override
+  Future<void> respondToInvitation(int tripId, {required bool accept}) =>
+      datasource.respondToInvitation(tripId, accept);
+  @override
+  Future<void> leaveTrip(int tripId) => datasource.leaveTrip(tripId);
+  @override
+  Future<void> inviteToTrip(int tripId, List<String> userIds) =>
+      datasource.inviteToTrip(tripId, userIds);
+  @override
+  Future<void> removeTripMember(int tripId, String userId) =>
+      datasource.removeTripMember(tripId, userId);
 }
