@@ -110,7 +110,7 @@ class _TripSearchPageState extends State<TripSearchPage> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: state.searchResults.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    separatorBuilder: (_, _) => SizedBox(height: 12.h),
                     itemBuilder: (context, index) =>
                         TripTile(trip: state.searchResults[index]),
                   );

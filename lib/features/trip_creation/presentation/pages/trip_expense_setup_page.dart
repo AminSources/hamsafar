@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
@@ -74,7 +73,8 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
               ),
               SizedBox(height: 16.h),
               const HsNote(
-                note: 'هزینه تخمینی پس از مشخص شدن تعداد اعضا قابل تقسیم خواهد بود.',
+                note:
+                    'هزینه تخمینی پس از مشخص شدن تعداد اعضا قابل تقسیم خواهد بود.',
               ),
               SizedBox(height: 20.h),
               txt(

@@ -131,10 +131,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   SizedBox(height: 20.h),
                   txt(trip.name, style: context.textTheme.headlineMedium),
                   SizedBox(height: 8.h),
-                  HsIconLabel(
-                    label: trip.location,
-                    icon: LucideIcons.mapPin,
-                  ),
+                  HsIconLabel(label: trip.location, icon: LucideIcons.mapPin),
                   if ((trip.description ?? '').isNotEmpty) ...[
                     SizedBox(height: 12.h),
                     txt(trip.description!),
@@ -149,22 +146,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       _ => 'درحال آماده‌سازی',
                     },
                   ),
-                  _InfoRow(
-                    label: 'لیدر سفر',
-                    value: trip.leaderName,
-                  ),
+                  _InfoRow(label: 'لیدر سفر', value: trip.leaderName),
                   _InfoRow(
                     label: 'تاریخ رفت',
-                    value: '${_date(trip.departureAt)} - ${_time(trip.departureAt)}',
+                    value:
+                        '${_date(trip.departureAt)} - ${_time(trip.departureAt)}',
                   ),
                   _InfoRow(
                     label: 'تاریخ برگشت',
                     value: '${_date(trip.returnAt)} - ${_time(trip.returnAt)}',
                   ),
-                  _InfoRow(
-                    label: 'بودجه',
-                    value: '${trip.budget} تومان',
-                  ),
+                  _InfoRow(label: 'بودجه', value: '${trip.budget} تومان'),
                   if ((trip.meetingPoint ?? '').isNotEmpty)
                     _InfoRow(label: 'محل تجمع', value: trip.meetingPoint!),
                   _InfoRow(
@@ -223,27 +215,29 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           ? 'هنوز عضوی در این سفر پذیرفته نشده است.'
                           : 'فهرست اعضا فقط برای اعضای سفر قابل مشاهده است.',
                       color: context.colorScheme.onSurfaceVariant,
-                    )
+                    ),
                   ...trip.members
                       .where((member) => member['member_status'] == 'accepted')
                       .map((member) {
-                    final firstName = member['first_name'] as String? ?? '';
-                    final lastName = member['last_name'] as String? ?? '';
-                    final username = member['username'] as String? ?? '';
-                    final memberName = '$firstName $lastName'.trim();
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        child: Text(
-                          memberName.isEmpty ? '؟' : memberName[0],
-                        ),
-                      ),
-                      title: Text(memberName.isEmpty ? username : memberName),
-                      subtitle: Text(
-                        member['member_type'] == 'leader' ? 'لیدر' : 'عضو',
-                      ),
-                    );
-                  }),
+                        final firstName = member['first_name'] as String? ?? '';
+                        final lastName = member['last_name'] as String? ?? '';
+                        final username = member['username'] as String? ?? '';
+                        final memberName = '$firstName $lastName'.trim();
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            child: Text(
+                              memberName.isEmpty ? '؟' : memberName[0],
+                            ),
+                          ),
+                          title: Text(
+                            memberName.isEmpty ? username : memberName,
+                          ),
+                          subtitle: Text(
+                            member['member_type'] == 'leader' ? 'لیدر' : 'عضو',
+                          ),
+                        );
+                      }),
                   if (trip.isCreator) ...[
                     SizedBox(height: 20.h),
                     HsButton(
@@ -258,7 +252,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: state.isDeleting ? null : () => _delete(trip),
+                        onPressed: state.isDeleting
+                            ? null
+                            : () => _delete(trip),
                         icon: const Icon(Icons.delete_outline),
                         label: Text(
                           state.isDeleting ? 'در حال حذف...' : 'حذف سفر',
@@ -271,10 +267,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   ],
                   if (state.errorMessage != null) ...[
                     SizedBox(height: 10.h),
-                    txt(
-                      state.errorMessage!,
-                      color: context.colorScheme.error,
-                    ),
+                    txt(state.errorMessage!, color: context.colorScheme.error),
                   ],
                   SizedBox(height: 32.h),
                 ],
@@ -308,9 +301,7 @@ class _InfoRow extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Expanded(
-            child: txt(value, fontWeight: FontWeight.w700),
-          ),
+          Expanded(child: txt(value, fontWeight: FontWeight.w700)),
         ],
       ),
     );

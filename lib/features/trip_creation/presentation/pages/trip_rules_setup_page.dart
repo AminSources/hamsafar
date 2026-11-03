@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
@@ -52,9 +53,9 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                   SizedBox(width: 10.w),
                   SizedBox(
                     height: 50.h,
-                    child: FilledButton(
-                      onPressed: _addRule,
-                      child: const Text('افزودن'),
+                    child: HsButton(
+                      onTap: _addRule,
+                      child: const Icon(Icons.add_rounded),
                     ),
                   ),
                 ],
@@ -87,7 +88,8 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
               ),
               SizedBox(height: 20.h),
               const HsNote(
-                note: 'قوانین برای همه اعضای سفر نمایش داده می‌شوند و پس از عضویت قابل مشاهده هستند.',
+                note:
+                    'قوانین برای همه اعضای سفر نمایش داده می‌شوند و پس از عضویت قابل مشاهده هستند.',
               ),
               SizedBox(height: 24.h),
             ],

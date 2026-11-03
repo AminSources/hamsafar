@@ -92,14 +92,15 @@ class _TripsPageState extends State<TripsPage> {
                     return const HsError(
                       illustrationPath: 'lib/assets/images/empty_trip.svg',
                       title: 'هنوز عضو سفری نیستید',
-                      subtitle: 'می‌توانید یک سفر جدید ایجاد کنید یا سفرهای دیگران را جستجو کنید.',
+                      subtitle:
+                          'می‌توانید یک سفر جدید ایجاد کنید یا سفرهای دیگران را جستجو کنید.',
                     );
                   }
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: state.myTrips.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                    separatorBuilder: (_, _) => SizedBox(height: 12.h),
                     itemBuilder: (context, index) =>
                         TripTile(trip: state.myTrips[index]),
                   );

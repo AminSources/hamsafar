@@ -34,7 +34,8 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
     if (query.isEmpty) return friends;
     return friends.where((friend) {
       final name = '${friend.firstName} ${friend.lastName}'.toLowerCase();
-      return name.contains(query) || friend.userName.toLowerCase().contains(query);
+      return name.contains(query) ||
+          friend.userName.toLowerCase().contains(query);
     }).toList();
   }
 
@@ -86,16 +87,18 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: friends.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 10.h),
+                    separatorBuilder: (_, _) => SizedBox(height: 10.h),
                     itemBuilder: (context, index) {
                       final friend = friends[index];
                       final selected = draft.invitedUserIds.contains(friend.id);
-                      final name = '${friend.firstName} ${friend.lastName}'.trim();
+                      final name = '${friend.firstName} ${friend.lastName}'
+                          .trim();
                       return TripFriendTile(
                         name: name.isEmpty ? friend.userName : name,
                         rate: friend.rate.toStringAsFixed(1),
                         tripCount: friend.tripCount.toString(),
-                        avatarColor: AppColors.avatars[index % AppColors.avatars.length],
+                        avatarColor:
+                            AppColors.avatars[index % AppColors.avatars.length],
                         isSelected: selected,
                         onSelected: (value) => context
                             .read<TripDraftCubit>()
@@ -107,7 +110,8 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
               ),
               SizedBox(height: 16.h),
               const HsNote(
-                note: 'دوستان انتخاب‌شده پس از ثبت سفر، دعوت‌نامهٔ عضویت دریافت می‌کنند. دعوت‌کردن اختیاری است.',
+                note:
+                    'دوستان انتخاب‌شده پس از ثبت سفر، دعوت‌نامهٔ عضویت دریافت می‌کنند. دعوت‌کردن اختیاری است.',
                 noteMode: HsNoteType.warning,
               ),
               SizedBox(height: 24.h),
