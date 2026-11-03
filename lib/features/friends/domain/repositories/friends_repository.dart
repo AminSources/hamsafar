@@ -22,4 +22,6 @@ abstract class FriendsRepository {
   Future<DataState<bool>> cancelFriendRequest({
     required String otherUserId,
   });
+
+  Future<DataState<bool>> removeFriend(String friendId);
 }
