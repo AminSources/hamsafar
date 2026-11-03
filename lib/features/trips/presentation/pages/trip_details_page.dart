@@ -46,14 +46,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _edit(TripEntity trip) async {
-    await context.push('/trip-create', extra: trip);
-    if (mounted) {
-      context.read<TripsCubit>().loadTripDetails(trip.id);
-    }
+    final router = GoRouter.of(context);
+    final tripsCubit = context.read<TripsCubit>();
+    await router.push('/trip-create', extra: trip);
+    if (!mounted) return;
+    tripsCubit.loadTripDetails(trip.id);
   }
 
   Future<void> _invite(TripEntity trip) async {
     final friendsBloc = context.read<FriendsBloc>();
+    final tripsCubit = context.read<TripsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
     friendsBloc.add(GetFriendsEvent());
     final selected = <String>{};
     final confirmed = await showDialog<bool>(
@@ -88,13 +91,16 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    final ok = await context.read<TripsCubit>().inviteToTrip(trip.id, selected.toList());
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(ok ? 'دعوت‌ها ارسال شدند.' : context.read<TripsCubit>().state.errorMessage ?? 'ارسال دعوت ناموفق بود.'),
+    final ok = await tripsCubit.inviteToTrip(trip.id, selected.toList());
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(
+      content: Text(ok ? 'دعوت‌ها ارسال شدند.' : tripsCubit.state.errorMessage ?? 'ارسال دعوت ناموفق بود.'),
     ));
   }
 
   Future<void> _delete(TripEntity trip) async {
+    final tripsCubit = context.read<TripsCubit>();
+    final router = GoRouter.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -114,9 +120,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
 
     if (confirmed != true || !mounted) return;
-    final deleted = await context.read<TripsCubit>().deleteTrip(trip.id);
+    final deleted = await tripsCubit.deleteTrip(trip.id);
     if (!mounted) return;
-    if (deleted) context.pop();
+    if (deleted) router.pop();
   }
 
   @override
@@ -265,6 +271,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         tooltip: 'اخراج عضو',
                         icon: const Icon(Icons.person_remove_alt_1_outlined),
                         onPressed: () async {
+                          final tripsCubit = context.read<TripsCubit>();
                           final yes = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
                             title: const Text('اخراج عضو'),
                             content: Text('آیا ${displayName.isEmpty ? username : displayName} از سفر اخراج شود؟'),
@@ -273,7 +280,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                               FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('اخراج')),
                             ],
                           ));
-                          if (yes == true && mounted) await context.read<TripsCubit>().removeTripMember(trip.id, userId);
+                          if (!mounted || yes != true) return;
+                          await tripsCubit.removeTripMember(trip.id, userId);
                         },
                       ) : null,
                     );
@@ -307,6 +315,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     SizedBox(height: 12.h),
                     OutlinedButton.icon(
                       onPressed: () async {
+                        final tripsCubit = context.read<TripsCubit>();
                         final yes = await showDialog<bool>(context: context, builder: (d) => AlertDialog(
                           title: const Text('خروج از سفر'),
                           content: const Text('از عضویت در این سفر خارج می‌شوید؟'),
@@ -315,7 +324,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             FilledButton(onPressed: () => Navigator.pop(d, true), child: const Text('خروج')),
                           ],
                         ));
-                        if (yes == true && mounted) await context.read<TripsCubit>().leaveTrip(trip.id);
+                        if (!mounted || yes != true) return;
+                        await tripsCubit.leaveTrip(trip.id);
                       },
                       icon: const Icon(Icons.logout), label: const Text('خروج از سفر'),
                     ),
