@@ -99,7 +99,18 @@ as $$
         and current_membership.user_id = (select auth.uid())
         and current_membership.member_status in ('pending', 'accepted')
     ),
-    coalesce(member_data.members, '[]'::jsonb)
+    case
+      when t.created_by = (select auth.uid())
+        or exists (
+          select 1
+          from public.trip_members visible_membership
+          where visible_membership.trip_id = t.id
+            and visible_membership.user_id = (select auth.uid())
+            and visible_membership.member_status in ('pending', 'accepted')
+        )
+      then coalesce(member_data.members, '[]'::jsonb)
+      else '[]'::jsonb
+    end
   from public.trips t
   left join public.profiles owner_profile on owner_profile.id = t.created_by
   left join lateral (
@@ -156,7 +167,8 @@ as $$
       when 'details' then
         t.id = p_trip_id
         and (
-          t.created_by = (select auth.uid())
+          t.status in ('preparing', 'active')
+          or t.created_by = (select auth.uid())
           or exists (
             select 1
             from public.trip_members detail_membership
