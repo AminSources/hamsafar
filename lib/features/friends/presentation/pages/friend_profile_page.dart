@@ -1,6 +1,8 @@
 // lib/features/friends_feature/presentation/pages/friend_profile_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/enums/hs_button_type.dart';
@@ -22,8 +24,22 @@ class FriendProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return BlocListener<FriendsBloc, FriendsState>(
+      listener: (context, state) {
+        final removedSuccessfully =
+            (state is FriendsSuccess &&
+                state.actionMessage != null &&
+                !state.actionError) ||
+            (state is FriendsSearchSuccess &&
+                state.actionMessage != null &&
+                !state.actionError);
+
+        if (removedSuccessfully && context.canPop()) {
+          context.pop();
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: Column(
@@ -60,9 +76,34 @@ class FriendProfilePage extends StatelessWidget {
                 HsButton(
                   hsButtonType: HsButtonType.outline,
                   borderColor: context.colorScheme.error,
-                  onTap: () {
-                    //? close page
-                    context.pop();
+                  onTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('حذف دوست'),
+                        content: const Text(
+                          'آیا مطمئن هستید که می‌خواهید این کاربر را از فهرست دوستان حذف کنید؟',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.of(dialogContext).pop(false),
+                            child: const Text('انصراف'),
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.of(dialogContext).pop(true),
+                            child: const Text('حذف'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirmed == true) {
+                      context.read<FriendsBloc>().add(
+                        RemoveFriendEvent(friendId: friendEntity.id),
+                      );
+                    }
                   },
                   child: Row(
                     spacing: 8.w,
@@ -87,6 +128,7 @@ class FriendProfilePage extends StatelessWidget {
               SizedBox(height: 20.h),
             ],
           ),
+        ),
         ),
       ),
     );
