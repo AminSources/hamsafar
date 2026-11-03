@@ -226,7 +226,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
                         child: Text(
-                          memberName.isEmpty ? '؟' : memberName.characters.first,
+                          memberName.isEmpty ? '؟' : memberName[0],
                         ),
                       ),
                       title: Text(memberName.isEmpty ? username : memberName),
