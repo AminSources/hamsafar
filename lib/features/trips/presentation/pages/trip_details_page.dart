@@ -217,6 +217,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     style: context.textTheme.titleMedium,
                   ),
                   SizedBox(height: 10.h),
+                  if (trip.members.isEmpty)
+                    txt(
+                      trip.isCreator || trip.isMember
+                          ? 'هنوز عضوی در این سفر پذیرفته نشده است.'
+                          : 'فهرست اعضا فقط برای اعضای سفر قابل مشاهده است.',
+                      color: context.colorScheme.onSurfaceVariant,
+                    )
                   ...trip.members
                       .where((member) => member['member_status'] == 'accepted')
                       .map((member) {
