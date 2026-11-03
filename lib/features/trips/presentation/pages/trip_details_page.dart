@@ -217,11 +217,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     style: context.textTheme.titleMedium,
                   ),
                   SizedBox(height: 10.h),
-                  ...trip.members.map((member) {
+                  ...trip.members
+                      .where((member) => member['member_status'] == 'accepted')
+                      .map((member) {
                     final firstName = member['first_name'] as String? ?? '';
                     final lastName = member['last_name'] as String? ?? '';
                     final username = member['username'] as String? ?? '';
-                    final memberName = '\$firstName \$lastName'.trim();
+                    final memberName = '$firstName $lastName'.trim();
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
