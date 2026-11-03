@@ -73,55 +73,76 @@ class FriendProfilePage extends StatelessWidget {
 
               //* remove friend button
               if (friendEntity.relationStatus == "friends") ...[
-                HsButton(
-                  hsButtonType: HsButtonType.outline,
-                  borderColor: context.colorScheme.error,
-                  onTap: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (dialogContext) => AlertDialog(
-                        title: const Text('حذف دوست'),
-                        content: const Text(
-                          'آیا مطمئن هستید که می‌خواهید این کاربر را از فهرست دوستان حذف کنید؟',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () =>
-                                Navigator.of(dialogContext).pop(false),
-                            child: const Text('انصراف'),
-                          ),
-                          TextButton(
-                            onPressed: () =>
-                                Navigator.of(dialogContext).pop(true),
-                            child: const Text('حذف'),
+                BlocBuilder<FriendsBloc, FriendsState>(
+                  builder: (context, state) {
+                    final isRemoving =
+                        (state is FriendsSuccess &&
+                            state.busyUserId == friendEntity.id) ||
+                        (state is FriendsSearchSuccess &&
+                            state.busyUserId == friendEntity.id);
+
+                    return HsButton(
+                      hsButtonType: HsButtonType.outline,
+                      borderColor: context.colorScheme.error,
+                      onTap: isRemoving
+                          ? null
+                          : () async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (dialogContext) => AlertDialog(
+                                  title: const Text('حذف دوست'),
+                                  content: const Text(
+                                    'آیا مطمئن هستید که می‌خواهید این کاربر را از فهرست دوستان حذف کنید؟',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(dialogContext).pop(false),
+                                      child: const Text('انصراف'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(dialogContext).pop(true),
+                                      child: const Text('حذف'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirmed == true && context.mounted) {
+                                context.read<FriendsBloc>().add(
+                                  RemoveFriendEvent(friendId: friendEntity.id),
+                                );
+                              }
+                            },
+                      child: Row(
+                        spacing: 8.w,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isRemoving)
+                            SizedBox(
+                              width: 20.w,
+                              height: 20.w,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          else
+                            Icon(
+                              LucideIcons.userRoundMinus,
+                              size: 20.sp,
+                              color: context.colorScheme.error,
+                            ),
+                          txt(
+                            'حذف دوست',
+                            color: context.colorScheme.error,
+                            fontWeight: FontWeight.w800,
+                            size: 14.sp,
                           ),
                         ],
                       ),
                     );
-
-                    if (confirmed == true) {
-                      context.read<FriendsBloc>().add(
-                        RemoveFriendEvent(friendId: friendEntity.id),
-                      );
-                    }
                   },
-                  child: Row(
-                    spacing: 8.w,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LucideIcons.userRoundMinus,
-                        size: 20.sp,
-                        color: context.colorScheme.error,
-                      ),
-                      txt(
-                        'حذف دوست',
-                        color: context.colorScheme.error,
-                        fontWeight: FontWeight.w800,
-                        size: 14.sp,
-                      ),
-                    ],
-                  ),
                 ),
               ],
 
