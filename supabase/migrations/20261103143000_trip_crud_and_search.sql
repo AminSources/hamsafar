@@ -312,7 +312,7 @@ begin
   from unnest(coalesce(p_rules, '{}'::text[])) as rule_values(rule_text)
   where nullif(trim(rule_values.rule_text), '') is not null;
 
-  insert into public.trip_members (
+  insert into public.trip_members as existing_members (
     trip_id, user_id, member_type, member_status
   )
   select v_trip_id, invited.user_id, 'member', 'pending'
@@ -325,7 +325,7 @@ begin
     set
       member_type = 'member',
       member_status = 'pending'
-    where public.trip_members.member_status in ('rejected', 'left', 'removed');
+    where existing_members.member_status in ('rejected', 'left', 'removed');
 
   return v_trip_id;
 end;
