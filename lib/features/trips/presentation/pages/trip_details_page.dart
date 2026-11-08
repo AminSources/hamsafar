@@ -132,7 +132,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   txt(trip.name, style: context.textTheme.headlineMedium),
                   SizedBox(height: 8.h),
                   HsIconLabel(label: trip.location, icon: LucideIcons.mapPin),
-                  if (!trip.canJoin && !trip.isMember && !trip.isCreator) ...[
+                  if (!trip.canJoin && !trip.isCreator) ...[
                     SizedBox(height: 12.h),
                     Container(
                       width: double.infinity,
