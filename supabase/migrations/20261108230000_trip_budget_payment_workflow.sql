@@ -123,12 +123,16 @@ as $$
       where tm.trip_id=t.id and tm.user_id=(select auth.uid()) and tm.member_status='accepted'),0),
     (select tm.pay_status from public.trip_members tm
       where tm.trip_id=t.id and tm.user_id=(select auth.uid()) and tm.member_status='accepted'),
-    coalesce((select jsonb_agg(jsonb_build_object(
-      'user_id',tm.user_id,'first_name',p.first_name,'last_name',p.last_name,
-      'member_type',tm.member_type,'share',tm.share,'pay_status',tm.pay_status,
-      'payment_method',tm.payment_method,'payment_reference',tm.payment_reference,
-      'payment_submitted_at',tm.payment_submitted_at
-    ) order by tm.member_type desc,tm.joined_at)
+    coalesce((select jsonb_agg(
+      case when t.created_by=(select auth.uid()) then
+        jsonb_build_object('user_id',tm.user_id,'first_name',p.first_name,'last_name',p.last_name,
+          'member_type',tm.member_type,'share',tm.share,'pay_status',tm.pay_status,
+          'payment_method',tm.payment_method,'payment_reference',tm.payment_reference,
+          'payment_submitted_at',tm.payment_submitted_at)
+      else
+        jsonb_build_object('user_id',tm.user_id,'first_name',p.first_name,'last_name',p.last_name,
+          'member_type',tm.member_type,'share',tm.share,'pay_status',tm.pay_status)
+      end order by tm.member_type desc,tm.joined_at)
       from public.trip_members tm join public.profiles p on p.id=tm.user_id
       where tm.trip_id=t.id and tm.member_status='accepted'),'[]'::jsonb)
   from public.trips t
