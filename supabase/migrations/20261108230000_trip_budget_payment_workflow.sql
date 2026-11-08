@@ -32,8 +32,13 @@ begin
     where tm.trip_id=p_trip_id and tm.member_status='accepted';
   if v_count=0 then return; end if;
   v_share := floor(v_budget::numeric / v_count)::bigint;
-  update public.trip_members set share=v_share
-    where trip_id=p_trip_id and member_status='accepted';
+  update public.trip_members set share=v_share,
+    pay_status=case when share is distinct from v_share then 'pending' else pay_status end,
+    payment_method=case when share is distinct from v_share then null else payment_method end,
+    payment_reference=case when share is distinct from v_share then null else payment_reference end,
+    payment_submitted_at=case when share is distinct from v_share then null else payment_submitted_at end,
+    payment_confirmed_at=case when share is distinct from v_share then null else payment_confirmed_at end
+  where trip_id=p_trip_id and member_status='accepted' and share is distinct from v_share;
 end;
 $$;
 revoke all on function private.recalculate_trip_member_shares(bigint) from public, anon, authenticated;
@@ -93,7 +98,7 @@ begin
     p_budget,p_schedule_type,p_cost_items,p_rules,p_invited_user_ids,p_departure_options
   );
   update public.trips set
-    bank_card_number=nullif(regexp_replace(coalesce(p_bank_card_number,''),'\\s','','g'),''),
+    bank_card_number=nullif(regexp_replace(coalesce(p_bank_card_number,''),'[[:space:]]','','g'),''),
     bank_account_name=nullif(trim(coalesce(p_bank_account_name,'')),'')
   where id=v_trip_id and created_by=(select auth.uid());
   if not found then raise exception 'trip_not_found_or_forbidden'; end if;
