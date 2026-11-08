@@ -187,6 +187,9 @@ class TripsCubit extends Cubit<TripsState> {
     if (raw.contains('not_authenticated')) {
       return 'برای انجام این عملیات وارد حساب خود شوید.';
     }
+    if (raw.contains('already_in_another_trip')) {
+      return 'شما در حال حاضر عضو سفر دیگری هستید؛ ابتدا از سفر فعلی خارج شوید.';
+    }
     if (raw.contains('invalid_invitees')) {
       return 'فقط می‌توانید دوستان خود را به سفر دعوت کنید.';
     }

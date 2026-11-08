@@ -87,6 +87,34 @@ class TripTile extends StatelessWidget {
               ),
             ],
           ),
+          if (!trip.canJoin && !trip.isCreator) ...[
+            SizedBox(height: 10.h),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: context.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 18.sp,
+                    color: context.colorScheme.onSurfaceVariant,
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: txt(
+                      'برای عضویت در این سفر، ابتدا باید از سفر فعلی خود خارج شوید.',
+                      color: context.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

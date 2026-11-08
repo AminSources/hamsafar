@@ -212,6 +212,34 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   txt(trip.name, style: context.textTheme.headlineMedium),
                   SizedBox(height: 8.h),
                   HsIconLabel(label: trip.location, icon: LucideIcons.mapPin),
+                  if (!trip.canJoin && !trip.isCreator) ...[
+                    SizedBox(height: 12.h),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.all(12.w),
+                      decoration: BoxDecoration(
+                        color: context.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20.sp,
+                            color: context.colorScheme.onSurfaceVariant,
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: txt(
+                              'شما در حال حاضر عضو سفر دیگری هستید. برای عضویت در این سفر، ابتدا باید از سفر فعلی خود خارج شوید.',
+                              color: context.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   if ((trip.description ?? '').isNotEmpty) ...[
                     SizedBox(height: 12.h),
                     txt(trip.description!),
