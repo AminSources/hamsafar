@@ -13,6 +13,7 @@ alter table public.trip_members drop constraint if exists trip_members_pay_statu
 alter table public.trip_members drop constraint if exists valid_pay_status;
 update public.trip_members set pay_status = case when pay_status = 'paid' then 'paid' else 'pending' end;
 alter table public.trip_members add constraint valid_pay_status check (pay_status in ('pending', 'under_review', 'paid'));
+alter table public.trip_members alter column pay_status set default 'pending';
 
 alter table public.trip_members drop constraint if exists trip_members_payment_method_check;
 alter table public.trip_members add constraint trip_members_payment_method_check
