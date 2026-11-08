@@ -83,33 +83,29 @@ grant insert, update, delete on public.trip_departure_options to authenticated;
 grant insert, update on public.trip_departure_votes to authenticated;
 grant usage, select on sequence public.trip_departure_options_id_seq to authenticated;
 
-create or replace function public.replace_trip_departure_options(p_trip_id bigint, p_options jsonb)
+create or replace function public.replace_trip_departure_options(p_trip_id bigint,p_options jsonb)
 returns void language plpgsql security invoker set search_path = ''
 as $$
-declare v_user_id uuid := (select auth.uid());
+declare v_user_id uuid := (select auth.uid()); v_options jsonb := coalesce(p_options,'[]'::jsonb); v_existing_count bigint;
 begin
   if v_user_id is null then raise exception 'not_authenticated'; end if;
-  if not exists (select 1 from public.trips t where t.id=p_trip_id and t.created_by=v_user_id) then
-    raise exception 'trip_not_found_or_forbidden';
+  if not exists(select 1 from public.trips t where t.id=p_trip_id and t.created_by=v_user_id) then raise exception 'trip_not_found_or_forbidden'; end if;
+  if not exists(select 1 from public.trips t where t.id=p_trip_id and t.schedule_type='voting') then
+    delete from public.trip_departure_options where trip_id=p_trip_id; return;
   end if;
-  if not exists (select 1 from public.trips t where t.id=p_trip_id and t.schedule_type='voting') then
-    delete from public.trip_departure_options where trip_id=p_trip_id;
-    return;
-  end if;
-  if jsonb_typeof(coalesce(p_options,'[]'::jsonb)) <> 'array'
-     or jsonb_array_length(coalesce(p_options,'[]'::jsonb)) < 2 then
-    raise exception 'at_least_two_departure_options_required';
-  end if;
-  if jsonb_array_length(p_options)>10 then raise exception 'too_many_departure_options'; end if;
-  if exists (select 1 from jsonb_array_elements(p_options) x
-    where nullif(x->>'starts_at','') is null or nullif(x->>'ends_at','') is null
-      or (x->>'ends_at')::timestamptz <= (x->>'starts_at')::timestamptz) then
-    raise exception 'invalid_departure_option_range';
-  end if;
+  if jsonb_typeof(v_options)<>'array' or jsonb_array_length(v_options)<2 then raise exception 'at_least_two_departure_options_required'; end if;
+  if jsonb_array_length(v_options)>10 then raise exception 'too_many_departure_options'; end if;
+  if exists(select 1 from jsonb_array_elements(v_options) x where nullif(x->>'starts_at','') is null or nullif(x->>'ends_at','') is null or (x->>'ends_at')::timestamptz <= (x->>'starts_at')::timestamptz) then raise exception 'invalid_departure_option_range'; end if;
+  select count(*) into v_existing_count from public.trip_departure_options where trip_id=p_trip_id;
+  if v_existing_count=jsonb_array_length(v_options) and not exists(
+    select 1 from jsonb_array_elements(v_options) x where not exists(
+      select 1 from public.trip_departure_options o where o.trip_id=p_trip_id
+        and o.starts_at=(x->>'starts_at')::timestamptz and o.ends_at=(x->>'ends_at')::timestamptz
+    )
+  ) then return; end if;
   delete from public.trip_departure_options where trip_id=p_trip_id;
   insert into public.trip_departure_options(trip_id,starts_at,ends_at)
-  select p_trip_id,(x->>'starts_at')::timestamptz,(x->>'ends_at')::timestamptz
-  from jsonb_array_elements(p_options) x;
+  select p_trip_id,(x->>'starts_at')::timestamptz,(x->>'ends_at')::timestamptz from jsonb_array_elements(v_options) x;
 end;
 $$;
 
