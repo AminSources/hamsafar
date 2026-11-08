@@ -10,8 +10,7 @@ class TripDraftCubit extends Cubit<TripDraft> {
   }
 
   void setName(String value) => emit(state.copyWith(name: value));
-  void setDescription(String value) =>
-      emit(state.copyWith(description: value));
+  void setDescription(String value) => emit(state.copyWith(description: value));
   void setLocation(String value) => emit(state.copyWith(location: value));
   void setMeetingPoint(String value) =>
       emit(state.copyWith(meetingPoint: value));
@@ -89,6 +88,10 @@ class TripDraftCubit extends Cubit<TripDraft> {
   }
 
   void removeRule(String value) {
-    emit(state.copyWith(rules: state.rules.where((rule) => rule != value).toList()));
+    emit(
+      state.copyWith(
+        rules: state.rules.where((rule) => rule != value).toList(),
+      ),
+    );
   }
 }
