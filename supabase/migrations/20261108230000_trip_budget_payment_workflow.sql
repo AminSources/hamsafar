@@ -10,15 +10,13 @@ alter table public.trip_members
   add column if not exists payment_confirmed_at timestamptz;
 
 alter table public.trip_members drop constraint if exists trip_members_pay_status_check;
-alter table public.trip_members add constraint trip_members_pay_status_check
-  check (pay_status in ('pending', 'under_review', 'paid'));
+alter table public.trip_members drop constraint if exists valid_pay_status;
+update public.trip_members set pay_status = case when pay_status = 'paid' then 'paid' else 'pending' end;
+alter table public.trip_members add constraint valid_pay_status check (pay_status in ('pending', 'under_review', 'paid'));
 
 alter table public.trip_members drop constraint if exists trip_members_payment_method_check;
 alter table public.trip_members add constraint trip_members_payment_method_check
   check (payment_method is null or payment_method in ('bank_transfer', 'cash'));
-
-update public.trip_members set pay_status='pending' where pay_status='unpaid';
-update public.trip_members set pay_status='pending' where pay_status='partial';
 
 create index if not exists trip_members_payment_review_idx
   on public.trip_members (trip_id, pay_status) where member_status='accepted';
