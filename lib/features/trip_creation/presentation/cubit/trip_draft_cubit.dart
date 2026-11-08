@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 
