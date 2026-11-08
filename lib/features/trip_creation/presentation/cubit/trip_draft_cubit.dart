@@ -31,8 +31,11 @@ class TripDraftCubit extends Cubit<TripDraft> {
 
   void toggleInvite(String userId, bool selected) {
     final ids = [...state.invitedUserIds];
-    if (selected && !ids.contains(userId)) ids.add(userId);
-    else if (!selected) ids.remove(userId);
+    if (selected && !ids.contains(userId)) {
+      ids.add(userId);
+    } else if (!selected) {
+      ids.remove(userId);
+    }
     emit(state.copyWith(invitedUserIds: ids));
   }
   void addCostItem(String value) {
