@@ -20,6 +20,7 @@ class TripModel extends TripEntity {
     super.isCreator,
     super.isMember,
     super.canJoin,
+    super.currentMemberStatus,
     super.members,
   });
 
@@ -43,6 +44,7 @@ class TripModel extends TripEntity {
       isCreator: json['is_creator'] as bool? ?? false,
       isMember: json['is_member'] as bool? ?? false,
       canJoin: json['can_join'] as bool? ?? true,
+      currentMemberStatus: currentMemberStatus,
       members: (json['members'] as List? ?? const [])
           .map((item) => Map<String, dynamic>.from(item as Map))
           .toList(),
