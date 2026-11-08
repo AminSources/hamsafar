@@ -52,14 +52,20 @@ class SupabaseTripsDatasource {
   }
 
   Future<int> saveTrip(TripDraft draft, {int? tripId}) async {
+    final effectiveDeparture = draft.scheduleType == 'voting' && draft.departureOptions.isNotEmpty
+        ? draft.departureOptions.map((option) => option.startsAt).reduce((a, b) => a.isBefore(b) ? a : b)
+        : draft.departureAt;
+    final effectiveReturn = draft.scheduleType == 'voting' && draft.departureOptions.isNotEmpty
+        ? draft.departureOptions.map((option) => option.endsAt).reduce((a, b) => a.isAfter(b) ? a : b)
+        : draft.returnAt;
     final response = await supabaseClient.rpc('save_trip', params: {
       'p_trip_id': tripId,
       'p_name': draft.name.trim(),
       'p_location': draft.location.trim(),
       'p_description': draft.description.trim(),
       'p_meeting_point': draft.meetingPoint.trim(),
-      'p_departure_at': draft.departureAt.toUtc().toIso8601String(),
-      'p_return_at': draft.returnAt.toUtc().toIso8601String(),
+      'p_departure_at': effectiveDeparture.toUtc().toIso8601String(),
+      'p_return_at': effectiveReturn.toUtc().toIso8601String(),
       'p_budget': draft.budget,
       'p_schedule_type': draft.scheduleType,
       'p_cost_items': draft.costItems,
