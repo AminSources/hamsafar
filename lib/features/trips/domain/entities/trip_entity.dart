@@ -20,6 +20,7 @@ class TripEntity extends Equatable {
   final bool isMember;
   final bool canJoin;
   final List<Map<String, dynamic>> members;
+  final List<Map<String, dynamic>> departureOptions;
 
   const TripEntity({
     required this.id,
@@ -41,6 +42,7 @@ class TripEntity extends Equatable {
     this.isMember = false,
     this.canJoin = true,
     this.members = const [],
+    this.departureOptions = const [],
   });
 
   bool get isPreparing => status == 'preparing';
@@ -68,5 +70,6 @@ class TripEntity extends Equatable {
         isMember,
         canJoin,
         members,
+        departureOptions,
       ];
 }
