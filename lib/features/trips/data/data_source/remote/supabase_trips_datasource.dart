@@ -17,6 +17,15 @@ class SupabaseTripsDatasource {
     return List<Map<String, dynamic>>.from(response as List);
   }
 
+  Future<List<Map<String, dynamic>>> getDepartureOptions(int tripId) async {
+    final rows = await supabaseClient
+        .from('trip_departure_options')
+        .select('id, starts_at, ends_at')
+        .eq('trip_id', tripId)
+        .order('starts_at');
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
   Future<String?> getMembershipStatus(int tripId) async {
     final value = await supabaseClient.rpc(
       'get_trip_membership_status',
