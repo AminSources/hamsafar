@@ -15,7 +15,7 @@ class TripScheduleSetupPage extends StatelessWidget {
   Future<DateTime?> _pickDateTime(BuildContext context, DateTime initial) async {
     final date = await showDatePicker(
       context: context, initialDate: initial.isBefore(DateTime(2000)) ? DateTime.now() : initial,
-      firstDate: DateTime.now(), lastDate: DateTime.now().add(const Duration(days: 3650)),
+      firstDate: DateTime(2000), lastDate: DateTime.now().add(const Duration(days: 3650)),
     );
     if (date == null || !context.mounted) return null;
     final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(initial));
