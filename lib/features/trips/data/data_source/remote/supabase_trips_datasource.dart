@@ -17,7 +17,7 @@ class SupabaseTripsDatasource {
     return List<Map<String, dynamic>>.from(response as List);
   }
 
-  Future<List<Map<String, dynamic>>> getDepartureOptions(int tripId) async {
+  Future<Map<String, dynamic>?> getTripPaymentDetails(int tripId) async {\n    return await supabaseClient.from('trips').select('bank_card_number, bank_account_name').eq('id', tripId).maybeSingle();\n  }\n\n  Future<List<Map<String, dynamic>>> getDepartureOptions(int tripId) async {
     final rows = await supabaseClient
         .from('trip_departure_options')
         .select('id, starts_at, ends_at')
