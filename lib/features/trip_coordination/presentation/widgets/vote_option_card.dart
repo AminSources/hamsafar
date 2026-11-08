@@ -76,7 +76,7 @@ class VoteOptionCard extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           LinearProgressIndicator(
-            value: percent.clamp(0.0, 1.0),
+            value: percent.clamp(0.0, 1.0).toDouble(),
             color: isVoted ? null : context.colorScheme.onSurfaceVariant,
           ),
         ],
