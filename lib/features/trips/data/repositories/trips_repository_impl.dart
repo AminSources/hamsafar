@@ -22,8 +22,12 @@ class TripsRepositoryImpl implements TripsRepository {
     if (rows.isEmpty) throw Exception('trip_not_found_or_forbidden');
     final status = await datasource.getMembershipStatus(tripId);
     final options = await datasource.getDepartureOptions(tripId);
+    final bankDetails = rows.first['is_creator'] == true
+        ? await datasource.getTripPaymentDetails(tripId)
+        : null;
     return TripModel.fromJson({
       ...rows.first,
+      ...?bankDetails,
       'departure_options': options,
     }, currentMemberStatus: status);
   }
