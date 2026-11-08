@@ -155,3 +155,20 @@ $$;
 grant execute on function public.replace_trip_departure_options(bigint,jsonb) to authenticated;
 grant execute on function public.get_my_departure_polls() to authenticated;
 grant execute on function public.cast_departure_vote(bigint,bigint) to authenticated;
+
+ 
+create or replace function public.save_trip_with_departure_options(
+  p_trip_id bigint,p_name text,p_location text,p_description text,p_meeting_point text,
+  p_departure_at timestamptz,p_return_at timestamptz,p_budget bigint,p_schedule_type text,
+  p_cost_items text[],p_rules text[],p_invited_user_ids uuid[],p_departure_options jsonb
+) returns bigint language plpgsql security invoker set search_path = ''
+as $$
+declare v_trip_id bigint;
+begin
+  v_trip_id := public.save_trip(p_trip_id,p_name,p_location,p_description,p_meeting_point,
+    p_departure_at,p_return_at,p_budget,p_schedule_type,p_cost_items,p_rules,p_invited_user_ids);
+  perform public.replace_trip_departure_options(v_trip_id,coalesce(p_departure_options,'[]'::jsonb));
+  return v_trip_id;
+end;
+$$;
+grant execute on function public.save_trip_with_departure_options(bigint,text,text,text,text,timestamptz,timestamptz,bigint,text,text[],text[],uuid[],jsonb) to authenticated;
