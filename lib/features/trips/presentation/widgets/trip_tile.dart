@@ -87,7 +87,7 @@ class TripTile extends StatelessWidget {
               ),
             ],
           ),
-          if (!trip.canJoin && !trip.isMember && !trip.isCreator) ...[
+          if (!trip.canJoin && !trip.isCreator) ...[
             SizedBox(height: 10.h),
             Container(
               width: double.infinity,
