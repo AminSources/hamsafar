@@ -14,11 +14,7 @@ class HomeTripCard extends StatelessWidget {
   final HomeTripEntity trip;
   final bool isInTrip;
 
-  const HomeTripCard({
-    super.key,
-    required this.trip,
-    required this.isInTrip,
-  });
+  const HomeTripCard({super.key, required this.trip, required this.isInTrip});
 
   String _formatDate(DateTime date) {
     return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
@@ -91,7 +87,7 @@ class HomeTripCard extends StatelessWidget {
           SizedBox(height: 16.h),
           Divider(color: Colors.white24, height: 1),
           SizedBox(height: 14.h),
-          HomeAvatarStack(),
+          HomeAvatarStack(membersNames: trip.membersNames),
         ],
       ),
     );
