@@ -18,7 +18,6 @@ import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
 import 'package:hamsafar/features/home/presentation/widgets/home_action_cards_row.dart';
 import 'package:hamsafar/features/home/presentation/widgets/home_activities.dart';
 import 'package:hamsafar/features/home/presentation/widgets/home_trip_card.dart';
-import 'package:hamsafar/features/home/presentation/widgets/departure_polls_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -131,8 +130,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  const DeparturePollsSection(),
-                  SizedBox(height: 16.h),
                   if (currentTrip != null)
                     Column(
                       children: [
