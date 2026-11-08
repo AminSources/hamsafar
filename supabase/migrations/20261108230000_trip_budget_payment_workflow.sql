@@ -91,10 +91,11 @@ create or replace function public.save_trip_with_payment_details(
   p_departure_at timestamptz,p_return_at timestamptz,p_budget bigint,p_schedule_type text,
   p_cost_items text[],p_rules text[],p_invited_user_ids uuid[],p_departure_options jsonb,
   p_bank_card_number text,p_bank_account_name text
-) returns bigint language plpgsql security invoker set search_path=''
+) returns bigint language plpgsql security definer set search_path=''
 as $$
-declare v_trip_id bigint;
+declare v_trip_id bigint; v_user_id uuid := (select auth.uid());
 begin
+  if v_user_id is null then raise exception 'not_authenticated'; end if;
   v_trip_id := public.save_trip_with_departure_options(
     p_trip_id,p_name,p_location,p_description,p_meeting_point,p_departure_at,p_return_at,
     p_budget,p_schedule_type,p_cost_items,p_rules,p_invited_user_ids,p_departure_options
@@ -102,7 +103,7 @@ begin
   update public.trips set
     bank_card_number=nullif(regexp_replace(coalesce(p_bank_card_number,''),'[[:space:]]','','g'),''),
     bank_account_name=nullif(trim(coalesce(p_bank_account_name,'')),'')
-  where id=v_trip_id and created_by=(select auth.uid());
+  where id=v_trip_id and created_by=v_user_id;
   if not found then raise exception 'trip_not_found_or_forbidden'; end if;
   perform private.recalculate_trip_member_shares(v_trip_id);
   return v_trip_id;
