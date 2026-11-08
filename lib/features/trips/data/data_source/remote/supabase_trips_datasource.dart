@@ -67,7 +67,13 @@ class SupabaseTripsDatasource {
     final effectiveReturn = draft.scheduleType == 'voting' && draft.departureOptions.isNotEmpty
         ? draft.departureOptions.map((option) => option.endsAt).reduce((a, b) => a.isAfter(b) ? a : b)
         : draft.returnAt;
-    final response = await supabaseClient.rpc('save_trip', params: {
+    final options = draft.scheduleType == 'voting'
+        ? draft.departureOptions.map((option) => {
+            'starts_at': option.startsAt.toUtc().toIso8601String(),
+            'ends_at': option.endsAt.toUtc().toIso8601String(),
+          }).toList()
+        : <Map<String, String>>[];
+    final response = await supabaseClient.rpc('save_trip_with_departure_options', params: {
       'p_trip_id': tripId,
       'p_name': draft.name.trim(),
       'p_location': draft.location.trim(),
@@ -80,19 +86,9 @@ class SupabaseTripsDatasource {
       'p_cost_items': draft.costItems,
       'p_rules': draft.rules,
       'p_invited_user_ids': draft.invitedUserIds,
+      'p_departure_options': options,
     });
-    final tripId = (response as num).toInt();
-    final options = draft.scheduleType == 'voting'
-        ? draft.departureOptions.map((option) => {
-            'starts_at': option.startsAt.toUtc().toIso8601String(),
-            'ends_at': option.endsAt.toUtc().toIso8601String(),
-          }).toList()
-        : <Map<String, String>>[];
-    await supabaseClient.rpc('replace_trip_departure_options', params: {
-      'p_trip_id': tripId,
-      'p_options': options,
-    });
-    return tripId;
+    return (response as num).toInt();
   }
 
   Future<void> deleteTrip(int tripId) async {
