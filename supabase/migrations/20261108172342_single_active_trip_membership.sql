@@ -1,0 +1,486 @@
+-- Enforce one accepted trip membership per user across all trips.
+-- The invariant applies equally to trip leaders and regular members.
+
+create unique index if not exists trip_members_one_accepted_trip_per_user_uidx
+  on public.trip_members (user_id)
+  where member_status = 'accepted';
+
+-- Keep trip creators represented in trip_members even for direct trips INSERTs.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+
+create or replace function private.ensure_trip_creator_membership()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.trip_members (
+    trip_id, user_id, member_type, member_status
+  )
+  values (new.id, new.created_by, 'leader', 'accepted')
+  on conflict (trip_id, user_id) do nothing;
+
+  return new;
+end;
+$$;
+
+revoke all on function private.ensure_trip_creator_membership() from public, anon, authenticated;
+
+drop trigger if exists ensure_trip_creator_membership on public.trips;
+create trigger ensure_trip_creator_membership
+after insert on public.trips
+for each row
+execute function private.ensure_trip_creator_membership();
+
+-- Extend the existing RPC with can_join while preserving current visibility rules.
+drop function if exists public.get_trips(text, text, bigint);
+
+create function public.get_trips(
+  p_mode text,
+  p_query text default null,
+  p_trip_id bigint default null
+)
+returns table (
+  id bigint,
+  name text,
+  location text,
+  departure_at timestamptz,
+  return_at timestamptz,
+  status text,
+  budget bigint,
+  created_by uuid,
+  description text,
+  meeting_point text,
+  schedule_type text,
+  cost_items text[],
+  rules text[],
+  member_count bigint,
+  leader_name text,
+  is_creator boolean,
+  is_member boolean,
+  members jsonb,
+  can_join boolean
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    t.id,
+    t.name,
+    t.location,
+    t.departure_at,
+    t.return_at,
+    t.status,
+    t.budget,
+    t.created_by,
+    t.description,
+    t.meeting_point,
+    t.schedule_type,
+    coalesce(t.cost_items, '{}'::text[]),
+    coalesce(rule_data.rules, '{}'::text[]),
+    coalesce(member_data.member_count, 0),
+    coalesce(
+      nullif(trim(concat_ws(' ', owner_profile.first_name, owner_profile.last_name)), ''),
+      'کاربر هم‌سفر'
+    ),
+    t.created_by = (select auth.uid()),
+    exists (
+      select 1
+      from public.trip_members current_membership
+      where current_membership.trip_id = t.id
+        and current_membership.user_id = (select auth.uid())
+        and current_membership.member_status in ('pending', 'accepted')
+    ),
+    case
+      when t.created_by = (select auth.uid())
+        or exists (
+          select 1
+          from public.trip_members visible_membership
+          where visible_membership.trip_id = t.id
+            and visible_membership.user_id = (select auth.uid())
+            and visible_membership.member_status in ('pending', 'accepted')
+        )
+      then coalesce(member_data.members, '[]'::jsonb)
+      else '[]'::jsonb
+    end,
+    not exists (
+      select 1
+      from public.trip_members other_membership
+      where other_membership.user_id = (select auth.uid())
+        and other_membership.member_status = 'accepted'
+        and other_membership.trip_id <> t.id
+    )
+  from public.trips t
+  left join public.profiles owner_profile on owner_profile.id = t.created_by
+  left join lateral (
+    select array_agg(tr.rule order by tr.id) as rules
+    from public.trip_rules tr
+    where tr.trip_id = t.id
+  ) rule_data on true
+  left join lateral (
+    select
+      count(*) filter (where tm.member_status = 'accepted') as member_count,
+      jsonb_agg(
+        jsonb_build_object(
+          'id', member_profile.id,
+          'first_name', member_profile.first_name,
+          'last_name', member_profile.last_name,
+          'username', member_profile.username,
+          'avatar_icon', member_profile.avatar_icon,
+          'member_type', tm.member_type,
+          'member_status', tm.member_status
+        )
+        order by tm.member_type desc, tm.joined_at
+      ) filter (
+        where tm.member_status = 'accepted'
+           or t.created_by = (select auth.uid())
+      ) as members
+    from public.trip_members tm
+    join public.profiles member_profile on member_profile.id = tm.user_id
+    where tm.trip_id = t.id
+      and (
+        tm.member_status = 'accepted'
+        or t.created_by = (select auth.uid())
+      )
+  ) member_data on true
+  where (select auth.uid()) is not null
+    and case p_mode
+      when 'mine' then
+        (
+          t.created_by = (select auth.uid())
+          or exists (
+            select 1
+            from public.trip_members my_membership
+            where my_membership.trip_id = t.id
+              and my_membership.user_id = (select auth.uid())
+              and my_membership.member_status = 'accepted'
+          )
+        )
+      when 'search' then
+        t.status in ('preparing', 'active')
+        and (
+          nullif(trim(coalesce(p_query, '')), '') is null
+          or t.name ilike '%' || trim(p_query) || '%'
+          or coalesce(t.location, '') ilike '%' || trim(p_query) || '%'
+        )
+      when 'details' then
+        t.id = p_trip_id
+        and (
+          t.status in ('preparing', 'active')
+          or t.created_by = (select auth.uid())
+          or exists (
+            select 1
+            from public.trip_members detail_membership
+            where detail_membership.trip_id = t.id
+              and detail_membership.user_id = (select auth.uid())
+              and detail_membership.member_status in ('pending', 'accepted')
+          )
+        )
+      else false
+    end
+  order by
+    case when p_mode = 'mine' then t.updated_at end desc nulls last,
+    case when p_mode = 'search' then t.departure_at end asc nulls last,
+    t.created_at desc
+  limit case when p_mode = 'details' then 1 else 100 end;
+$$;
+
+revoke all on function public.get_trips(text, text, bigint) from public, anon;
+grant execute on function public.get_trips(text, text, bigint) to authenticated;
+
+-- Reject a second membership, irrespective of the user's role in the first trip.
+create or replace function public.join_trip(p_trip_id bigint)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_user_id uuid := (select auth.uid());
+  v_trip_status text;
+  v_existing_status text;
+begin
+  if v_user_id is null then
+    raise exception 'not_authenticated';
+  end if;
+
+  select t.status into v_trip_status
+  from public.trips t
+  where t.id = p_trip_id
+  for update;
+
+  if not found then
+    raise exception 'trip_not_found';
+  end if;
+
+  if v_trip_status not in ('preparing', 'active') then
+    raise exception 'trip_not_joinable';
+  end if;
+
+  if exists (
+    select 1
+    from public.trip_members tm
+    where tm.user_id = v_user_id
+      and tm.member_status = 'accepted'
+      and tm.trip_id <> p_trip_id
+  ) then
+    raise exception 'already_in_another_trip';
+  end if;
+
+  select tm.member_status into v_existing_status
+  from public.trip_members tm
+  where tm.trip_id = p_trip_id
+    and tm.user_id = v_user_id
+  for update;
+
+  if v_existing_status = 'accepted' then
+    raise exception 'already_joined';
+  elsif v_existing_status = 'pending' then
+    update public.trip_members
+    set member_status = 'accepted', joined_at = now()
+    where trip_id = p_trip_id and user_id = v_user_id;
+  elsif v_existing_status = 'removed' then
+    raise exception 'membership_removed';
+  elsif v_existing_status is null then
+    insert into public.trip_members (
+      trip_id, user_id, member_type, member_status
+    )
+    values (p_trip_id, v_user_id, 'member', 'accepted');
+  else
+    update public.trip_members
+    set member_status = 'accepted', joined_at = now()
+    where trip_id = p_trip_id and user_id = v_user_id;
+  end if;
+
+exception
+  when unique_violation then
+    raise exception 'already_in_another_trip';
+end;
+$$;
+
+revoke all on function public.join_trip(bigint) from public, anon;
+grant execute on function public.join_trip(bigint) to authenticated;
+
+-- Invitation acceptance uses the same rule.
+create or replace function public.respond_to_trip_invitation(
+  p_trip_id bigint,
+  p_accept boolean
+)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_user_id uuid := (select auth.uid());
+  v_status text;
+  v_trip_status text;
+begin
+  if v_user_id is null then
+    raise exception 'not_authenticated';
+  end if;
+
+  select t.status into v_trip_status
+  from public.trips t
+  where t.id = p_trip_id;
+
+  if not found then
+    raise exception 'trip_not_found';
+  end if;
+
+  if v_trip_status not in ('preparing', 'active') then
+    raise exception 'trip_not_joinable';
+  end if;
+
+  select tm.member_status into v_status
+  from public.trip_members tm
+  where tm.trip_id = p_trip_id and tm.user_id = v_user_id
+  for update;
+
+  if v_status is distinct from 'pending' then
+    raise exception 'invitation_not_pending';
+  end if;
+
+  if p_accept and exists (
+    select 1
+    from public.trip_members tm
+    where tm.user_id = v_user_id
+      and tm.member_status = 'accepted'
+      and tm.trip_id <> p_trip_id
+  ) then
+    raise exception 'already_in_another_trip';
+  end if;
+
+  update public.trip_members
+  set member_status = case when p_accept then 'accepted' else 'rejected' end,
+      joined_at = case when p_accept then now() else joined_at end
+  where trip_id = p_trip_id and user_id = v_user_id;
+
+exception
+  when unique_violation then
+    raise exception 'already_in_another_trip';
+end;
+$$;
+
+revoke all on function public.respond_to_trip_invitation(bigint, boolean) from public, anon;
+grant execute on function public.respond_to_trip_invitation(bigint, boolean) to authenticated;
+
+-- A leader cannot create a second trip while already in another accepted trip.
+-- The trigger + unique index also enforce this for direct INSERTs and race conditions.
+create or replace function public.save_trip(
+  p_trip_id bigint default null,
+  p_name text default null,
+  p_location text default null,
+  p_description text default null,
+  p_meeting_point text default null,
+  p_departure_at timestamptz default null,
+  p_return_at timestamptz default null,
+  p_budget bigint default 0,
+  p_schedule_type text default 'fixed',
+  p_cost_items text[] default '{}'::text[],
+  p_rules text[] default '{}'::text[],
+  p_invited_user_ids uuid[] default '{}'::uuid[]
+)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_user_id uuid := (select auth.uid());
+  v_trip_id bigint;
+begin
+  if v_user_id is null then
+    raise exception 'not_authenticated';
+  end if;
+
+  if nullif(trim(coalesce(p_name, '')), '') is null then
+    raise exception 'trip_name_required';
+  end if;
+
+  if nullif(trim(coalesce(p_location, '')), '') is null then
+    raise exception 'trip_location_required';
+  end if;
+
+  if p_departure_at is null or p_return_at is null
+     or p_return_at <= p_departure_at then
+    raise exception 'invalid_trip_dates';
+  end if;
+
+  if coalesce(p_budget, -1) < 0 then
+    raise exception 'invalid_trip_budget';
+  end if;
+
+  if coalesce(p_schedule_type, '') not in ('fixed', 'voting') then
+    raise exception 'invalid_schedule_type';
+  end if;
+
+  if exists (
+    select 1
+    from unnest(coalesce(p_invited_user_ids, '{}'::uuid[])) invited(user_id)
+    where invited.user_id <> v_user_id
+      and not exists (
+        select 1
+        from public.friendships f
+        where (f.user_id = v_user_id and f.friend_id = invited.user_id)
+           or (f.friend_id = v_user_id and f.user_id = invited.user_id)
+      )
+  ) then
+    raise exception 'invalid_invitees';
+  end if;
+
+  if p_trip_id is null then
+    if exists (
+      select 1
+      from public.trip_members tm
+      where tm.user_id = v_user_id
+        and tm.member_status = 'accepted'
+    ) then
+      raise exception 'already_in_another_trip';
+    end if;
+
+    insert into public.trips (
+      name, location, departure_at, return_at, status, budget,
+      created_by, description, meeting_point, schedule_type, cost_items
+    )
+    values (
+      trim(p_name), trim(p_location), p_departure_at, p_return_at,
+      'preparing', p_budget, v_user_id,
+      nullif(trim(coalesce(p_description, '')), ''),
+      nullif(trim(coalesce(p_meeting_point, '')), ''),
+      p_schedule_type,
+      coalesce(p_cost_items, '{}'::text[])
+    )
+    returning trips.id into v_trip_id;
+
+    -- The AFTER INSERT trigger has already inserted the accepted leader row.
+  else
+    update public.trips
+    set
+      name = trim(p_name),
+      location = trim(p_location),
+      departure_at = p_departure_at,
+      return_at = p_return_at,
+      budget = p_budget,
+      description = nullif(trim(coalesce(p_description, '')), ''),
+      meeting_point = nullif(trim(coalesce(p_meeting_point, '')), ''),
+      schedule_type = p_schedule_type,
+      cost_items = coalesce(p_cost_items, '{}'::text[]),
+      updated_at = now()
+    where trips.id = p_trip_id
+      and trips.created_by = v_user_id
+    returning trips.id into v_trip_id;
+
+    if v_trip_id is null then
+      raise exception 'trip_not_found_or_forbidden';
+    end if;
+  end if;
+
+  delete from public.trip_rules where trip_id = v_trip_id;
+
+  delete from public.trip_members
+  where trip_id = v_trip_id
+    and user_id <> v_user_id
+    and member_status = 'pending'
+    and not (
+      user_id = any(coalesce(p_invited_user_ids, '{}'::uuid[]))
+    );
+
+  insert into public.trip_rules (trip_id, rule)
+  select v_trip_id, trim(rule_values.rule_text)
+  from unnest(coalesce(p_rules, '{}'::text[])) as rule_values(rule_text)
+  where nullif(trim(rule_values.rule_text), '') is not null;
+
+  insert into public.trip_members as existing_members (
+    trip_id, user_id, member_type, member_status
+  )
+  select v_trip_id, invited.user_id, 'member', 'pending'
+  from (
+    select distinct invited_ids.user_id
+    from unnest(coalesce(p_invited_user_ids, '{}'::uuid[])) as invited_ids(user_id)
+    where invited_ids.user_id <> v_user_id
+  ) invited
+  on conflict (trip_id, user_id) do update
+    set
+      member_type = 'member',
+      member_status = 'pending'
+    where existing_members.member_status in ('rejected', 'left', 'removed');
+
+  return v_trip_id;
+end;
+$$;
+
+revoke all on function public.save_trip(
+  bigint, text, text, text, text, timestamptz, timestamptz,
+  bigint, text, text[], text[], uuid[]
+) from public, anon;
+grant execute on function public.save_trip(
+  bigint, text, text, text, text, timestamptz, timestamptz,
+  bigint, text, text[], text[], uuid[]
+) to authenticated;
+
+notify pgrst, 'reload schema';
