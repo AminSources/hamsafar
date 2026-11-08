@@ -23,7 +23,7 @@ class TripModel extends TripEntity {
     super.members,
   });
 
-  factory TripModel.fromJson(Map<String, dynamic> json) {
+  factory TripModel.fromJson(Map<String, dynamic> json, {String? currentMemberStatus}) {
     return TripModel(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String? ?? '',

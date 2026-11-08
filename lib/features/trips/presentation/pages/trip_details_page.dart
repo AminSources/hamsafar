@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -45,13 +46,92 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
   Future<void> _edit(TripEntity trip) async {
-    await context.push('/trip-create', extra: trip);
-    if (mounted) {
-      context.read<TripsCubit>().loadTripDetails(trip.id);
-    }
+    final router = GoRouter.of(context);
+    final tripsCubit = context.read<TripsCubit>();
+    await router.push('/trip-create', extra: trip);
+    if (!mounted) return;
+    tripsCubit.loadTripDetails(trip.id);
+  }
+
+  Future<void> _invite(TripEntity trip) async {
+    final friendsBloc = context.read<FriendsBloc>();
+    final tripsCubit = context.read<TripsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    friendsBloc.add(GetFriendsEvent());
+    final selected = <String>{};
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('دعوت دوستان به سفر'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: BlocBuilder<FriendsBloc, FriendsState>(
+              bloc: friendsBloc,
+              builder: (context, state) {
+                if (state is FriendsLoading || state is FriendsInitial) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is FriendsFailure) return Text(state.errorMessage);
+                if (state is! FriendsSuccess || state.friends.isEmpty) {
+                  return const Text('دوستی برای دعوت وجود ندارد.');
+                }
+                return ListView(
+                  shrinkWrap: true,
+                  children: state.friends
+                      .map(
+                        (friend) => CheckboxListTile(
+                          value: selected.contains(friend.id),
+                          title: Text(
+                            '${friend.firstName} ${friend.lastName}'.trim(),
+                          ),
+                          subtitle: Text('@${friend.userName}'),
+                          onChanged: (value) => setDialogState(() {
+                            if (value == true) {
+                              selected.add(friend.id);
+                            } else {
+                              selected.remove(friend.id);
+                            }
+                          }),
+                        ),
+                      )
+                      .toList(),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('انصراف'),
+            ),
+            FilledButton(
+              onPressed: selected.isEmpty
+                  ? null
+                  : () => Navigator.pop(dialogContext, true),
+              child: const Text('ارسال دعوت'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final ok = await tripsCubit.inviteToTrip(trip.id, selected.toList());
+    if (!mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? 'دعوت‌ها ارسال شدند.'
+              : tripsCubit.state.errorMessage ?? 'ارسال دعوت ناموفق بود.',
+        ),
+      ),
+    );
   }
 
   Future<void> _delete(TripEntity trip) async {
+    final tripsCubit = context.read<TripsCubit>();
+    final router = GoRouter.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -71,9 +151,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
 
     if (confirmed != true || !mounted) return;
-    final deleted = await context.read<TripsCubit>().deleteTrip(trip.id);
+    final deleted = await tripsCubit.deleteTrip(trip.id);
     if (!mounted) return;
-    if (deleted) context.pop();
+    if (deleted) router.pop();
   }
 
   @override
@@ -237,35 +317,176 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     style: context.textTheme.titleMedium,
                   ),
                   SizedBox(height: 10.h),
-                  if (trip.members.isEmpty)
-                    txt(
-                      trip.isCreator || trip.isMember
-                          ? 'هنوز عضوی در این سفر پذیرفته نشده است.'
-                          : 'فهرست اعضا فقط برای اعضای سفر قابل مشاهده است.',
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
                   ...trip.members
-                      .where((member) => member['member_status'] == 'accepted')
+                      .where((m) => m['member_status'] == 'accepted')
                       .map((member) {
-                        final firstName = member['first_name'] as String? ?? '';
-                        final lastName = member['last_name'] as String? ?? '';
+                        final first = member['first_name'] as String? ?? '';
+                        final last = member['last_name'] as String? ?? '';
                         final username = member['username'] as String? ?? '';
-                        final memberName = '$firstName $lastName'.trim();
+                        final userId = member['id'] as String? ?? '';
+                        final displayName = '$first $last'.trim();
+                        final isLeader = member['member_type'] == 'leader';
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
                             child: Text(
-                              memberName.isEmpty ? '؟' : memberName[0],
+                              displayName.isEmpty ? '؟' : displayName[0],
                             ),
                           ),
                           title: Text(
-                            memberName.isEmpty ? username : memberName,
+                            displayName.isEmpty ? username : displayName,
                           ),
                           subtitle: Text(
-                            member['member_type'] == 'leader' ? 'لیدر' : 'عضو',
+                            isLeader ? 'لیدر سفر' : 'عضو پذیرفته‌شده',
                           ),
+                          trailing: trip.isCreator && !isLeader
+                              ? IconButton(
+                                  tooltip: 'اخراج عضو',
+                                  icon: const Icon(
+                                    Icons.person_remove_alt_1_outlined,
+                                  ),
+                                  onPressed: () async {
+                                    final tripsCubit = context
+                                        .read<TripsCubit>();
+                                    final yes = await showDialog<bool>(
+                                      context: context,
+                                      builder: (d) => AlertDialog(
+                                        title: const Text('اخراج عضو'),
+                                        content: Text(
+                                          'آیا ${displayName.isEmpty ? username : displayName} از سفر اخراج شود؟',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(d, false),
+                                            child: const Text('انصراف'),
+                                          ),
+                                          FilledButton(
+                                            onPressed: () =>
+                                                Navigator.pop(d, true),
+                                            child: const Text('اخراج'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    if (!mounted || yes != true) return;
+                                    await tripsCubit.removeTripMember(
+                                      trip.id,
+                                      userId,
+                                    );
+                                  },
+                                )
+                              : null,
                         );
                       }),
+                  if (trip.isCreator) ...[
+                    SizedBox(height: 8.h),
+                    txt(
+                      'دعوت‌های در انتظار',
+                      style: context.textTheme.titleSmall,
+                    ),
+                    ...trip.members
+                        .where((m) => m['member_status'] == 'pending')
+                        .map((member) {
+                          final first = member['first_name'] as String? ?? '';
+                          final last = member['last_name'] as String? ?? '';
+                          final userId = member['id'] as String? ?? '';
+                          final name = '$first $last'.trim();
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              name.isEmpty
+                                  ? (member['username'] as String? ?? '')
+                                  : name,
+                            ),
+                            subtitle: const Text('در انتظار پاسخ'),
+                            trailing: IconButton(
+                              tooltip: 'لغو دعوت',
+                              icon: const Icon(Icons.close),
+                              onPressed: () => context
+                                  .read<TripsCubit>()
+                                  .removeTripMember(trip.id, userId),
+                            ),
+                          );
+                        }),
+                    OutlinedButton.icon(
+                      onPressed: () => _invite(trip),
+                      icon: const Icon(Icons.person_add_alt_1),
+                      label: const Text('دعوت دوستان'),
+                    ),
+                  ] else if (trip.currentMemberStatus == 'pending') ...[
+                    SizedBox(height: 12.h),
+                    const Text('برای پیوستن به این سفر دعوت شده‌اید.'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () => context
+                                .read<TripsCubit>()
+                                .respondToInvitation(trip.id, accept: true),
+                            child: const Text('پذیرفتن دعوت'),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => context
+                                .read<TripsCubit>()
+                                .respondToInvitation(trip.id, accept: false),
+                            child: const Text('رد دعوت'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ] else if (trip.currentMemberStatus == 'accepted' &&
+                      !trip.isCreator) ...[
+                    SizedBox(height: 12.h),
+                    OutlinedButton.icon(
+                      onPressed: () async {
+                        final tripsCubit = context.read<TripsCubit>();
+                        final yes = await showDialog<bool>(
+                          context: context,
+                          builder: (d) => AlertDialog(
+                            title: const Text('خروج از سفر'),
+                            content: const Text(
+                              'از عضویت در این سفر خارج می‌شوید؟',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(d, false),
+                                child: const Text('انصراف'),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.pop(d, true),
+                                child: const Text('خروج'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (!mounted || yes != true) return;
+                        await tripsCubit.leaveTrip(trip.id);
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text('خروج از سفر'),
+                    ),
+                  ] else if (!trip.isCreator &&
+                      ['preparing', 'active'].contains(trip.status) &&
+                      (trip.currentMemberStatus == null ||
+                          [
+                            'left',
+                            'rejected',
+                          ].contains(trip.currentMemberStatus))) ...[
+                    SizedBox(height: 12.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: () =>
+                            context.read<TripsCubit>().joinTrip(trip.id),
+                        icon: const Icon(Icons.group_add_outlined),
+                        label: const Text('پیوستن به سفر'),
+                      ),
+                    ),
+                  ],
                   if (trip.isCreator) ...[
                     SizedBox(height: 20.h),
                     HsButton(

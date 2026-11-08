@@ -138,6 +138,29 @@ class TripsCubit extends Cubit<TripsState> {
     }
   }
 
+  Future<bool> joinTrip(int tripId) => _runMembershipAction(() => repository.joinTrip(tripId), tripId);
+  Future<bool> respondToInvitation(int tripId, {required bool accept}) =>
+      _runMembershipAction(() => repository.respondToInvitation(tripId, accept: accept), tripId);
+  Future<bool> leaveTrip(int tripId) =>
+      _runMembershipAction(() => repository.leaveTrip(tripId), tripId);
+  Future<bool> inviteToTrip(int tripId, List<String> userIds) =>
+      _runMembershipAction(() => repository.inviteToTrip(tripId, userIds), tripId);
+  Future<bool> removeTripMember(int tripId, String userId) =>
+      _runMembershipAction(() => repository.removeTripMember(tripId, userId), tripId);
+
+  Future<bool> _runMembershipAction(Future<void> Function() action, int tripId) async {
+    emit(state.copyWith(clearError: true));
+    try {
+      await action();
+      await loadTripDetails(tripId);
+      await loadMyTrips();
+      return true;
+    } catch (error) {
+      emit(state.copyWith(errorMessage: _friendlyError(error)));
+      return false;
+    }
+  }
+
   Future<bool> deleteTrip(int tripId) async {
     emit(state.copyWith(isDeleting: true, clearError: true));
     try {
