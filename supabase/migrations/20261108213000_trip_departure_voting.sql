@@ -24,6 +24,7 @@ create table if not exists public.trip_departure_votes (
 
 create index if not exists trip_departure_options_trip_idx on public.trip_departure_options(trip_id, starts_at);
 create index if not exists trip_departure_votes_option_idx on public.trip_departure_votes(trip_id, option_id);
+create index if not exists trip_departure_votes_user_idx on public.trip_departure_votes(user_id);
 
 alter table public.trip_departure_options enable row level security;
 alter table public.trip_departure_votes enable row level security;
@@ -37,10 +38,12 @@ using (exists (select 1 from public.trips t where t.id=trip_id and (
   )
 )));
 
-create policy "Trip creators manage departure options"
-on public.trip_departure_options for all to authenticated
-using (exists (select 1 from public.trips t where t.id=trip_id and t.created_by=(select auth.uid())))
+create policy "Trip creators insert departure options"
+on public.trip_departure_options for insert to authenticated
 with check (exists (select 1 from public.trips t where t.id=trip_id and t.created_by=(select auth.uid())));
+create policy "Trip creators delete departure options"
+on public.trip_departure_options for delete to authenticated
+using (exists (select 1 from public.trips t where t.id=trip_id and t.created_by=(select auth.uid())));
 
 create policy "Trip members read departure votes"
 on public.trip_departure_votes for select to authenticated
