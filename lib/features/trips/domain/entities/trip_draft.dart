@@ -66,6 +66,10 @@ class TripDraft extends Equatable {
     returnAt: trip.returnAt,
     budget: trip.budget,
     scheduleType: trip.scheduleType,
+    departureOptions: trip.departureOptions.map((option) => DepartureOptionDraft(
+      startsAt: DateTime.parse(option['starts_at'] as String).toLocal(),
+      endsAt: DateTime.parse(option['ends_at'] as String).toLocal(),
+    )).toList(),
     costItems: trip.costItems,
     rules: trip.rules,
     invitedUserIds: trip.members.where((member) => member['member_status'] == 'pending').map((member) => member['id'] as String).toList(),
