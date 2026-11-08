@@ -19,6 +19,7 @@ class TripEntity extends Equatable {
   final bool isCreator;
   final bool isMember;
   final bool canJoin;
+  final String? currentMemberStatus;
   final List<Map<String, dynamic>> members;
 
   const TripEntity({
@@ -40,6 +41,7 @@ class TripEntity extends Equatable {
     this.isCreator = false,
     this.isMember = false,
     this.canJoin = true,
+    this.currentMemberStatus,
     this.members = const [],
   });
 
@@ -67,6 +69,7 @@ class TripEntity extends Equatable {
         isCreator,
         isMember,
         canJoin,
+        currentMemberStatus,
         members,
       ];
 }
