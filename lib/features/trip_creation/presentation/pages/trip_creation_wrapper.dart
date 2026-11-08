@@ -73,6 +73,14 @@ class _TripCreationContentState extends State<_TripCreationContent> {
       );
       return;
     }
+    if (draft.scheduleType == 'voting' && draft.departureOptions.length < 2) {
+      context.showHsSnackBar(text: 'برای رأی‌گیری حداقل دو بازهٔ پیشنهادی ثبت کنید.', hsSnackBarType: HsSnackBarType.warning);
+      return;
+    }
+    if (draft.scheduleType == 'voting' && draft.departureOptions.any((option) => !option.endsAt.isAfter(option.startsAt))) {
+      context.showHsSnackBar(text: 'پایان هر بازه باید بعد از شروع آن باشد.', hsSnackBarType: HsSnackBarType.warning);
+      return;
+    }
     if (!draft.returnAt.isAfter(draft.departureAt)) {
       context.showHsSnackBar(
         text: 'زمان برگشت باید بعد از زمان رفت باشد.',
