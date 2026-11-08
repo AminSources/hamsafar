@@ -17,6 +17,16 @@ class SupabaseTripsDatasource {
     return List<Map<String, dynamic>>.from(response as List);
   }
 
+  Future<Map<String, dynamic>?> getTripPaymentDetails(int tripId) async {
+    final row = await supabaseClient
+        .from('trips')
+        .select('bank_card_number, bank_account_name')
+        .eq('id', tripId)
+        .maybeSingle();
+
+    return row;
+  }
+
   Future<List<Map<String, dynamic>>> getDepartureOptions(int tripId) async {
     final rows = await supabaseClient
         .from('trip_departure_options')
@@ -73,7 +83,7 @@ class SupabaseTripsDatasource {
             'ends_at': option.endsAt.toUtc().toIso8601String(),
           }).toList()
         : <Map<String, String>>[];
-    final response = await supabaseClient.rpc('save_trip_with_departure_options', params: {
+    final response = await supabaseClient.rpc('save_trip_with_payment_details', params: {
       'p_trip_id': tripId,
       'p_name': draft.name.trim(),
       'p_location': draft.location.trim(),
@@ -87,6 +97,8 @@ class SupabaseTripsDatasource {
       'p_rules': draft.rules,
       'p_invited_user_ids': draft.invitedUserIds,
       'p_departure_options': options,
+      'p_bank_card_number': draft.bankCardNumber,
+      'p_bank_account_name': draft.bankAccountName,
     });
     return (response as num).toInt();
   }

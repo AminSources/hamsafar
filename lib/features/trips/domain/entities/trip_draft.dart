@@ -5,33 +5,34 @@ class DepartureOptionDraft extends Equatable {
   final DateTime startsAt;
   final DateTime endsAt;
   const DepartureOptionDraft({required this.startsAt, required this.endsAt});
-
   DepartureOptionDraft copyWith({DateTime? startsAt, DateTime? endsAt}) =>
-      DepartureOptionDraft(startsAt: startsAt ?? this.startsAt, endsAt: endsAt ?? this.endsAt);
-
+      DepartureOptionDraft(
+        startsAt: startsAt ?? this.startsAt,
+        endsAt: endsAt ?? this.endsAt,
+      );
   @override
   List<Object?> get props => [startsAt, endsAt];
 }
 
 class TripDraft extends Equatable {
-  final String name;
-  final String description;
-  final String location;
-  final String meetingPoint;
-  final DateTime departureAt;
-  final DateTime returnAt;
+  final String name,
+      description,
+      location,
+      meetingPoint,
+      bankCardNumber,
+      bankAccountName,
+      scheduleType;
+  final DateTime departureAt, returnAt;
   final int budget;
-  final String scheduleType;
   final List<DepartureOptionDraft> departureOptions;
-  final List<String> costItems;
-  final List<String> rules;
-  final List<String> invitedUserIds;
-
+  final List<String> costItems, rules, invitedUserIds;
   const TripDraft({
     this.name = '',
     this.description = '',
     this.location = '',
     this.meetingPoint = '',
+    this.bankCardNumber = '',
+    this.bankAccountName = '',
     required this.departureAt,
     required this.returnAt,
     this.budget = 0,
@@ -41,7 +42,6 @@ class TripDraft extends Equatable {
     this.rules = const [],
     this.invitedUserIds = const [],
   });
-
   factory TripDraft.empty() {
     final now = DateTime.now();
     final departure = DateTime(now.year, now.month, now.day + 1, 7);
@@ -50,46 +50,93 @@ class TripDraft extends Equatable {
       departureAt: departure,
       returnAt: returning,
       departureOptions: [
-        DepartureOptionDraft(startsAt: departure, endsAt: departure.add(const Duration(hours: 2))),
-        DepartureOptionDraft(startsAt: departure.add(const Duration(hours: 2)), endsAt: departure.add(const Duration(hours: 4))),
+        DepartureOptionDraft(
+          startsAt: departure,
+          endsAt: departure.add(const Duration(hours: 2)),
+        ),
+        DepartureOptionDraft(
+          startsAt: departure.add(const Duration(hours: 2)),
+          endsAt: departure.add(const Duration(hours: 4)),
+        ),
       ],
-      rules: const ['حضور به‌موقع در محل تجمع', 'تقسیم منصفانه هزینه‌ها و احترام به طبیعت'],
+      rules: const [
+        'حضور به‌موقع در محل تجمع',
+        'تقسیم منصفانه هزینه‌ها و احترام به طبیعت',
+      ],
     );
   }
-
   factory TripDraft.fromTrip(TripEntity trip) => TripDraft(
     name: trip.name,
     description: trip.description ?? '',
     location: trip.location,
     meetingPoint: trip.meetingPoint ?? '',
+    bankCardNumber: trip.bankCardNumber ?? '',
+    bankAccountName: trip.bankAccountName ?? '',
     departureAt: trip.departureAt,
     returnAt: trip.returnAt,
     budget: trip.budget,
     scheduleType: trip.scheduleType,
-    departureOptions: trip.departureOptions.map((option) => DepartureOptionDraft(
-      startsAt: DateTime.parse(option['starts_at'] as String).toLocal(),
-      endsAt: DateTime.parse(option['ends_at'] as String).toLocal(),
-    )).toList(),
+    departureOptions: trip.departureOptions
+        .map(
+          (o) => DepartureOptionDraft(
+            startsAt: DateTime.parse(o['starts_at'] as String).toLocal(),
+            endsAt: DateTime.parse(o['ends_at'] as String).toLocal(),
+          ),
+        )
+        .toList(),
     costItems: trip.costItems,
     rules: trip.rules,
-    invitedUserIds: trip.members.where((member) => member['member_status'] == 'pending').map((member) => member['id'] as String).toList(),
+    invitedUserIds: trip.members
+        .where((m) => m['member_status'] == 'pending')
+        .map((m) => m['id'] as String)
+        .toList(),
   );
-
   TripDraft copyWith({
-    String? name, String? description, String? location, String? meetingPoint,
-    DateTime? departureAt, DateTime? returnAt, int? budget, String? scheduleType,
-    List<DepartureOptionDraft>? departureOptions, List<String>? costItems,
-    List<String>? rules, List<String>? invitedUserIds,
+    String? name,
+    String? description,
+    String? location,
+    String? meetingPoint,
+    String? bankCardNumber,
+    String? bankAccountName,
+    DateTime? departureAt,
+    DateTime? returnAt,
+    int? budget,
+    String? scheduleType,
+    List<DepartureOptionDraft>? departureOptions,
+    List<String>? costItems,
+    List<String>? rules,
+    List<String>? invitedUserIds,
   }) => TripDraft(
-    name: name ?? this.name, description: description ?? this.description,
-    location: location ?? this.location, meetingPoint: meetingPoint ?? this.meetingPoint,
-    departureAt: departureAt ?? this.departureAt, returnAt: returnAt ?? this.returnAt,
-    budget: budget ?? this.budget, scheduleType: scheduleType ?? this.scheduleType,
+    name: name ?? this.name,
+    description: description ?? this.description,
+    location: location ?? this.location,
+    meetingPoint: meetingPoint ?? this.meetingPoint,
+    bankCardNumber: bankCardNumber ?? this.bankCardNumber,
+    bankAccountName: bankAccountName ?? this.bankAccountName,
+    departureAt: departureAt ?? this.departureAt,
+    returnAt: returnAt ?? this.returnAt,
+    budget: budget ?? this.budget,
+    scheduleType: scheduleType ?? this.scheduleType,
     departureOptions: departureOptions ?? this.departureOptions,
-    costItems: costItems ?? this.costItems, rules: rules ?? this.rules,
+    costItems: costItems ?? this.costItems,
+    rules: rules ?? this.rules,
     invitedUserIds: invitedUserIds ?? this.invitedUserIds,
   );
-
   @override
-  List<Object?> get props => [name, description, location, meetingPoint, departureAt, returnAt, budget, scheduleType, departureOptions, costItems, rules, invitedUserIds];
+  List<Object?> get props => [
+    name,
+    description,
+    location,
+    meetingPoint,
+    bankCardNumber,
+    bankAccountName,
+    departureAt,
+    returnAt,
+    budget,
+    scheduleType,
+    departureOptions,
+    costItems,
+    rules,
+    invitedUserIds,
+  ];
 }
