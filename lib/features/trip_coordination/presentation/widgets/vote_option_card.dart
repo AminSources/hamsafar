@@ -6,7 +6,6 @@ import 'package:hamsafar/core/widgets/txt.dart';
 
 class VoteOptionCard extends StatelessWidget {
   final String title;
-  final int memberCount;
   final int vote;
   final double percent;
   final bool isVoted;
@@ -15,7 +14,6 @@ class VoteOptionCard extends StatelessWidget {
   const VoteOptionCard({
     super.key,
     required this.title,
-    required this.memberCount,
     required this.vote,
     required this.percent,
     required this.isVoted,
@@ -35,7 +33,6 @@ class VoteOptionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //* option time and icon
           Row(
             children: [
               Icon(
@@ -46,26 +43,30 @@ class VoteOptionCard extends StatelessWidget {
                     : context.colorScheme.onSurfaceVariant,
               ),
               SizedBox(width: 8.w),
-              txt(
-                title,
-                style: context.textTheme.titleMedium,
-                color: isVoted ? context.colorScheme.onPrimaryContainer : null,
+              Expanded(
+                child: txt(
+                  title,
+                  style: context.textTheme.titleSmall,
+                  color: isVoted
+                      ? context.colorScheme.onPrimaryContainer
+                      : null,
+                ),
               ),
-              const Spacer(),
-              //* selected badge
-              txt('رای شما', style: context.textTheme.labelSmall),
+              if (isVoted) ...[
+                SizedBox(width: 8.w),
+                txt(
+                  'رأی شما',
+                  style: context.textTheme.labelSmall,
+                  color: context.colorScheme.primary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ],
             ],
           ),
-
           SizedBox(height: 12.h),
-
-          //* vote count and percentage
           Row(
             children: [
-              txt(
-                '$vote رای از $memberCount عضو',
-                style: context.textTheme.bodySmall,
-              ),
+              txt('$vote رأی', style: context.textTheme.bodySmall),
               const Spacer(),
               txt(
                 '${(percent * 100).round()}%',
@@ -73,12 +74,9 @@ class VoteOptionCard extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 8.h),
-
-          //* progress bar
           LinearProgressIndicator(
-            value: percent,
+            value: percent.clamp(0.0, 1.0).toDouble(),
             color: isVoted ? null : context.colorScheme.onSurfaceVariant,
           ),
         ],

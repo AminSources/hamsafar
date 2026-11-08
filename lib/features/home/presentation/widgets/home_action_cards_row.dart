@@ -17,7 +17,7 @@ class HomeActionCardsRow extends StatelessWidget {
           child: HomeActionCard(
             icon: Icons.how_to_vote_outlined,
             title: 'رای‌گیری',
-            subtitle: isInTrip ? 'برنامه فردا' : '۱ رای‌گیری فعال',
+            subtitle: 'رأی‌گیری زمان حرکت',
             bg: context.colorScheme.tertiaryContainer,
             fg: context.colorScheme.onTertiaryContainer,
             onTap: () {

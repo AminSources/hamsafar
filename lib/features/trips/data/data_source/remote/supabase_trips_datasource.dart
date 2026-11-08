@@ -17,6 +17,15 @@ class SupabaseTripsDatasource {
     return List<Map<String, dynamic>>.from(response as List);
   }
 
+  Future<List<Map<String, dynamic>>> getDepartureOptions(int tripId) async {
+    final rows = await supabaseClient
+        .from('trip_departure_options')
+        .select('id, starts_at, ends_at')
+        .eq('trip_id', tripId)
+        .order('starts_at');
+    return List<Map<String, dynamic>>.from(rows);
+  }
+
   Future<String?> getMembershipStatus(int tripId) async {
     final value = await supabaseClient.rpc(
       'get_trip_membership_status',
@@ -52,19 +61,32 @@ class SupabaseTripsDatasource {
   }
 
   Future<int> saveTrip(TripDraft draft, {int? tripId}) async {
-    final response = await supabaseClient.rpc('save_trip', params: {
+    final effectiveDeparture = draft.scheduleType == 'voting' && draft.departureOptions.isNotEmpty
+        ? draft.departureOptions.map((option) => option.startsAt).reduce((a, b) => a.isBefore(b) ? a : b)
+        : draft.departureAt;
+    final effectiveReturn = draft.scheduleType == 'voting' && draft.departureOptions.isNotEmpty
+        ? draft.departureOptions.map((option) => option.endsAt).reduce((a, b) => a.isAfter(b) ? a : b)
+        : draft.returnAt;
+    final options = draft.scheduleType == 'voting'
+        ? draft.departureOptions.map((option) => {
+            'starts_at': option.startsAt.toUtc().toIso8601String(),
+            'ends_at': option.endsAt.toUtc().toIso8601String(),
+          }).toList()
+        : <Map<String, String>>[];
+    final response = await supabaseClient.rpc('save_trip_with_departure_options', params: {
       'p_trip_id': tripId,
       'p_name': draft.name.trim(),
       'p_location': draft.location.trim(),
       'p_description': draft.description.trim(),
       'p_meeting_point': draft.meetingPoint.trim(),
-      'p_departure_at': draft.departureAt.toUtc().toIso8601String(),
-      'p_return_at': draft.returnAt.toUtc().toIso8601String(),
+      'p_departure_at': effectiveDeparture.toUtc().toIso8601String(),
+      'p_return_at': effectiveReturn.toUtc().toIso8601String(),
       'p_budget': draft.budget,
       'p_schedule_type': draft.scheduleType,
       'p_cost_items': draft.costItems,
       'p_rules': draft.rules,
       'p_invited_user_ids': draft.invitedUserIds,
+      'p_departure_options': options,
     });
     return (response as num).toInt();
   }
