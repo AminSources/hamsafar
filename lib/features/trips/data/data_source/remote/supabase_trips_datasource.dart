@@ -66,7 +66,18 @@ class SupabaseTripsDatasource {
       'p_rules': draft.rules,
       'p_invited_user_ids': draft.invitedUserIds,
     });
-    return (response as num).toInt();
+    final tripId = (response as num).toInt();
+    final options = draft.scheduleType == 'voting'
+        ? draft.departureOptions.map((option) => {
+            'starts_at': option.startsAt.toUtc().toIso8601String(),
+            'ends_at': option.endsAt.toUtc().toIso8601String(),
+          }).toList()
+        : <Map<String, String>>[];
+    await supabaseClient.rpc('replace_trip_departure_options', params: {
+      'p_trip_id': tripId,
+      'p_options': options,
+    });
+    return tripId;
   }
 
   Future<void> deleteTrip(int tripId) async {
