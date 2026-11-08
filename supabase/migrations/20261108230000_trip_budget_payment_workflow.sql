@@ -33,12 +33,13 @@ begin
   if v_count=0 then return; end if;
   v_share := floor(v_budget::numeric / v_count)::bigint;
   update public.trip_members set share=v_share,
-    pay_status=case when share is distinct from v_share then 'pending' else pay_status end,
-    payment_method=case when share is distinct from v_share then null else payment_method end,
-    payment_reference=case when share is distinct from v_share then null else payment_reference end,
-    payment_submitted_at=case when share is distinct from v_share then null else payment_submitted_at end,
-    payment_confirmed_at=case when share is distinct from v_share then null else payment_confirmed_at end
-  where trip_id=p_trip_id and member_status='accepted' and share is distinct from v_share;
+    pay_status=case when member_type='leader' then 'paid' when share is distinct from v_share then 'pending' else pay_status end,
+    payment_method=case when member_type='leader' or share is distinct from v_share then null else payment_method end,
+    payment_reference=case when member_type='leader' or share is distinct from v_share then null else payment_reference end,
+    payment_submitted_at=case when member_type='leader' or share is distinct from v_share then null else payment_submitted_at end,
+    payment_confirmed_at=case when member_type='leader' then coalesce(payment_confirmed_at,now()) when share is distinct from v_share then null else payment_confirmed_at end
+  where trip_id=p_trip_id and member_status='accepted'
+    and (share is distinct from v_share or (member_type='leader' and pay_status<>'paid'));
 end;
 $$;
 revoke all on function private.recalculate_trip_member_shares(bigint) from public, anon, authenticated;
