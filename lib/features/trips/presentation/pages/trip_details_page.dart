@@ -288,8 +288,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       _ => 'درحال آماده‌سازی',
                     },
                   ),
-                  if (trip.isCreator &&
-                      !['completed', 'cancelled'].contains(trip.status)) ...[
+                  if (trip.isCreator && trip.isPreparing) ...[
                     SizedBox(height: 10.h),
                     SizedBox(
                       width: double.infinity,
@@ -563,7 +562,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     ),
                   ] else if (!trip.isCreator &&
                       !trip.membershipClosed &&
-                      ['preparing', 'active'].contains(trip.status) &&
+                      trip.isPreparing &&
                       (trip.currentMemberStatus == null ||
                           [
                             'left',
