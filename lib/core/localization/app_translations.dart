@@ -130,7 +130,6 @@ class AppTranslations {
     'تأیید و ادامه': 'Confirm and continue',
     'مرحله بعد': 'Next step',
     'مرحله قبل': 'Previous step',
-    'گزارش باگ': 'Report a bug',
     'نوع مشکل': 'Issue type',
     'موضوع': 'Subject',
     'توضیحات مشکل را با جزئیات بنویسید...':
@@ -159,6 +158,24 @@ class AppTranslations {
     if (memberCount != null) {
       final count = memberCount.group(1)!;
       return '$count ${count == "1" ? "member" : "members"}';
+    }
+
+    const weekdays = {
+      'شنبه': 'Saturday',
+      'یکشنبه': 'Sunday',
+      'دوشنبه': 'Monday',
+      'سه‌شنبه': 'Tuesday',
+      'سه شنبه': 'Tuesday',
+      'چهارشنبه': 'Wednesday',
+      'پنجشنبه': 'Thursday',
+      'جمعه': 'Friday',
+    };
+    final singleDay = weekdays[value];
+    if (singleDay != null) return singleDay;
+
+    final dayParts = value.split('،').map((day) => day.trim()).toList();
+    if (dayParts.length > 1 && dayParts.every(weekdays.containsKey)) {
+      return dayParts.map((day) => weekdays[day]!).join(', ');
     }
 
     final greeting = RegExp(r'^سلام،?\s*(.+)! 👋$').firstMatch(value);

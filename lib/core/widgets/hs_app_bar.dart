@@ -35,7 +35,13 @@ class HsAppBar extends StatelessWidget {
                       width: 40.w,
                       height: 40.w,
                       onTap: onTapBackButton ?? () => context.pop(),
-                      child: Center(child: Icon(Icons.chevron_left_sharp)),
+                      child: Center(
+                        child: Icon(
+                          Directionality.of(context) == TextDirection.rtl
+                              ? Icons.chevron_left_sharp
+                              : Icons.chevron_right_sharp,
+                        ),
+                      ),
                     ),
 
                     //* space
