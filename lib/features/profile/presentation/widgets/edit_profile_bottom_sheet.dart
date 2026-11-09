@@ -242,7 +242,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                     );
                     if (requiredError != null) return requiredError;
 
-                    if (value!.trim().contains(RegExp(r'\\s'))) {
+                    if (value!.trim().contains(RegExp(r'\s'))) {
                       return 'نام کاربری نباید فاصله داشته باشد';
                     }
                     return null;
