@@ -48,27 +48,27 @@ class _HomePageState extends State<HomePage> {
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          child: BlocConsumer<HomeBloc, HomeState>(
-            listener: (context, state) {
-              if (state is HomeFailed) {
-                context.showHsSnackBar(
-                  text: state.message,
-                  hsSnackBarType: HsSnackBarType.error,
-                );
-              }
-            },
-            builder: (context, state) {
-              if (state is HomeLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state is HomeFailed) {
-                return Center(child: txt(state.message));
-              }
-              if (state is HomeInitial) {
-                return const Center(
-                  child: txt(
-                    'اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.',
-                  ),
+            child: BlocConsumer<HomeBloc, HomeState>(
+              listener: (context, state) {
+                if (state is HomeFailed) {
+                  context.showHsSnackBar(
+                    text: state.message,
+                    hsSnackBarType: HsSnackBarType.error,
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is HomeLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is HomeFailed) {
+                  return Center(child: txt(state.message));
+                }
+                if (state is HomeInitial) {
+                  return const Center(
+                    child: txt(
+                      'اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.',
+                    ),
                 );
               }
               if (state is! HomeSuccess) return const SizedBox.shrink();
