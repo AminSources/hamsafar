@@ -640,6 +640,7 @@ class AppTranslations {
 
 
 
+
   static String translate(BuildContext context, String value) {
     if (Localizations.localeOf(context).languageCode != 'en') {
       return value;
@@ -657,7 +658,6 @@ class AppTranslations {
     }
 
     final western = _normalizeDigits(value);
-
     final itemCount = RegExp(r'^(\d+)\s+مورد$').firstMatch(western);
     if (itemCount != null) {
       final count = itemCount.group(1)!;
@@ -743,158 +743,12 @@ class AppTranslations {
     if (budget != null) return 'Total budget: ${budget.group(1)} toman';
 
     final amountShare =
-        RegExp(r'^مبلغ سهم شما: (.+) تومان
-    if (share != null) return 'Your share: ${share.group(1)} toman';
-
-    final money = RegExp(r'^(.+?) تومان$').firstMatch(western);
-    if (money != null) return '${money.group(1)} toman';
-
-    final abbreviatedMoney = RegExp(r'^([0-9,]+)\s*ت$').firstMatch(western);
-    if (abbreviatedMoney != null) {
-      return '${abbreviatedMoney.group(1)} toman';
-    }
-
-    final membersCount = RegExp(r'^تعداد اعضا: (\d+) نفر$').firstMatch(western);
-    if (membersCount != null) return 'Members: ${membersCount.group(1)}';
-
-    final status = RegExp(r'^وضعیت شما: (.+)$').firstMatch(value);
-    if (status != null) {
-      final translatedStatus =
-          _english[status.group(1)] ??
-          _additionalEnglish[status.group(1)] ??
-          status.group(1);
-      return 'Your status: $translatedStatus';
-    }
-
-    final taskProgress =
-        RegExp(r'^وضعیت وظایف: (\d+) از (\d+) انجام شده$').firstMatch(western);
-    if (taskProgress != null) {
-      return 'Tasks: ${taskProgress.group(1)} of ${taskProgress.group(2)} completed';
-    }
-
-    final range = RegExp(r'^(.+) تا (.+)$').firstMatch(western);
-    if (range != null && !value.contains('ساعت')) {
-      return '${range.group(1)} to ${range.group(2)}';
-    }
-
-    final removeTrip =
-        RegExp(r'^سفر «(.+)» و اطلاعات وابسته به آن حذف شود؟$').firstMatch(value);
-    if (removeTrip != null) {
-      return 'Delete trip "${removeTrip.group(1)}" and its related data?';
-    }
-
-    final removeMember =
-        RegExp(r'^آیا (.+) از سفر اخراج شود؟$').firstMatch(value);
-    if (removeMember != null) {
-      return 'Remove ${removeMember.group(1)} from the trip?';
-    }
-
-    final removeTask = RegExp(r'^وظیفه «(.+)» حذف شود؟$').firstMatch(value);
-    if (removeTask != null) {
-      return 'Delete task "${removeTask.group(1)}"?';
-    }
-
-    final tracking = RegExp(r'^شماره پیگیری: (.+)$').firstMatch(western);
-    if (tracking != null) return 'Tracking number: ${tracking.group(1)}';
-
-    final greeting = RegExp(r'^سلام،?\s*(.+)! 👋$').firstMatch(value);
-    if (greeting != null) return 'Hello, ${greeting.group(1)}! 👋';
-
-    return western.replaceAll('٬', ',');
-  }
-
-  static String _normalizeDigits(String value) {
-    const digits = {
-      '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
-      '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
-      '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
-      '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
-    };
-    return value.replaceAllMapped(
-      RegExp('[۰-۹٠-٩]'),
-      (match) => digits[match.group(0)]!,
-    ).replaceAll('٬', ',');
-  }
-}
-).firstMatch(western);
+        RegExp(r'^مبلغ سهم شما: (.+) تومان$').firstMatch(western);
     if (amountShare != null) {
       return 'Your share amount: ${amountShare.group(1)} toman';
     }
 
-    final share = RegExp(r'^سهم شما: (.+) تومان
-    if (share != null) return 'Your share: ${share.group(1)} toman';
-
-    final money = RegExp(r'^(.+?) تومان$').firstMatch(western);
-    if (money != null) return '${money.group(1)} toman';
-
-    final abbreviatedMoney = RegExp(r'^([0-9,]+)\s*ت$').firstMatch(western);
-    if (abbreviatedMoney != null) {
-      return '${abbreviatedMoney.group(1)} toman';
-    }
-
-    final membersCount = RegExp(r'^تعداد اعضا: (\d+) نفر$').firstMatch(western);
-    if (membersCount != null) return 'Members: ${membersCount.group(1)}';
-
-    final status = RegExp(r'^وضعیت شما: (.+)$').firstMatch(value);
-    if (status != null) {
-      final translatedStatus =
-          _english[status.group(1)] ??
-          _additionalEnglish[status.group(1)] ??
-          status.group(1);
-      return 'Your status: $translatedStatus';
-    }
-
-    final taskProgress =
-        RegExp(r'^وضعیت وظایف: (\d+) از (\d+) انجام شده$').firstMatch(western);
-    if (taskProgress != null) {
-      return 'Tasks: ${taskProgress.group(1)} of ${taskProgress.group(2)} completed';
-    }
-
-    final range = RegExp(r'^(.+) تا (.+)$').firstMatch(western);
-    if (range != null && !value.contains('ساعت')) {
-      return '${range.group(1)} to ${range.group(2)}';
-    }
-
-    final removeTrip =
-        RegExp(r'^سفر «(.+)» و اطلاعات وابسته به آن حذف شود؟$').firstMatch(value);
-    if (removeTrip != null) {
-      return 'Delete trip "${removeTrip.group(1)}" and its related data?';
-    }
-
-    final removeMember =
-        RegExp(r'^آیا (.+) از سفر اخراج شود؟$').firstMatch(value);
-    if (removeMember != null) {
-      return 'Remove ${removeMember.group(1)} from the trip?';
-    }
-
-    final removeTask = RegExp(r'^وظیفه «(.+)» حذف شود؟$').firstMatch(value);
-    if (removeTask != null) {
-      return 'Delete task "${removeTask.group(1)}"?';
-    }
-
-    final tracking = RegExp(r'^شماره پیگیری: (.+)$').firstMatch(western);
-    if (tracking != null) return 'Tracking number: ${tracking.group(1)}';
-
-    final greeting = RegExp(r'^سلام،?\s*(.+)! 👋$').firstMatch(value);
-    if (greeting != null) return 'Hello, ${greeting.group(1)}! 👋';
-
-    return western.replaceAll('٬', ',');
-  }
-
-  static String _normalizeDigits(String value) {
-    const digits = {
-      '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
-      '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
-      '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
-      '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
-    };
-    return value.replaceAllMapped(
-      RegExp('[۰-۹٠-٩]'),
-      (match) => digits[match.group(0)]!,
-    ).replaceAll('٬', ',');
-  }
-}
-).firstMatch(western);
+    final share = RegExp(r'^سهم شما: (.+) تومان$').firstMatch(western);
     if (share != null) return 'Your share: ${share.group(1)} toman';
 
     final money = RegExp(r'^(.+?) تومان$').firstMatch(western);
