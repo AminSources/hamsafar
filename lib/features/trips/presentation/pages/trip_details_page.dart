@@ -156,6 +156,23 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     if (deleted) router.pop();
   }
 
+  Future<void> _startTrip(TripEntity trip) async {
+    final tripsCubit = context.read<TripsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final started = await tripsCubit.startTrip(trip.id);
+    if (!mounted) return;
+
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          started
+              ? 'وضعیت سفر به «درحال سفر» تغییر کرد.'
+              : tripsCubit.state.errorMessage ?? 'شروع سفر انجام نشد.',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -254,6 +271,31 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       _ => 'درحال آماده‌سازی',
                     },
                   ),
+                  if (trip.isCreator && trip.status == 'preparing') ...[
+                    SizedBox(height: 8.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: state.isUpdatingStatus
+                            ? null
+                            : () => _startTrip(trip),
+                        icon: state.isUpdatingStatus
+                            ? SizedBox(
+                                width: 18.w,
+                                height: 18.w,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.play_arrow_rounded),
+                        label: Text(
+                          state.isUpdatingStatus
+                              ? 'در حال شروع سفر...'
+                              : 'شروع سفر',
+                        ),
+                      ),
+                    ),
+                  ],
                   _InfoRow(label: 'لیدر سفر', value: trip.leaderName),
                   _InfoRow(
                     label: 'تاریخ رفت',
