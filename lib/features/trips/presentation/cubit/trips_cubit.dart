@@ -13,6 +13,7 @@ class TripsState extends Equatable {
   final bool isLoadingDetails;
   final bool isSaving;
   final bool isDeleting;
+  final bool isUpdatingStatus;
   final String? errorMessage;
 
   const TripsState({
@@ -24,6 +25,7 @@ class TripsState extends Equatable {
     this.isLoadingDetails = false,
     this.isSaving = false,
     this.isDeleting = false,
+    this.isUpdatingStatus = false,
     this.errorMessage,
   });
 
@@ -37,6 +39,7 @@ class TripsState extends Equatable {
     bool? isLoadingDetails,
     bool? isSaving,
     bool? isDeleting,
+    bool? isUpdatingStatus,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -50,6 +53,7 @@ class TripsState extends Equatable {
       isLoadingDetails: isLoadingDetails ?? this.isLoadingDetails,
       isSaving: isSaving ?? this.isSaving,
       isDeleting: isDeleting ?? this.isDeleting,
+      isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
@@ -64,6 +68,7 @@ class TripsState extends Equatable {
         isLoadingDetails,
         isSaving,
         isDeleting,
+        isUpdatingStatus,
         errorMessage,
       ];
 }
@@ -148,6 +153,23 @@ class TripsCubit extends Cubit<TripsState> {
   Future<bool> removeTripMember(int tripId, String userId) =>
       _runMembershipAction(() => repository.removeTripMember(tripId, userId), tripId);
 
+  Future<bool> startTrip(int tripId) async {
+    emit(state.copyWith(isUpdatingStatus: true, clearError: true));
+    try {
+      await repository.startTrip(tripId);
+      await loadTripDetails(tripId);
+      await loadMyTrips();
+      emit(state.copyWith(isUpdatingStatus: false));
+      return true;
+    } catch (error) {
+      emit(state.copyWith(
+        isUpdatingStatus: false,
+        errorMessage: _friendlyError(error),
+      ));
+      return false;
+    }
+  }
+
   Future<bool> _runMembershipAction(Future<void> Function() action, int tripId) async {
     emit(state.copyWith(clearError: true));
     try {
@@ -198,8 +220,9 @@ class TripsCubit extends Cubit<TripsState> {
     }
     if (raw.contains('trip_name_required')) return 'نام سفر را وارد کنید.';
     if (raw.contains('trip_location_required')) return 'مقصد سفر را وارد کنید.';
-    if (raw.contains('trip_not_found_or_forbidden')) {
-      return 'سفر پیدا نشد یا اجازهٔ انجام این عملیات را ندارید.';
+    if (raw.contains('trip_not_found_or_forbidden') ||
+        raw.contains('trip_not_found_or_not_preparing')) {
+      return 'سفر پیدا نشد، قبلاً شروع شده یا اجازهٔ انجام این عملیات را ندارید.';
     }
     return 'عملیات سفر انجام نشد. اتصال اینترنت و اطلاعات را بررسی کنید.';
   }
