@@ -156,6 +156,23 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     if (deleted) router.pop();
   }
 
+  Future<void> _toggleMembership(TripEntity trip) async {
+    final tripsCubit = context.read<TripsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final closed = !trip.membershipClosed;
+    final changed = await tripsCubit.setMembershipClosed(trip.id, closed);
+    if (!mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          changed
+              ? (closed ? 'عضوگیری سفر بسته شد.' : 'عضوگیری سفر دوباره باز شد.')
+              : tripsCubit.state.errorMessage ?? 'تغییر وضعیت عضوگیری انجام نشد.',
+        ),
+      ),
+    );
+  }
+
   Future<void> _startTrip(TripEntity trip) async {
     final tripsCubit = context.read<TripsCubit>();
     final messenger = ScaffoldMessenger.of(context);
@@ -271,6 +288,36 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       _ => 'درحال آماده‌سازی',
                     },
                   ),
+                  if (trip.isCreator &&
+                      !['completed', 'cancelled'].contains(trip.status)) ...[
+                    SizedBox(height: 10.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: state.isUpdatingMembership
+                            ? null
+                            : () => _toggleMembership(trip),
+                        icon: state.isUpdatingMembership
+                            ? SizedBox(
+                                width: 18.w,
+                                height: 18.w,
+                                child: const CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Icon(
+                                trip.membershipClosed
+                                    ? Icons.lock_open_rounded
+                                    : Icons.lock_outline_rounded,
+                              ),
+                        label: Text(
+                          state.isUpdatingMembership
+                              ? 'در حال تغییر وضعیت...'
+                              : trip.membershipClosed
+                                  ? 'باز کردن عضوگیری'
+                                  : 'بستن عضوگیری',
+                        ),
+                      ),
+                    ),
+                  ],
                   if (trip.isCreator && trip.status == 'preparing') ...[
                     SizedBox(height: 8.h),
                     SizedBox(
@@ -381,7 +428,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           subtitle: Text(
                             isLeader ? 'لیدر سفر' : 'عضو پذیرفته‌شده',
                           ),
-                          trailing: trip.isCreator && !isLeader
+                          trailing: trip.isCreator && !trip.membershipClosed && !isLeader
                               ? IconButton(
                                   tooltip: 'اخراج عضو',
                                   icon: const Icon(
@@ -442,7 +489,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                   : name,
                             ),
                             subtitle: const Text('در انتظار پاسخ'),
-                            trailing: IconButton(
+                            trailing: trip.membershipClosed ? null : IconButton(
                               tooltip: 'لغو دعوت',
                               icon: const Icon(Icons.close),
                               onPressed: () => context
@@ -452,7 +499,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           );
                         }),
                     OutlinedButton.icon(
-                      onPressed: () => _invite(trip),
+                      onPressed: trip.membershipClosed ? null : () => _invite(trip),
                       icon: const Icon(Icons.person_add_alt_1),
                       label: const Text('دعوت دوستان'),
                     ),
@@ -463,9 +510,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       children: [
                         Expanded(
                           child: FilledButton(
-                            onPressed: () => context
-                                .read<TripsCubit>()
-                                .respondToInvitation(trip.id, accept: true),
+                            onPressed: trip.membershipClosed
+                                ? null
+                                : () => context
+                                    .read<TripsCubit>()
+                                    .respondToInvitation(trip.id, accept: true),
                             child: const Text('پذیرفتن دعوت'),
                           ),
                         ),
@@ -481,7 +530,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       ],
                     ),
                   ] else if (trip.currentMemberStatus == 'accepted' &&
-                      !trip.isCreator) ...[
+                      !trip.isCreator &&
+                      !trip.membershipClosed) ...[
                     SizedBox(height: 12.h),
                     OutlinedButton.icon(
                       onPressed: () async {
@@ -512,6 +562,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       label: const Text('خروج از سفر'),
                     ),
                   ] else if (!trip.isCreator &&
+                      !trip.membershipClosed &&
                       ['preparing', 'active'].contains(trip.status) &&
                       (trip.currentMemberStatus == null ||
                           [
@@ -526,6 +577,17 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             context.read<TripsCubit>().joinTrip(trip.id),
                         icon: const Icon(Icons.group_add_outlined),
                         label: const Text('پیوستن به سفر'),
+                      ),
+                    ),
+                  ],
+                  if (trip.isCreator || trip.currentMemberStatus == 'accepted') ...[
+                    SizedBox(height: 16.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => context.push('/trip-tasks', extra: trip.id),
+                        icon: const Icon(Icons.checklist_rounded),
+                        label: const Text('مشاهده وظایف سفر'),
                       ),
                     ),
                   ],

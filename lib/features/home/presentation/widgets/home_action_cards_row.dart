@@ -6,8 +6,9 @@ import 'package:hamsafar/features/home/presentation/widgets/home_action_card.dar
 
 class HomeActionCardsRow extends StatelessWidget {
   final bool isInTrip;
+  final int? tripId;
 
-  const HomeActionCardsRow({super.key, required this.isInTrip});
+  const HomeActionCardsRow({super.key, required this.isInTrip, required this.tripId});
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +49,9 @@ class HomeActionCardsRow extends StatelessWidget {
             subtitle: isInTrip ? '۲ وظیفه امروز' : '۴ وظیفه',
             bg: context.colorScheme.primaryContainer,
             fg: context.colorScheme.onPrimaryContainer,
-            onTap: () {
-              //? push to trip tasks page
-              context.push("/trip-tasks");
-            },
+            onTap: tripId == null
+                ? null
+                : () => context.push("/trip-tasks", extra: tripId),
           ),
         ),
       ],

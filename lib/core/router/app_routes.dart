@@ -138,7 +138,10 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/trip-tasks",
-        builder: (context, state) => const TripTasksPage(),
+        builder: (context, state) {
+          final tripId = state.extra is int ? state.extra as int : -1;
+          return TripTasksPage(tripId: tripId);
+        },
       ),
       GoRoute(
         path: "/friend-profile",
