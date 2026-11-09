@@ -72,12 +72,8 @@ class MyApp extends StatelessWidget {
             return MaterialApp.router(
               title: "Hamsafar Travel App",
               debugShowCheckedModeBanner: false,
-              theme: AppTheme.light.copyWith(
-                fontFamily: settings.localeCode == 'fa' ? 'vazirmatn' : 'Roboto',
-              ),
-              darkTheme: AppTheme.dark.copyWith(
-                fontFamily: settings.localeCode == 'fa' ? 'vazirmatn' : 'Roboto',
-              ),
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
               themeMode: settings.themeMode,
               routerConfig: AppRoutes.router,
               supportedLocales: const [Locale("fa"), Locale("en")],

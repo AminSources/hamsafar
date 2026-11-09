@@ -32,6 +32,7 @@ class AppTranslations {
     'انتخاب نشده': 'Not selected',
     'وسایل من': 'My items',
     'ذخیره تغییرات': 'Save changes',
+    'سفر های من': 'My trips',
     'لغو': 'Cancel',
     'تأیید': 'Confirm',
     'بازگشت': 'Back',
@@ -65,8 +66,7 @@ class AppTranslations {
         'The end time must be after the start time',
     'انتخاب آواتار': 'Choose an avatar',
     'ویرایش پروفایل': 'Edit profile',
-    'پروفایل با موفقیت به‌روزرسانی شد':
-        'Profile updated successfully',
+    'پروفایل با موفقیت به‌روزرسانی شد': 'Profile updated successfully',
     'روزهای آزاد هفته‌ات را انتخاب کن تا هماهنگی زمان سفرها راحت‌تر انجام شود.':
         'Choose your available days to make trip planning easier.',
     'نام': 'First name',
@@ -123,7 +123,7 @@ class AppTranslations {
     'توضیحات اختیاری': 'Optional description',
     'عنوان': 'Title',
     'نام سفر': 'Trip name',
-    'جستجوی سفر': 'Search trips',
+    'جستجوی سفر...': 'Search trips...',
     'فیلتر': 'Filter',
     'اعمال': 'Apply',
     'پاک کردن': 'Clear',
@@ -132,17 +132,16 @@ class AppTranslations {
     'مرحله قبل': 'Previous step',
     'نوع مشکل': 'Issue type',
     'موضوع': 'Subject',
-    'توضیحات مشکل را با جزئیات بنویسید...':
-        'Describe the issue in detail...',
+    'توضیحات مشکل را با جزئیات بنویسید...': 'Describe the issue in detail...',
     'ارسال گزارش': 'Submit report',
     'بازخورد شما به بهتر شدن همسفر کمک می‌کند 💚':
         'Your feedback helps make Hamsafar better 💚',
   };
 
-
   static const Map<String, String> _additionalEnglish = {
     // Home and activity feed
-    'اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.': 'Home page data has not loaded yet.',
+    'اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.':
+        'Home page data has not loaded yet.',
     'شما هنوز عضو سفری نشده اید': "You have not joined a trip yet",
     'برای عضویت یا ساخت سفر جدید به بخش سفرها مراجعه کنید':
         'Go to Trips to join or create a new trip',
@@ -184,8 +183,7 @@ class AppTranslations {
     'درخواست دریافتیِ در انتظاری ندارید.':
         'You have no pending incoming requests.',
     'درخواست‌های ارسالی': 'Sent requests',
-    'درخواست ارسالیِ در انتظاری ندارید.':
-        'You have no pending sent requests.',
+    'درخواست ارسالیِ در انتظاری ندارید.': 'You have no pending sent requests.',
     'پس از پذیرفته شدن درخواست، دوست به لیست «دوستان من» اضافه می‌شود':
         'After the request is accepted, the person will be added to My Friends.',
     'برای بارگذاری دوباره، این بخش را مجدداً باز کنید.':
@@ -302,6 +300,8 @@ class AppTranslations {
     'پرداخت شده': 'Paid',
     'لیدر': 'Leader',
     'عضو': 'Member',
+    'دردسترس نیست': 'Not available',
+    'اماده برای سفر': 'Ready for trip',
 
     // Authentication
     'خوش برگشتی! 👋': 'Welcome back! 👋',
@@ -336,7 +336,7 @@ class AppTranslations {
     'ایجاد حساب با گوگل': 'Sign up with Google',
     'حساب کاربری دارید؟': 'Already have an account?',
     'وارد شوید': 'Log in',
-    
+
     // Trip creation and details
     'جزئیات عمومی سفر': 'Trip overview',
     'تاریخ و ساعت سفر': 'Trip date and time',
@@ -494,8 +494,7 @@ class AppTranslations {
     'حذف وظیفه': 'Delete task',
     'حذف': 'Delete',
     'وظیفه حذف شد.': 'Task deleted.',
-    'وظیفه به‌عنوان انجام‌شده ثبت شد.':
-        'Task marked as completed.',
+    'وظیفه به‌عنوان انجام‌شده ثبت شد.': 'Task marked as completed.',
     'افزودن وظیفه': 'Add task',
     'اطلاعات وظایف این سفر در دسترس نیست.':
         'Task information for this trip is unavailable.',
@@ -577,8 +576,7 @@ class AppTranslations {
     'موضوع *': 'Subject *',
     'مثال: مشکل در ثبت تأیید پرداخت': 'Example: Payment confirmation issue',
     'توضیحات *': 'Description *',
-    'توضیحات مشکل را با جزئیات بنویسید...':
-        'Describe the issue in detail...',
+    'توضیحات مشکل را با جزئیات بنویسید...': 'Describe the issue in detail...',
     'ایمیل (اختیاری)': 'Email (optional)',
     'نوع مشکل': 'Issue type',
     'ارسال گزارش': 'Submit report',
@@ -637,9 +635,6 @@ class AppTranslations {
     'نگار احمدی': 'Negar Ahmadi',
     'علی کریمی': 'Ali Karimi',
   };
-
-
-
 
   static String translate(BuildContext context, String value) {
     if (Localizations.localeOf(context).languageCode != 'en') {
@@ -727,8 +722,9 @@ class AppTranslations {
     final startDate = RegExp(r'^شروع (.+)$').firstMatch(western);
     if (startDate != null) return 'Starts ${startDate.group(1)}';
 
-    final sharedTrips =
-        RegExp(r'^(\d+) سفر مشترک · امتیاز (.+)$').firstMatch(western);
+    final sharedTrips = RegExp(
+      r'^(\d+) سفر مشترک · امتیاز (.+)$',
+    ).firstMatch(western);
     if (sharedTrips != null) {
       return '${sharedTrips.group(1)} shared trips · rating ${sharedTrips.group(2)}';
     }
@@ -742,8 +738,9 @@ class AppTranslations {
     final budget = RegExp(r'^بودجه کل: (.+) تومان$').firstMatch(western);
     if (budget != null) return 'Total budget: ${budget.group(1)} toman';
 
-    final amountShare =
-        RegExp(r'^مبلغ سهم شما: (.+) تومان$').firstMatch(western);
+    final amountShare = RegExp(
+      r'^مبلغ سهم شما: (.+) تومان$',
+    ).firstMatch(western);
     if (amountShare != null) {
       return 'Your share amount: ${amountShare.group(1)} toman';
     }
@@ -771,8 +768,9 @@ class AppTranslations {
       return 'Your status: $translatedStatus';
     }
 
-    final taskProgress =
-        RegExp(r'^وضعیت وظایف: (\d+) از (\d+) انجام شده$').firstMatch(western);
+    final taskProgress = RegExp(
+      r'^وضعیت وظایف: (\d+) از (\d+) انجام شده$',
+    ).firstMatch(western);
     if (taskProgress != null) {
       return 'Tasks: ${taskProgress.group(1)} of ${taskProgress.group(2)} completed';
     }
@@ -782,14 +780,16 @@ class AppTranslations {
       return '${range.group(1)} to ${range.group(2)}';
     }
 
-    final removeTrip =
-        RegExp(r'^سفر «(.+)» و اطلاعات وابسته به آن حذف شود؟$').firstMatch(value);
+    final removeTrip = RegExp(
+      r'^سفر «(.+)» و اطلاعات وابسته به آن حذف شود؟$',
+    ).firstMatch(value);
     if (removeTrip != null) {
       return 'Delete trip "${removeTrip.group(1)}" and its related data?';
     }
 
-    final removeMember =
-        RegExp(r'^آیا (.+) از سفر اخراج شود؟$').firstMatch(value);
+    final removeMember = RegExp(
+      r'^آیا (.+) از سفر اخراج شود؟$',
+    ).firstMatch(value);
     if (removeMember != null) {
       return 'Remove ${removeMember.group(1)} from the trip?';
     }
@@ -810,14 +810,32 @@ class AppTranslations {
 
   static String _normalizeDigits(String value) {
     const digits = {
-      '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
-      '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
-      '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
-      '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+      '۰': '0',
+      '۱': '1',
+      '۲': '2',
+      '۳': '3',
+      '۴': '4',
+      '۵': '5',
+      '۶': '6',
+      '۷': '7',
+      '۸': '8',
+      '۹': '9',
+      '٠': '0',
+      '١': '1',
+      '٢': '2',
+      '٣': '3',
+      '٤': '4',
+      '٥': '5',
+      '٦': '6',
+      '٧': '7',
+      '٨': '8',
+      '٩': '9',
     };
-    return value.replaceAllMapped(
-      RegExp('[۰-۹٠-٩]'),
-      (match) => digits[match.group(0)]!,
-    ).replaceAll('٬', ',');
+    return value
+        .replaceAllMapped(
+          RegExp('[۰-۹٠-٩]'),
+          (match) => digits[match.group(0)]!,
+        )
+        .replaceAll('٬', ',');
   }
 }
