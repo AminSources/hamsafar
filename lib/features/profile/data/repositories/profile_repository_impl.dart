@@ -24,7 +24,14 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return DataSuccess(null);
     } catch (e) {
       log.e(e);
-      return DataFailed("خطای ناشناخته‌ای رخ داد: ${e.toString()}");
+
+      final rawError = e.toString();
+      if (rawError.contains('23505') ||
+          rawError.contains('profiles_username_key')) {
+        return const DataFailed('این نام کاربری قبلاً انتخاب شده است');
+      }
+
+      return DataFailed('خطای ناشناخته‌ای رخ داد: $rawError');
     }
   }
 
@@ -38,7 +45,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return DataSuccess(profileData);
     } catch (e) {
       log.e(e);
-      return DataFailed("خطای ناشناخته‌ای رخ داد: ${e.toString()}");
+      return DataFailed('خطای ناشناخته‌ای رخ داد: ${e.toString()}');
     }
   }
 }

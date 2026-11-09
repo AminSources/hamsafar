@@ -24,14 +24,68 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   Future<void> onEditProfile(EditProfileEvent event, emit) async {
-    emit(ProfileLoading());
-    final result = await editProfileUsecase(event.editProfileParams);
+    ProfileEntity? currentProfile;
 
-    if (result is DataSuccess) {
-      emit(ProfileSuccess(null));
-    } else {
-      emit(ProfileFailed(result.message ?? "Edit profile failed"));
+    if (state is ProfileSuccess) {
+      currentProfile = (state as ProfileSuccess).profile;
+    } else if (state is ProfileUpdating) {
+      currentProfile = (state as ProfileUpdating).profile;
+    } else if (state is ProfileUpdateFailed) {
+      currentProfile = (state as ProfileUpdateFailed).profile;
     }
+
+    if (currentProfile != null) {
+      emit(ProfileUpdating(currentProfile));
+    } else {
+      emit(ProfileLoading());
+    }
+
+    final params = event.editProfileParams;
+    final result = await editProfileUsecase(params);
+
+    if (result is! DataSuccess) {
+      final message = result.message ?? 'ویرایش پروفایل ناموفق بود';
+
+      if (currentProfile != null) {
+        emit(ProfileUpdateFailed(currentProfile, message));
+      } else {
+        emit(ProfileFailed(message));
+      }
+      return;
+    }
+
+    // During onboarding there is no profile in memory yet, so load the
+    // newly created profile from Supabase. Existing profiles can be updated
+    // locally while preserving statistics and availability data.
+    if (currentProfile == null) {
+      final profileResult = await getProfileUsecase(NoParams());
+
+      if (profileResult is DataSuccess<ProfileEntity> &&
+          profileResult.data != null) {
+        emit(ProfileSuccess(profileResult.data!));
+      } else {
+        emit(
+          ProfileFailed(
+            profileResult.message ?? 'پروفایل ذخیره شد اما دریافت آن ناموفق بود',
+          ),
+        );
+      }
+      return;
+    }
+
+    emit(
+      ProfileSuccess(
+        currentProfile.copyWith(
+          userName: params.userName,
+          firstName: params.firstName,
+          lastName: params.lastName,
+          avatarIcon: params.avatarIcon,
+          bio: params.bio,
+          rate: params.rate,
+          tripCount: params.tripCount,
+        ),
+      ),
+    );
   }
 
   Future<void> onGetProfile(GetProfileEvent event, emit) async {
@@ -39,10 +93,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     final result = await getProfileUsecase(NoParams());
 
-    if (result is DataSuccess<ProfileEntity>) {
-      emit(ProfileSuccess(result.data));
+    if (result is DataSuccess<ProfileEntity> && result.data != null) {
+      emit(ProfileSuccess(result.data!));
     } else {
-      emit(ProfileFailed(result.message ?? "Get profile failed"));
+      emit(ProfileFailed(result.message ?? 'دریافت پروفایل ناموفق بود'));
     }
   }
 }

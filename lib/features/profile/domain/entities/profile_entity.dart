@@ -27,6 +27,33 @@ class ProfileEntity extends Equatable {
     required this.freeDays,
   });
 
+  ProfileEntity copyWith({
+    String? userName,
+    String? firstName,
+    String? lastName,
+    String? avatarIcon,
+    String? bio,
+    double? rate,
+    int? tripCount,
+    int? friendCount,
+    int? toolCount,
+    List<String>? freeDays,
+  }) {
+    return ProfileEntity(
+      id: id,
+      userName: userName ?? this.userName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      avatarIcon: avatarIcon ?? this.avatarIcon,
+      bio: bio ?? this.bio,
+      rate: rate ?? this.rate,
+      tripCount: tripCount ?? this.tripCount,
+      friendCount: friendCount ?? this.friendCount,
+      toolCount: toolCount ?? this.toolCount,
+      freeDays: freeDays ?? this.freeDays,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
