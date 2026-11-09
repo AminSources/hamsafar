@@ -90,11 +90,9 @@ class _TripTasksPageState extends State<TripTasksPage> {
   }
 
   String _memberName(Map<String, dynamic> member) {
-    final name =
-        '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'.trim();
-    return name.isEmpty
-        ? (member['username'] as String? ?? 'عضو سفر')
-        : name;
+    final name = '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'
+        .trim();
+    return name.isEmpty ? (member['username'] as String? ?? 'عضو سفر') : name;
   }
 
   int? _parseMemberId(dynamic value) {
@@ -136,10 +134,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
       } else {
         await _client
             .from('trip_member_tasks')
-            .update({
-              'trip_member_id': draft.tripMemberId,
-              'task': draft.title,
-            })
+            .update({'trip_member_id': draft.tripMemberId, 'task': draft.title})
             .eq('id', task['id']);
       }
       await _load();
@@ -178,10 +173,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
 
     setState(() => _busy = true);
     try {
-      await _client
-          .from('trip_member_tasks')
-          .delete()
-          .eq('id', task['id']);
+      await _client.from('trip_member_tasks').delete().eq('id', task['id']);
       await _load();
       if (mounted) _message('وظیفه حذف شد.', true);
     } catch (error) {
@@ -261,8 +253,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
                               'وضعیت وظایف: $completed از ${tasks.length} انجام شده',
                             ),
                           ),
-                          if (_isLeader)
-                            const Chip(label: Text('مدیریت لیدر')),
+                          if (_isLeader) const Chip(label: Text('مدیریت لیدر')),
                         ],
                       ),
                     ),
@@ -363,11 +354,9 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
   }
 
   String _memberName(Map<String, dynamic> member) {
-    final name =
-        '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'.trim();
-    return name.isEmpty
-        ? (member['username'] as String? ?? 'عضو سفر')
-        : name;
+    final name = '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'
+        .trim();
+    return name.isEmpty ? (member['username'] as String? ?? 'عضو سفر') : name;
   }
 
   @override
@@ -419,7 +408,7 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
               ),
               SizedBox(height: 12.h),
               DropdownButtonFormField<int>(
-                value: _selectedTripMemberId,
+                initialValue: _selectedTripMemberId,
                 isExpanded: true,
                 decoration: const InputDecoration(
                   labelText: 'مسئول انجام وظیفه',
@@ -439,12 +428,9 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                     final memberId = _selectedTripMemberId;
                     if (title.isEmpty || memberId == null) return;
 
-                    Navigator.of(context).pop(
-                      _TaskDraft(
-                        title: title,
-                        tripMemberId: memberId,
-                      ),
-                    );
+                    Navigator.of(
+                      context,
+                    ).pop(_TaskDraft(title: title, tripMemberId: memberId));
                   },
                   child: Text(
                     widget.isEditing ? 'ذخیره تغییرات' : 'افزودن وظیفه',
