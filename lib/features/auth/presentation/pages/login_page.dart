@@ -12,6 +12,7 @@ import 'package:hamsafar/features/auth/domain/params/sign_in_params.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -84,16 +85,16 @@ class _LoginPageState extends State<LoginPage> {
                       TextFormField(
                         controller: _emailController,
                         focusNode: _emailFocusNode,
-                        decoration: const InputDecoration(
-                          hintText: 'ایمیل',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'ایمیل'),
                           prefixIcon: Icon(LucideIcons.mail),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'لطفا ایمیل خود را وارد کنید';
+                            return AppTranslations.translate(context, 'لطفا ایمیل خود را وارد کنید');
                           }
                           if (!value.contains("@")) {
-                            return "ایمیل نامعتبر است";
+                            return AppTranslations.translate(context, "ایمیل نامعتبر است");
                           }
                           return null;
                         },
@@ -104,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: _obscureText,
                         controller: _passwordController,
                         decoration: InputDecoration(
-                          hintText: 'رمز عبور',
+                          hintText: AppTranslations.translate(context, 'رمز عبور'),
                           prefixIcon: const Icon(LucideIcons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -119,10 +120,10 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "لطفا گذرواژه خود را وارد کنید";
+                            return AppTranslations.translate(context, "لطفا گذرواژه خود را وارد کنید");
                           }
                           if (value.length < 8) {
-                            return "ارقام گذرواژه نمیتواند کمتر از 8 باشد";
+                            return AppTranslations.translate(context, "ارقام گذرواژه نمیتواند کمتر از 8 باشد");
                           }
                           return null;
                         },
@@ -172,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: Text(
+                            child: txt(
                               'یا',
                               style: context.textTheme.bodySmall,
                             ),

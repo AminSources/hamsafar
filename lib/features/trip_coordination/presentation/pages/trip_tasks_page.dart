@@ -5,6 +5,8 @@ import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/trip_task_tile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripTasksPage extends StatefulWidget {
   final int tripId;
 
@@ -83,7 +85,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
   void _message(String message, bool success) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: txt(message),
         backgroundColor: success ? Colors.green : null,
       ),
     );
@@ -155,16 +157,16 @@ class _TripTasksPageState extends State<TripTasksPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('حذف وظیفه'),
-        content: Text('وظیفه «${task['task']}» حذف شود؟'),
+        title: const txt('حذف وظیفه'),
+        content: txt('وظیفه «${task['task']}» حذف شود؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('انصراف'),
+            child: const txt('انصراف'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('حذف'),
+            child: const txt('حذف'),
           ),
         ],
       ),
@@ -216,7 +218,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
           ? FloatingActionButton.extended(
               onPressed: _busy ? null : () => _openTaskSheet(),
               icon: const Icon(Icons.add),
-              label: const Text('افزودن وظیفه'),
+              label: const txt('افزودن وظیفه'),
             )
           : null,
       body: SafeArea(
@@ -249,11 +251,11 @@ class _TripTasksPageState extends State<TripTasksPage> {
                           const Icon(Icons.checklist_rounded),
                           SizedBox(width: 10.w),
                           Expanded(
-                            child: Text(
+                            child: txt(
                               'وضعیت وظایف: $completed از ${tasks.length} انجام شده',
                             ),
                           ),
-                          if (_isLeader) const Chip(label: Text('مدیریت لیدر')),
+                          if (_isLeader) const Chip(label: txt('مدیریت لیدر')),
                         ],
                       ),
                     ),
@@ -374,7 +376,7 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
           if (id == null) return null;
           return DropdownMenuItem<int>(
             value: id,
-            child: Text(_memberName(member)),
+            child: txt(_memberName(member)),
           );
         })
         .whereType<DropdownMenuItem<int>>()
@@ -391,7 +393,7 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              txt(
                 widget.isEditing ? 'ویرایش وظیفه' : 'ایجاد وظیفه',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
@@ -400,9 +402,9 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                 controller: _titleController,
                 autofocus: true,
                 maxLength: 120,
-                decoration: const InputDecoration(
-                  labelText: 'عنوان وظیفه',
-                  hintText: 'مثلاً رزرو اقامتگاه',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.translate(context, 'عنوان وظیفه'),
+                  hintText: AppTranslations.translate(context, 'مثلاً رزرو اقامتگاه'),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -410,8 +412,8 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
               DropdownButtonFormField<int>(
                 initialValue: _selectedTripMemberId,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                  labelText: 'مسئول انجام وظیفه',
+                decoration: InputDecoration(
+                  labelText: AppTranslations.translate(context, 'مسئول انجام وظیفه'),
                   border: OutlineInputBorder(),
                 ),
                 items: members,
@@ -432,7 +434,7 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                       context,
                     ).pop(_TaskDraft(title: title, tripMemberId: memberId));
                   },
-                  child: Text(
+                  child: txt(
                     widget.isEditing ? 'ذخیره تغییرات' : 'افزودن وظیفه',
                   ),
                 ),

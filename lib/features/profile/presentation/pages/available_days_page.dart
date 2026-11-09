@@ -68,7 +68,7 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
       context: context,
       initialTime: isStart ? _startTime : _endTime,
       builder: (context, child) {
-        return Directionality(textDirection: TextDirection.rtl, child: child!);
+        return Directionality(textDirection: Directionality.of(context), child: child!);
       },
     );
     if (!mounted || picked == null) return;
@@ -139,7 +139,7 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
                       TextButton(
                         onPressed: () =>
                             context.read<ProfilePreferencesCubit>().load(),
-                        child: const Text('تلاش دوباره'),
+                        child: const txt('تلاش دوباره'),
                       ),
                     ],
                   ),

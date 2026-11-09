@@ -33,7 +33,9 @@ class HsHeader extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 Icon(
-                  Icons.chevron_right_rounded,
+                  Directionality.of(context) == TextDirection.rtl
+                      ? Icons.chevron_right_rounded
+                      : Icons.chevron_left_rounded,
                   size: 16.sp,
                   color: context.colorScheme.primary,
                 ),

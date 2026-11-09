@@ -30,7 +30,9 @@ class ProfileMenuTile extends StatelessWidget {
         type: HsAvatarType.icon,
       ),
       trailing: Icon(
-        Icons.chevron_right_rounded,
+        Directionality.of(context) == TextDirection.rtl
+            ? Icons.chevron_right_rounded
+            : Icons.chevron_left_rounded,
         color: context.colorScheme.onSurfaceVariant,
         size: 24.sp,
       ),

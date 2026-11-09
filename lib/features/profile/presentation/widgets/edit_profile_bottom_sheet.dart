@@ -18,6 +18,7 @@ import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class EditProfileBottomSheet extends StatefulWidget {
   final ProfileEntity profile;
   final VoidCallback onSaved;
@@ -63,7 +64,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
 
   String? _requiredFieldValidator(String? value, String fieldName) {
     if (value == null || value.trim().isEmpty) {
-      return '$fieldName الزامی است';
+      return AppTranslations.translate(context, '$fieldName الزامی است');
     }
     return null;
   }
@@ -150,7 +151,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                       ),
                     ),
                     IconButton(
-                      tooltip: 'بستن',
+                      tooltip: AppTranslations.translate(context, 'بستن'),
                       onPressed: isSaving
                           ? null
                           : () => Navigator.of(context).pop(),
@@ -231,8 +232,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.left,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    hintText: 'نام کاربری',
+                  decoration: InputDecoration(
+                    hintText: AppTranslations.translate(context, 'نام کاربری'),
                     prefixIcon: Icon(LucideIcons.atSign),
                   ),
                   validator: (value) {
@@ -243,7 +244,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                     if (requiredError != null) return requiredError;
 
                     if (value!.trim().contains(RegExp(r'\s'))) {
-                      return 'نام کاربری نباید فاصله داشته باشد';
+                      return AppTranslations.translate(context, 'نام کاربری نباید فاصله داشته باشد');
                     }
                     return null;
                   },
@@ -254,8 +255,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                 TextFormField(
                   controller: _firstNameController,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    hintText: 'نام',
+                  decoration: InputDecoration(
+                    hintText: AppTranslations.translate(context, 'نام'),
                     prefixIcon: Icon(LucideIcons.userRound),
                   ),
                   validator: (value) =>
@@ -267,8 +268,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                 TextFormField(
                   controller: _lastNameController,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    hintText: 'نام خانوادگی',
+                  decoration: InputDecoration(
+                    hintText: AppTranslations.translate(context, 'نام خانوادگی'),
                     prefixIcon: Icon(LucideIcons.userRound),
                   ),
                   validator: (value) =>

@@ -10,6 +10,7 @@ import 'package:hamsafar/features/auth/domain/params/sign_up_params.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -79,16 +80,16 @@ class _RegisterPageState extends State<RegisterPage> {
                       TextFormField(
                         controller: _emailController,
                         focusNode: _emailFocusNode,
-                        decoration: const InputDecoration(
-                          hintText: 'ایمیل',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'ایمیل'),
                           prefixIcon: Icon(LucideIcons.mail),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'لطفا ایمیل خود را وارد کنید';
+                            return AppTranslations.translate(context, 'لطفا ایمیل خود را وارد کنید');
                           }
                           if (!value.contains("@")) {
-                            return "ایمیل نامعتبر است";
+                            return AppTranslations.translate(context, "ایمیل نامعتبر است");
                           }
                           return null;
                         },
@@ -98,16 +99,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: _passwordController,
                         focusNode: _passwordFocusNode,
                         obscureText: true,
-                        decoration: const InputDecoration(
-                          hintText: 'رمز عبور',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'رمز عبور'),
                           prefixIcon: Icon(LucideIcons.lock),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "لطفا گذرواژه خود را وارد کنید";
+                            return AppTranslations.translate(context, "لطفا گذرواژه خود را وارد کنید");
                           }
                           if (value.length < 8) {
-                            return "ارقام گذرواژه نمیتواند کمتر از 8 باشد";
+                            return AppTranslations.translate(context, "ارقام گذرواژه نمیتواند کمتر از 8 باشد");
                           }
                           return null;
                         },
@@ -117,19 +118,19 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: _confirmPasswordController,
                         focusNode: _confirmPasswordFocusNode,
                         obscureText: true,
-                        decoration: const InputDecoration(
-                          hintText: 'تأیید رمز عبور',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'تأیید رمز عبور'),
                           prefixIcon: Icon(LucideIcons.lock),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "لطفا گذرواژه خود را وارد کنید";
+                            return AppTranslations.translate(context, "لطفا گذرواژه خود را وارد کنید");
                           }
                           if (value != _passwordController.text) {
-                            return "گذرواژه صحیح نیست";
+                            return AppTranslations.translate(context, "گذرواژه صحیح نیست");
                           }
                           if (value.length < 8) {
-                            return "ارقام گذرواژه نمیتواند کمتر از 8 باشد";
+                            return AppTranslations.translate(context, "ارقام گذرواژه نمیتواند کمتر از 8 باشد");
                           }
                           return null;
                         },
@@ -158,16 +159,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                   color: context.colorScheme.onSurfaceVariant,
                                 ),
                                 children: [
-                                  const TextSpan(text: 'شرایط استفاده'),
+                                  TextSpan(text: AppTranslations.translate(context, 'شرایط استفاده')),
                                   TextSpan(
-                                    text: ' و ',
+                                    text: AppTranslations.translate(context, ' و '),
                                     style: TextStyle(
                                       color: context.colorScheme.onSurface,
                                     ),
                                   ),
-                                  const TextSpan(text: 'حریم خصوصی'),
+                                  TextSpan(text: AppTranslations.translate(context, 'حریم خصوصی')),
                                   TextSpan(
-                                    text: ' همسفر را مطالعه کرده و می‌پذیرم.',
+                                    text: AppTranslations.translate(context, ' همسفر را مطالعه کرده و می‌پذیرم.'),
                                     style: TextStyle(
                                       color: context.colorScheme.onSurface,
                                     ),

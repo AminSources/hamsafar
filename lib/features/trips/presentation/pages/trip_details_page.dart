@@ -12,6 +12,7 @@ import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripDetailsPage extends StatefulWidget {
   final int? tripId;
 
@@ -63,7 +64,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('دعوت دوستان به سفر'),
+          title: const txt('دعوت دوستان به سفر'),
           content: SizedBox(
             width: double.maxFinite,
             child: BlocBuilder<FriendsBloc, FriendsState>(
@@ -72,9 +73,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                 if (state is FriendsLoading || state is FriendsInitial) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (state is FriendsFailure) return Text(state.errorMessage);
+                if (state is FriendsFailure) return txt(state.errorMessage);
                 if (state is! FriendsSuccess || state.friends.isEmpty) {
-                  return const Text('دوستی برای دعوت وجود ندارد.');
+                  return const txt('دوستی برای دعوت وجود ندارد.');
                 }
                 return ListView(
                   shrinkWrap: true,
@@ -82,10 +83,10 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       .map(
                         (friend) => CheckboxListTile(
                           value: selected.contains(friend.id),
-                          title: Text(
+                          title: txt(
                             '${friend.firstName} ${friend.lastName}'.trim(),
                           ),
-                          subtitle: Text('@${friend.userName}'),
+                          subtitle: txt('@${friend.userName}'),
                           onChanged: (value) => setDialogState(() {
                             if (value == true) {
                               selected.add(friend.id);
@@ -103,13 +104,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('انصراف'),
+              child: const txt('انصراف'),
             ),
             FilledButton(
               onPressed: selected.isEmpty
                   ? null
                   : () => Navigator.pop(dialogContext, true),
-              child: const Text('ارسال دعوت'),
+              child: const txt('ارسال دعوت'),
             ),
           ],
         ),
@@ -120,7 +121,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     if (!mounted) return;
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
+        content: txt(
           ok
               ? 'دعوت‌ها ارسال شدند.'
               : tripsCubit.state.errorMessage ?? 'ارسال دعوت ناموفق بود.',
@@ -135,16 +136,16 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('حذف سفر'),
-        content: Text('سفر «${trip.name}» و اطلاعات وابسته به آن حذف شود؟'),
+        title: const txt('حذف سفر'),
+        content: txt('سفر «${trip.name}» و اطلاعات وابسته به آن حذف شود؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('انصراف'),
+            child: const txt('انصراف'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('حذف سفر'),
+            child: const txt('حذف سفر'),
           ),
         ],
       ),
@@ -164,7 +165,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     if (!mounted) return;
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
+        content: txt(
           changed
               ? (closed ? 'عضوگیری سفر بسته شد.' : 'عضوگیری سفر دوباره باز شد.')
               : tripsCubit.state.errorMessage ?? 'تغییر وضعیت عضوگیری انجام نشد.',
@@ -181,7 +182,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
     messenger.showSnackBar(
       SnackBar(
-        content: Text(
+        content: txt(
           started
               ? 'وضعیت سفر به «درحال سفر» تغییر کرد.'
               : tripsCubit.state.errorMessage ?? 'شروع سفر انجام نشد.',
@@ -217,7 +218,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     Center(
                       child: TextButton(
                         onPressed: _loadCurrentTrip,
-                        child: const Text('تلاش دوباره'),
+                        child: const txt('تلاش دوباره'),
                       ),
                     ),
                     const Spacer(),
@@ -236,7 +237,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     hasBack: true,
                     leading: trip.isCreator
                         ? IconButton(
-                            tooltip: 'ویرایش سفر',
+                            tooltip: AppTranslations.translate(context, 'ویرایش سفر'),
                             onPressed: () => _edit(trip),
                             icon: const Icon(Icons.edit_outlined),
                           )
@@ -307,7 +308,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     ? Icons.lock_open_rounded
                                     : Icons.lock_outline_rounded,
                               ),
-                        label: Text(
+                        label: txt(
                           state.isUpdatingMembership
                               ? 'در حال تغییر وضعیت...'
                               : trip.membershipClosed
@@ -334,7 +335,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                 ),
                               )
                             : const Icon(Icons.play_arrow_rounded),
-                        label: Text(
+                        label: txt(
                           state.isUpdatingStatus
                               ? 'در حال شروع سفر...'
                               : 'شروع سفر',
@@ -369,7 +370,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       spacing: 8.w,
                       runSpacing: 8.h,
                       children: trip.costItems
-                          .map((item) => Chip(label: Text(item)))
+                          .map((item) => Chip(label: txt(item)))
                           .toList(),
                     ),
                     SizedBox(height: 20.h),
@@ -417,19 +418,19 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
-                            child: Text(
+                            child: txt(
                               displayName.isEmpty ? '؟' : displayName[0],
                             ),
                           ),
-                          title: Text(
+                          title: txt(
                             displayName.isEmpty ? username : displayName,
                           ),
-                          subtitle: Text(
+                          subtitle: txt(
                             isLeader ? 'لیدر سفر' : 'عضو پذیرفته‌شده',
                           ),
                           trailing: trip.isCreator && !trip.membershipClosed && !isLeader
                               ? IconButton(
-                                  tooltip: 'اخراج عضو',
+                                  tooltip: AppTranslations.translate(context, 'اخراج عضو'),
                                   icon: const Icon(
                                     Icons.person_remove_alt_1_outlined,
                                   ),
@@ -439,20 +440,20 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     final yes = await showDialog<bool>(
                                       context: context,
                                       builder: (d) => AlertDialog(
-                                        title: const Text('اخراج عضو'),
-                                        content: Text(
+                                        title: const txt('اخراج عضو'),
+                                        content: txt(
                                           'آیا ${displayName.isEmpty ? username : displayName} از سفر اخراج شود؟',
                                         ),
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(d, false),
-                                            child: const Text('انصراف'),
+                                            child: const txt('انصراف'),
                                           ),
                                           FilledButton(
                                             onPressed: () =>
                                                 Navigator.pop(d, true),
-                                            child: const Text('اخراج'),
+                                            child: const txt('اخراج'),
                                           ),
                                         ],
                                       ),
@@ -482,14 +483,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final name = '$first $last'.trim();
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: Text(
+                            title: txt(
                               name.isEmpty
                                   ? (member['username'] as String? ?? '')
                                   : name,
                             ),
-                            subtitle: const Text('در انتظار پاسخ'),
+                            subtitle: const txt('در انتظار پاسخ'),
                             trailing: trip.membershipClosed ? null : IconButton(
-                              tooltip: 'لغو دعوت',
+                              tooltip: AppTranslations.translate(context, 'لغو دعوت'),
                               icon: const Icon(Icons.close),
                               onPressed: () => context
                                   .read<TripsCubit>()
@@ -500,11 +501,11 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     OutlinedButton.icon(
                       onPressed: trip.membershipClosed ? null : () => _invite(trip),
                       icon: const Icon(Icons.person_add_alt_1),
-                      label: const Text('دعوت دوستان'),
+                      label: const txt('دعوت دوستان'),
                     ),
                   ] else if (trip.currentMemberStatus == 'pending') ...[
                     SizedBox(height: 12.h),
-                    const Text('برای پیوستن به این سفر دعوت شده‌اید.'),
+                    const txt('برای پیوستن به این سفر دعوت شده‌اید.'),
                     Row(
                       children: [
                         Expanded(
@@ -514,7 +515,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                 : () => context
                                     .read<TripsCubit>()
                                     .respondToInvitation(trip.id, accept: true),
-                            child: const Text('پذیرفتن دعوت'),
+                            child: const txt('پذیرفتن دعوت'),
                           ),
                         ),
                         SizedBox(width: 8.w),
@@ -523,7 +524,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             onPressed: () => context
                                 .read<TripsCubit>()
                                 .respondToInvitation(trip.id, accept: false),
-                            child: const Text('رد دعوت'),
+                            child: const txt('رد دعوت'),
                           ),
                         ),
                       ],
@@ -538,18 +539,18 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         final yes = await showDialog<bool>(
                           context: context,
                           builder: (d) => AlertDialog(
-                            title: const Text('خروج از سفر'),
-                            content: const Text(
+                            title: const txt('خروج از سفر'),
+                            content: const txt(
                               'از عضویت در این سفر خارج می‌شوید؟',
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(d, false),
-                                child: const Text('انصراف'),
+                                child: const txt('انصراف'),
                               ),
                               FilledButton(
                                 onPressed: () => Navigator.pop(d, true),
-                                child: const Text('خروج'),
+                                child: const txt('خروج'),
                               ),
                             ],
                           ),
@@ -558,7 +559,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         await tripsCubit.leaveTrip(trip.id);
                       },
                       icon: const Icon(Icons.logout),
-                      label: const Text('خروج از سفر'),
+                      label: const txt('خروج از سفر'),
                     ),
                   ] else if (!trip.isCreator &&
                       !trip.membershipClosed &&
@@ -575,7 +576,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         onPressed: () =>
                             context.read<TripsCubit>().joinTrip(trip.id),
                         icon: const Icon(Icons.group_add_outlined),
-                        label: const Text('پیوستن به سفر'),
+                        label: const txt('پیوستن به سفر'),
                       ),
                     ),
                   ],
@@ -586,7 +587,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => context.push('/trip-tasks', extra: trip.id),
                         icon: const Icon(Icons.checklist_rounded),
-                        label: const Text('مشاهده وظایف سفر'),
+                        label: const txt('مشاهده وظایف سفر'),
                       ),
                     ),
                   ],
@@ -608,7 +609,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             ? null
                             : () => _delete(trip),
                         icon: const Icon(Icons.delete_outline),
-                        label: Text(
+                        label: txt(
                           state.isDeleting ? 'در حال حذف...' : 'حذف سفر',
                         ),
                         style: OutlinedButton.styleFrom(

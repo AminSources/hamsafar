@@ -17,6 +17,8 @@ class FriendsDayChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+
     return Container(
       width: 36.w,
       height: 36.w,
@@ -33,7 +35,7 @@ class FriendsDayChip extends StatelessWidget {
               ? context.colorScheme.onPrimary
               : context.colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w700,
-          size: 14.sp,
+          size: isEnglish ? 11.sp : 14.sp,
         ),
       ),
     );

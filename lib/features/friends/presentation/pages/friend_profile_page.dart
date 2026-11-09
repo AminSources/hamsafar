@@ -77,8 +77,8 @@ class FriendProfilePage extends StatelessWidget {
                                 final confirmed = await showDialog<bool>(
                                   context: context,
                                   builder: (dialogContext) => AlertDialog(
-                                    title: const Text('حذف دوست'),
-                                    content: const Text(
+                                    title: const txt('حذف دوست'),
+                                    content: const txt(
                                       'آیا مطمئن هستید که می‌خواهید این کاربر را از فهرست دوستان حذف کنید؟',
                                     ),
                                     actions: [
@@ -86,13 +86,13 @@ class FriendProfilePage extends StatelessWidget {
                                         onPressed: () => Navigator.of(
                                           dialogContext,
                                         ).pop(false),
-                                        child: const Text('انصراف'),
+                                        child: const txt('انصراف'),
                                       ),
                                       TextButton(
                                         onPressed: () => Navigator.of(
                                           dialogContext,
                                         ).pop(true),
-                                        child: const Text('حذف'),
+                                        child: const txt('حذف'),
                                       ),
                                     ],
                                   ),

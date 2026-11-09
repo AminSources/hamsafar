@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripRulesSetupPage extends StatefulWidget {
   const TripRulesSetupPage({super.key});
 
@@ -45,8 +46,8 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                     child: TextField(
                       controller: _ruleController,
                       onSubmitted: (_) => _addRule(),
-                      decoration: const InputDecoration(
-                        hintText: 'قانون جدید را بنویسید...',
+                      decoration: InputDecoration(
+                        hintText: AppTranslations.translate(context, 'قانون جدید را بنویسید...'),
                       ),
                     ),
                   ),
@@ -77,9 +78,9 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                 (rule) => Card(
                   child: ListTile(
                     leading: const Icon(Icons.rule_outlined),
-                    title: Text(rule),
+                    title: txt(rule),
                     trailing: IconButton(
-                      tooltip: 'حذف قانون',
+                      tooltip: AppTranslations.translate(context, 'حذف قانون'),
                       onPressed: () => cubit.removeRule(rule),
                       icon: const Icon(Icons.close),
                     ),

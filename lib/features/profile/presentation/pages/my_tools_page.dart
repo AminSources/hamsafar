@@ -14,6 +14,7 @@ import 'package:hamsafar/features/profile/domain/entities/profile_preferences_en
 import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/tool_tile.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class MyToolsPage extends StatefulWidget {
   const MyToolsPage({super.key});
 
@@ -121,7 +122,7 @@ class _MyToolsPageState extends State<MyToolsPage> {
                         onPressed: () {
                           context.read<ProfilePreferencesCubit>().load();
                         },
-                        child: const Text('تلاش دوباره'),
+                        child: const txt('تلاش دوباره'),
                       ),
                     ],
                   ),
@@ -292,8 +293,8 @@ class _AddToolBottomSheetState extends State<_AddToolBottomSheet> {
                     },
                     onSubmitted: (_) => _addTool(),
                     decoration: InputDecoration(
-                      labelText: 'عنوان وسیله',
-                      hintText: 'مثلاً چراغ قوه',
+                      labelText: AppTranslations.translate(context, 'عنوان وسیله'),
+                      hintText: AppTranslations.translate(context, 'مثلاً چراغ قوه'),
                       errorText: _validationMessage,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14.r),

@@ -10,7 +10,17 @@ class HomeActivities extends StatelessWidget {
 
   const HomeActivities({super.key, required this.activities});
 
-  String _statusLabel(String? status) {
+  String _statusLabel(String? status, {required bool isEnglish}) {
+    if (isEnglish) {
+      return switch (status) {
+        'preparing' => 'Preparing',
+        'active' => 'In progress',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        _ => 'Unknown',
+      };
+    }
+
     return switch (status) {
       'preparing' => 'در حال آماده‌سازی',
       'active' => 'در حال اجرا',
@@ -20,9 +30,25 @@ class HomeActivities extends StatelessWidget {
     };
   }
 
-  String _title(HomeActivityEntity activity) {
+  String _title(HomeActivityEntity activity, {required bool isEnglish}) {
     final actor = activity.actorName;
-    final subject = activity.subjectName ?? 'عضو سفر';
+    final subject = activity.subjectName ?? (isEnglish ? 'a trip member' : 'عضو سفر');
+
+    if (isEnglish) {
+      return switch (activity.activityType) {
+        'member_joined' => '$subject joined the trip',
+        'member_left' => '$subject left the trip',
+        'member_removed' => '$subject was removed from the trip',
+        'payment_confirmed' => '$actor confirmed $subject payment',
+        'task_completed' =>
+          '$actor completed the task "${activity.taskName ?? 'Trip task'}"',
+        'trip_status_changed' =>
+          '$actor changed the trip status to "${_statusLabel(activity.newStatus, isEnglish: true)}"',
+        'membership_closed' => '$actor closed trip registration',
+        'membership_opened' => '$actor reopened trip registration',
+        _ => 'A new trip activity was recorded',
+      };
+    }
 
     return switch (activity.activityType) {
       'member_joined' => '$subject به سفر پیوست',
@@ -32,7 +58,7 @@ class HomeActivities extends StatelessWidget {
       'task_completed' =>
         '$actor وظیفه «${activity.taskName ?? 'وظیفه سفر'}» را انجام داد',
       'trip_status_changed' =>
-        '$actor وضعیت سفر را به «${_statusLabel(activity.newStatus)}» تغییر داد',
+        '$actor وضعیت سفر را به «${_statusLabel(activity.newStatus, isEnglish: false)}» تغییر داد',
       'membership_closed' => '$actor عضوگیری سفر را بست',
       'membership_opened' => '$actor عضوگیری سفر را باز کرد',
       _ => 'فعالیت جدیدی در سفر ثبت شد',
@@ -73,27 +99,35 @@ class HomeActivities extends StatelessWidget {
     );
   }
 
-  String _timeAgo(DateTime createdAt) {
+  String _timeAgo(DateTime createdAt, {required bool isEnglish}) {
     final difference = DateTime.now().difference(createdAt);
     if (difference.isNegative || difference.inSeconds < 60) {
-      return 'لحظاتی پیش';
+      return isEnglish ? 'Just now' : 'لحظاتی پیش';
     }
     if (difference.inMinutes < 60) {
-      return '${_persianDigits(difference.inMinutes.toString())} دقیقه پیش';
+      final value = difference.inMinutes.toString();
+      if (isEnglish) return '$value ${value == '1' ? 'minute' : 'minutes'} ago';
+      return '${_persianDigits(value)} دقیقه پیش';
     }
     if (difference.inHours < 24) {
-      return '${_persianDigits(difference.inHours.toString())} ساعت پیش';
+      final value = difference.inHours.toString();
+      if (isEnglish) return '$value ${value == '1' ? 'hour' : 'hours'} ago';
+      return '${_persianDigits(value)} ساعت پیش';
     }
     if (difference.inDays < 7) {
-      return '${_persianDigits(difference.inDays.toString())} روز پیش';
+      final value = difference.inDays.toString();
+      if (isEnglish) return '$value ${value == '1' ? 'day' : 'days'} ago';
+      return '${_persianDigits(value)} روز پیش';
     }
 
     final date = '${createdAt.day}/${createdAt.month}/${createdAt.year}';
-    return _persianDigits(date);
+    return isEnglish ? date : _persianDigits(date);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+
     if (activities.isEmpty) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: 20.h),
@@ -112,8 +146,8 @@ class HomeActivities extends StatelessWidget {
         for (var index = 0; index < activities.length; index++) ...[
           HomeActivityTile(
             key: ValueKey(activities[index].id),
-            title: _title(activities[index]),
-            time: _timeAgo(activities[index].createdAt),
+            title: _title(activities[index], isEnglish: isEnglish),
+            time: _timeAgo(activities[index].createdAt, isEnglish: isEnglish),
             icon: _icon(activities[index].activityType),
             color: _color(activities[index].activityType),
           ),

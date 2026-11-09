@@ -108,7 +108,7 @@ class TripScheduleSetupPage extends StatelessWidget {
                   final start = draft.departureOptions.isEmpty ? DateTime.now().add(const Duration(days: 1)) : draft.departureOptions.last.startsAt.add(const Duration(hours: 2));
                   cubit.addDepartureOption(start, start.add(const Duration(hours: 2)));
                 },
-                icon: const Icon(Icons.add), label: const Text('افزودن بازهٔ پیشنهادی'),
+                icon: const Icon(Icons.add), label: const txt('افزودن بازهٔ پیشنهادی'),
               ),
               SizedBox(height: 6.h),
               txt('حداقل ۲ و حداکثر ۱۰ بازه می‌توانید ثبت کنید.', size: 11.sp, color: Theme.of(context).colorScheme.onSurfaceVariant),

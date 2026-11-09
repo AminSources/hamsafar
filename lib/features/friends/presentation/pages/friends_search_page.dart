@@ -11,6 +11,7 @@ import 'package:hamsafar/features/friends/enums/friend_type.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tile.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class FriendsSearchPage extends StatefulWidget {
   const FriendsSearchPage({super.key});
 
@@ -61,7 +62,7 @@ class _FriendsSearchPageState extends State<FriendsSearchPage> {
             controller: _controller,
             onChanged: _onQueryChanged,
             decoration: InputDecoration(
-              hintText: 'جستجوی نام کاربری...',
+              hintText: AppTranslations.translate(context, 'جستجوی نام کاربری...'),
               prefixIcon: Icon(
                 Icons.search,
                 size: 20.sp,
