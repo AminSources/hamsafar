@@ -29,6 +29,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  static const Map<String, String> _dayLabels = {
+    'sat': 'شنبه',
+    'sun': 'یکشنبه',
+    'mon': 'دوشنبه',
+    'tue': 'سه‌شنبه',
+    'wed': 'چهارشنبه',
+    'thu': 'پنجشنبه',
+    'fri': 'جمعه',
+  };
   @override
   void initState() {
     super.initState();
@@ -63,6 +72,12 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+
+  Future<void> _openPreferencesPage(String route) async {
+    await context.push<bool>(route);
+    if (!mounted) return;
+    context.read<ProfileBloc>().add(GetProfileEvent());
   }
 
   @override
@@ -117,11 +132,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       //* available days item
                       ProfileMenuTile(
                         title: 'روزهای آزاد من',
-                        subtitle: profileEntity.freeDays.join(', '),
+                        subtitle: profileEntity.freeDays.isEmpty
+                            ? 'انتخاب نشده'
+                            : profileEntity.freeDays
+                                .map((day) => _dayLabels[day] ?? day)
+                                .join('، '),
                         icon: LucideIcons.calendarCheck,
-                        onTap: () {
-                          context.push('/available-days');
-                        },
+                        onTap: () => _openPreferencesPage('/available-days'),
                       ),
                       SizedBox(height: 12.h),
 
@@ -129,9 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: 'وسایل من',
                         subtitle: '${profileEntity.toolCount} مورد',
                         icon: LucideIcons.toolCase,
-                        onTap: () {
-                          context.push('/my-items');
-                        },
+                        onTap: () => _openPreferencesPage('/my-items'),
                       ),
                       SizedBox(height: 24.h),
                     ],
