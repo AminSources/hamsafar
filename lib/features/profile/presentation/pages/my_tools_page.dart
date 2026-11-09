@@ -27,6 +27,7 @@ class _MyToolsPageState extends State<MyToolsPage> {
 
   void _initializeTools(ProfilePreferencesState state) {
     if (_initialized) return;
+
     setState(() {
       _tools
         ..clear()
@@ -35,11 +36,8 @@ class _MyToolsPageState extends State<MyToolsPage> {
     });
   }
 
-  Future<String?> _showAddToolSheet() async {
-    final controller = TextEditingController();
-    String? validationMessage;
-
-    final result = await showModalBottomSheet<String>(
+  Future<String?> _showAddToolSheet() {
+    return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -47,56 +45,8 @@ class _MyToolsPageState extends State<MyToolsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            void addTool() {
-              final name = controller.text.trim();
-              if (name.isEmpty) {
-                setModalState(() {
-                  validationMessage = 'عنوان وسیله را وارد کنید';
-                });
-                return;
-              }
-              Navigator.of(sheetContext).pop(name);
-            }
-
-            return Padding(
-              padding: EdgeInsets.fromLTRB(
-                20.w, 24.h, 20.w,
-                MediaQuery.viewInsetsOf(context).bottom + 24.h,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  txt('افزودن وسیله جدید', style: context.textTheme.titleLarge),
-                  SizedBox(height: 18.h),
-                  TextField(
-                    controller: controller,
-                    autofocus: true,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => addTool(),
-                    decoration: InputDecoration(
-                      labelText: 'عنوان وسیله',
-                      hintText: 'مثلاً چراغ قوه',
-                      errorText: validationMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14.r),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 18.h),
-                  HsButton(onTap: addTool, child: txt('افزودن')),
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (_) => const _AddToolBottomSheet(),
     );
-    controller.dispose();
-    return result;
   }
 
   Future<void> _addTool() async {
@@ -107,6 +57,7 @@ class _MyToolsPageState extends State<MyToolsPage> {
     final alreadyExists = _tools.any(
       (tool) => tool.name.toLowerCase() == normalizedName.toLowerCase(),
     );
+
     if (alreadyExists) {
       context.showHsSnackBar(
         text: 'این وسیله در فهرست شما وجود دارد',
@@ -145,12 +96,15 @@ class _MyToolsPageState extends State<MyToolsPage> {
       body: SafeArea(
         child: BlocConsumer<ProfilePreferencesCubit, ProfilePreferencesState>(
           listener: (context, state) {
-            if (state.isLoaded && !_initialized) _initializeTools(state);
+            if (state.isLoaded && !_initialized) {
+              _initializeTools(state);
+            }
           },
           builder: (context, state) {
             if (state.isLoading || (!state.isLoaded && state.message == null)) {
               return const Center(child: CircularProgressIndicator());
             }
+
             if (!state.isLoaded) {
               return Center(
                 child: Padding(
@@ -158,12 +112,15 @@ class _MyToolsPageState extends State<MyToolsPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      txt(state.message ?? 'دریافت اطلاعات ناموفق بود',
-                          textAlign: TextAlign.center),
+                      txt(
+                        state.message ?? 'دریافت اطلاعات ناموفق بود',
+                        textAlign: TextAlign.center,
+                      ),
                       SizedBox(height: 12.h),
                       TextButton(
-                        onPressed: () =>
-                            context.read<ProfilePreferencesCubit>().load(),
+                        onPressed: () {
+                          context.read<ProfilePreferencesCubit>().load();
+                        },
                         child: const Text('تلاش دوباره'),
                       ),
                     ],
@@ -180,7 +137,8 @@ class _MyToolsPageState extends State<MyToolsPage> {
                   HsAppBar(title: 'وسایل من', hasBack: true),
                   SizedBox(height: 16.h),
                   HsNote(
-                    note: 'وسایلی که می‌توانید در سفرها همراه بیاورید؛ لیدر بر اساس این لیست وظایف را تقسیم می‌کند.',
+                    note:
+                        'وسایلی که می‌توانید در سفرها همراه بیاورید؛ لیدر بر اساس این لیست وظایف را تقسیم می‌کند.',
                     noteMode: HsNoteType.success,
                   ),
                   SizedBox(height: 24.h),
@@ -201,8 +159,11 @@ class _MyToolsPageState extends State<MyToolsPage> {
                       itemCount: _tools.length,
                       itemBuilder: (context, index) {
                         final tool = _tools[index];
+
                         return Padding(
-                          padding: EdgeInsets.only(top: index == 0 ? 0 : 12.h),
+                          padding: EdgeInsets.only(
+                            top: index == 0 ? 0 : 12.h,
+                          ),
                           child: ToolTile(
                             toolName: tool.name,
                             toolStatus: tool.isAvailable,
@@ -250,6 +211,104 @@ class _MyToolsPageState extends State<MyToolsPage> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _AddToolBottomSheet extends StatefulWidget {
+  const _AddToolBottomSheet();
+
+  @override
+  State<_AddToolBottomSheet> createState() => _AddToolBottomSheetState();
+}
+
+class _AddToolBottomSheetState extends State<_AddToolBottomSheet> {
+  late final TextEditingController _nameController;
+  String? _validationMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _addTool() {
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty) {
+      setState(() {
+        _validationMessage = 'عنوان وسیله را وارد کنید';
+      });
+      return;
+    }
+
+    Navigator.of(context).pop(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SafeArea(
+        top: false,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  txt(
+                    'افزودن وسیله جدید',
+                    style: context.textTheme.titleLarge,
+                  ),
+                  SizedBox(height: 18.h),
+                  TextField(
+                    controller: _nameController,
+                    autofocus: true,
+                    textInputAction: TextInputAction.done,
+                    onChanged: (_) {
+                      if (_validationMessage != null) {
+                        setState(() {
+                          _validationMessage = null;
+                        });
+                      }
+                    },
+                    onSubmitted: (_) => _addTool(),
+                    decoration: InputDecoration(
+                      labelText: 'عنوان وسیله',
+                      hintText: 'مثلاً چراغ قوه',
+                      errorText: _validationMessage,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 18.h),
+                  HsButton(
+                    onTap: _addTool,
+                    child: txt('افزودن'),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
