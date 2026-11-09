@@ -37,8 +37,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            final bloc = context.read<HomeBloc>();
+            bloc.add(LoadHomeEvent());
+            await bloc.stream.firstWhere(
+              (state) => state is HomeSuccess || state is HomeFailed,
+            );
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
           child: BlocConsumer<HomeBloc, HomeState>(
             listener: (context, state) {
               if (state is HomeFailed) {
@@ -153,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(height: 24.h),
                         HsHeader(title: 'فعالیت‌های اخیر'),
                         SizedBox(height: 12.h),
-                        HomeActivities(isInTrip: isInTrip),
+                        HomeActivities(activities: homeData.activities),
                         SizedBox(height: 65.h),
                       ],
                     )
@@ -167,6 +176,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               );
             },
+          ),
           ),
         ),
       ),
