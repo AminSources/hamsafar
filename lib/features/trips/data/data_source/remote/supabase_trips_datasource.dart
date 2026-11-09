@@ -103,6 +103,10 @@ class SupabaseTripsDatasource {
     return (response as num).toInt();
   }
 
+  Future<void> startTrip(int tripId) async {
+    await supabaseClient.rpc('start_trip', params: {'p_trip_id': tripId});
+  }
+
   Future<void> deleteTrip(int tripId) async {
     final rows = await supabaseClient.from('trips').delete()
         .eq('id', tripId).select('id');
