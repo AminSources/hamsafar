@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                           isInTrip: isInTrip,
                         ),
                         SizedBox(height: 16.h),
-                        HomeActionCardsRow(tripId: tripId),
+                        HomeActionCardsRow(isInTrip: isInTrip, tripId: tripId),
                         SizedBox(height: 24.h),
                         HsHeader(title: 'فعالیت‌های اخیر'),
                         SizedBox(height: 12.h),
