@@ -5,14 +5,9 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/features/home/presentation/widgets/home_action_card.dart';
 
 class HomeActionCardsRow extends StatelessWidget {
-  final bool isInTrip;
   final int? tripId;
 
-  const HomeActionCardsRow({
-    super.key,
-    required this.isInTrip,
-    required this.tripId,
-  });
+  const HomeActionCardsRow({super.key, required this.tripId});
 
   @override
   Widget build(BuildContext context) {
