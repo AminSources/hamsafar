@@ -28,7 +28,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       final rawError = e.toString();
       if (rawError.contains('23505') ||
           rawError.contains('profiles_username_key')) {
-        return const DataFailed('این نام کاربری قبلاً انتخاب شده است');
+        return DataFailed('این نام کاربری قبلاً انتخاب شده است');
       }
 
       return DataFailed('خطای ناشناخته‌ای رخ داد: $rawError');
