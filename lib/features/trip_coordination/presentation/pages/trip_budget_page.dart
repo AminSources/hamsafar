@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TripBudgetPage extends StatefulWidget {
   const TripBudgetPage({super.key});
+
   @override
   State<TripBudgetPage> createState() => _TripBudgetPageState();
 }
@@ -16,6 +17,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
   final _client = Supabase.instance.client;
   Map<String, dynamic>? _budget;
   bool _loading = true, _busy = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,128 +47,60 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
           backgroundColor: success ? Colors.green : null,
         ),
       );
+
   String _money(dynamic value) => ((value as num?)?.toInt() ?? 0)
       .toString()
       .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '٬');
+
   String _name(Map<String, dynamic> m) {
     final n = '${m['first_name'] ?? ''} ${m['last_name'] ?? ''}';
     return n.trim().isEmpty ? 'عضو سفر' : n.trim();
   }
 
   Widget _copyRow(BuildContext context, String label, String value) => Padding(
-    padding: EdgeInsets.only(bottom: 8.h),
-    child: Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: Theme.of(context).textTheme.bodySmall),
-              SelectableText(value.isEmpty ? 'ثبت نشده' : value),
-            ],
-          ),
+        padding: EdgeInsets.only(bottom: 8.h),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: Theme.of(context).textTheme.bodySmall),
+                  SelectableText(value.isEmpty ? 'ثبت نشده' : value),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: value.isEmpty
+                  ? null
+                  : () => Clipboard.setData(ClipboardData(text: value)),
+              icon: const Icon(Icons.copy),
+            ),
+          ],
         ),
-        IconButton(
-          onPressed: value.isEmpty
-              ? null
-              : () => Clipboard.setData(ClipboardData(text: value)),
-          icon: const Icon(Icons.copy),
-        ),
-      ],
-    ),
-  );
+      );
+
   Future<void> _openPaymentSheet() async {
-    final ref = TextEditingController();
-    String method = 'bank_transfer';
-    final data = _budget!;
-    final result = await showModalBottomSheet<String>(
+    final data = _budget;
+    if (data == null || !mounted) return;
+
+    final result = await showModalBottomSheet<_PaymentSubmission>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-            20.w,
-            8.h,
-            20.w,
-            MediaQuery.of(ctx).viewInsets.bottom + 24.h,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('پرداخت سهم سفر', style: Theme.of(ctx).textTheme.titleLarge),
-              SizedBox(height: 8.h),
-              Text('مبلغ سهم شما: ${_money(data['my_share'])} تومان'),
-              SizedBox(height: 16.h),
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(
-                    value: 'bank_transfer',
-                    label: Text('کارت‌به‌کارت'),
-                    icon: Icon(Icons.credit_card),
-                  ),
-                  ButtonSegment(
-                    value: 'cash',
-                    label: Text('نقدی به لیدر'),
-                    icon: Icon(Icons.payments_outlined),
-                  ),
-                ],
-                selected: {method},
-                onSelectionChanged: (v) =>
-                    setSheetState(() => method = v.first),
-              ),
-              if (method == 'bank_transfer') ...[
-                SizedBox(height: 16.h),
-                _copyRow(
-                  ctx,
-                  'شماره کارت',
-                  (data['bank_card_number'] ?? '').toString(),
-                ),
-                _copyRow(
-                  ctx,
-                  'نام صاحب حساب',
-                  (data['bank_account_name'] ?? '').toString(),
-                ),
-                TextField(
-                  controller: ref,
-                  decoration: const InputDecoration(
-                    labelText: 'شماره پیگیری تراکنش',
-                    hintText: 'شماره پیگیری را وارد کنید',
-                  ),
-                ),
-              ] else
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: HsNote(
-                    note:
-                        'سهم خود را نقداً به لیدر تحویل دهید. پس از ثبت، پرداخت برای تأیید لیدر ارسال می‌شود.',
-                  ),
-                ),
-              SizedBox(height: 18.h),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.pop(ctx, method),
-                  child: const Text('ثبت پرداخت برای بررسی'),
-                ),
-              ),
-            ],
-          ),
-        ),
+      builder: (_) => _TripPaymentSheet(
+        data: data,
+        moneyFormatter: _money,
+        copyRowBuilder: _copyRow,
       ),
     );
-    final reference = ref.text.trim();
-    ref.dispose();
-    if (result == null) return;
-    if (result == 'bank_transfer' && reference.isEmpty) {
-      _message('شماره پیگیری را وارد کنید.', false);
-      return;
-    }
-    await _submitPayment(result, result == 'bank_transfer' ? reference : null);
+
+    if (!mounted || result == null) return;
+    await _submitPayment(result.method, result.reference);
   }
 
   Future<void> _submitPayment(String method, String? reference) async {
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
       await _client.rpc(
@@ -178,14 +112,19 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
         },
       );
       await _load();
-      if (mounted) _message('پرداخت ثبت شد و در انتظار تأیید لیدر است.', true);
+      if (mounted) {
+        _message('پرداخت ثبت شد و در انتظار تأیید لیدر است.', true);
+      }
     } catch (_) {
-      if (mounted) _message('ثبت پرداخت انجام نشد. دوباره تلاش کنید.', false);
+      if (mounted) {
+        _message('ثبت پرداخت انجام نشد. دوباره تلاش کنید.', false);
+      }
     }
     if (mounted) setState(() => _busy = false);
   }
 
   Future<void> _confirm(String userId) async {
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
       await _client.rpc(
@@ -204,8 +143,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     final status = PaymentMemberStatus.fromValue(
       member['pay_status'] as String?,
     );
-    final canConfirm =
-        leader &&
+    final canConfirm = leader &&
         member['member_type'] != 'leader' &&
         member['pay_status'] == 'under_review';
     return Card(
@@ -233,7 +171,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                     ),
                   ),
                   if (member['payment_method'] == 'bank_transfer' &&
-                      (member['payment_reference'] ?? '').toString().isNotEmpty)
+                      (member['payment_reference'] ?? '')
+                          .toString()
+                          .isNotEmpty)
                     Text('شماره پیگیری: ${member['payment_reference']}'),
                   if (member['payment_method'] == 'cash')
                     const Text('پرداخت نقدی'),
@@ -263,6 +203,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     final myStatus = PaymentMemberStatus.fromValue(
       data?['my_pay_status'] as String?,
     );
+
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
@@ -295,7 +236,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         SizedBox(height: 8.h),
-                        Text('بودجه کل: ${_money(data['total_budget'])} تومان'),
+                        Text(
+                          'بودجه کل: ${_money(data['total_budget'])} تومان',
+                        ),
                         Text('تعداد اعضا: ${members.length} نفر'),
                         const Divider(),
                         Text(
@@ -343,13 +286,166 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                 Text(
                   'وضعیت پرداخت اعضا',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
                 SizedBox(height: 10.h),
                 ...members.map((m) => _memberTile(m, leader)),
               ],
               SizedBox(height: 24.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PaymentSubmission {
+  const _PaymentSubmission({
+    required this.method,
+    required this.reference,
+  });
+
+  final String method;
+  final String? reference;
+}
+
+class _TripPaymentSheet extends StatefulWidget {
+  const _TripPaymentSheet({
+    required this.data,
+    required this.moneyFormatter,
+    required this.copyRowBuilder,
+  });
+
+  final Map<String, dynamic> data;
+  final String Function(dynamic value) moneyFormatter;
+  final Widget Function(BuildContext, String, String) copyRowBuilder;
+
+  @override
+  State<_TripPaymentSheet> createState() => _TripPaymentSheetState();
+}
+
+class _TripPaymentSheetState extends State<_TripPaymentSheet> {
+  late final TextEditingController _referenceController;
+  String _method = 'bank_transfer';
+  String? _referenceError;
+
+  @override
+  void initState() {
+    super.initState();
+    _referenceController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _referenceController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final reference = _referenceController.text.trim();
+    if (_method == 'bank_transfer' && reference.isEmpty) {
+      setState(() => _referenceError = 'شماره پیگیری را وارد کنید.');
+      return;
+    }
+
+    Navigator.of(context).pop(
+      _PaymentSubmission(
+        method: _method,
+        reference: _method == 'bank_transfer' ? reference : null,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final data = widget.data;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return SafeArea(
+      top: false,
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'پرداخت سهم سفر',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'مبلغ سهم شما: ${widget.moneyFormatter(data['my_share'])} تومان',
+              ),
+              SizedBox(height: 16.h),
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(
+                    value: 'bank_transfer',
+                    label: Text('کارت‌به‌کارت'),
+                    icon: Icon(Icons.credit_card),
+                  ),
+                  ButtonSegment(
+                    value: 'cash',
+                    label: Text('نقدی به لیدر'),
+                    icon: Icon(Icons.payments_outlined),
+                  ),
+                ],
+                selected: {_method},
+                onSelectionChanged: (values) {
+                  setState(() {
+                    _method = values.first;
+                    _referenceError = null;
+                  });
+                },
+              ),
+              if (_method == 'bank_transfer') ...[
+                SizedBox(height: 16.h),
+                widget.copyRowBuilder(
+                  context,
+                  'شماره کارت',
+                  (data['bank_card_number'] ?? '').toString(),
+                ),
+                widget.copyRowBuilder(
+                  context,
+                  'نام صاحب حساب',
+                  (data['bank_account_name'] ?? '').toString(),
+                ),
+                TextField(
+                  controller: _referenceController,
+                  onChanged: (_) {
+                    if (_referenceError != null) {
+                      setState(() => _referenceError = null);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'شماره پیگیری تراکنش',
+                    hintText: 'شماره پیگیری را وارد کنید',
+                    errorText: _referenceError,
+                  ),
+                ),
+              ] else
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: HsNote(
+                    note:
+                        'سهم خود را نقداً به لیدر تحویل دهید. پس از ثبت، پرداخت برای تأیید لیدر ارسال می‌شود.',
+                  ),
+                ),
+              SizedBox(height: 18.h),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _submit,
+                  child: const Text('ثبت پرداخت برای بررسی'),
+                ),
+              ),
             ],
           ),
         ),
