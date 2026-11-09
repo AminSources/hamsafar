@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseProfileDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseProfileDatasource({required SupabaseClient supabaseClient})
-    : _supabaseClient = supabaseClient;
+  SupabaseProfileDatasource({required this._supabaseClient});
 
   Future<void> editProfile({required EditProfileParams params}) async {
     final user = _supabaseClient.auth.currentUser;
