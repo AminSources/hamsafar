@@ -234,6 +234,9 @@ class TripsCubit extends Cubit<TripsState> {
     if (raw.contains('membership_closed')) {
       return 'عضوگیری این سفر بسته شده است و امکان تغییر عضویت وجود ندارد.';
     }
+    if (raw.contains('trip_not_preparing') || raw.contains('trip_already_started')) {
+      return 'پس از شروع سفر، امکان تغییر وضعیت عضوگیری وجود ندارد.';
+    }
     if (raw.contains('already_in_another_trip')) {
       return 'شما در حال حاضر عضو سفر دیگری هستید؛ ابتدا از سفر فعلی خارج شوید.';
     }
