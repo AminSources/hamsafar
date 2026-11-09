@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class RecoveryPasswordPage extends StatelessWidget {
   const RecoveryPasswordPage({super.key});
 
@@ -47,8 +48,8 @@ class RecoveryPasswordPage extends StatelessWidget {
               SizedBox(height: 32.h),
 
               TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'ایمیل',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'ایمیل'),
                   prefixIcon: Icon(LucideIcons.mail),
                 ),
               ),

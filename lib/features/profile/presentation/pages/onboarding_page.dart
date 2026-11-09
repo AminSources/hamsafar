@@ -13,6 +13,7 @@ import 'package:hamsafar/features/profile/presentation/widgets/onboarding_header
 import 'package:hamsafar/features/profile/presentation/widgets/onboarding_avatar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -85,16 +86,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       TextFormField(
                         controller: _firstNameController,
                         focusNode: _firstNameFocusNode,
-                        decoration: const InputDecoration(
-                          hintText: 'نام',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'نام'),
                           prefixIcon: Icon(LucideIcons.userRound),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "نام الزامی است";
+                            return AppTranslations.translate(context, "نام الزامی است");
                           }
                           if (value.length >= 10) {
-                            return "نام طولانی است";
+                            return AppTranslations.translate(context, "نام طولانی است");
                           }
                           return null;
                         },
@@ -106,16 +107,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       TextFormField(
                         controller: _lastNameController,
                         focusNode: _lastNameFocusNode,
-                        decoration: const InputDecoration(
-                          hintText: 'نام خانوادگی',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'نام خانوادگی'),
                           prefixIcon: Icon(LucideIcons.userRound),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "نام خانوادگی الزامی است";
+                            return AppTranslations.translate(context, "نام خانوادگی الزامی است");
                           }
                           if (value.length >= 10) {
-                            return "نام خانوادگی طولانی است";
+                            return AppTranslations.translate(context, "نام خانوادگی طولانی است");
                           }
                           return null;
                         },
@@ -127,13 +128,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       TextFormField(
                         controller: _userNameController,
                         focusNode: _userNameFocusNode,
-                        decoration: const InputDecoration(
-                          hintText: 'نام کاربری',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'نام کاربری'),
                           prefixIcon: Icon(LucideIcons.atSign),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "نام کاربری الزامی است";
+                            return AppTranslations.translate(context, "نام کاربری الزامی است");
                           }
                           return null;
                         },
@@ -145,14 +146,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         controller: _bioController,
                         focusNode: _bioFocusNode,
                         maxLines: 3,
-                        decoration: const InputDecoration(
-                          hintText:
-                              'چند خط درباره خودت و سبک سفر کردنت بنویس...',
+                        decoration: InputDecoration(
+                          hintText: AppTranslations.translate(context, 'چند خط درباره خودت و سبک سفر کردنت بنویس...'),
                           alignLabelWithHint: true,
                         ),
                         validator: (value) {
                           if (value!.length > 50) {
-                            return "کارکتر های بیش از حد مجاز";
+                            return AppTranslations.translate(context, "کارکتر های بیش از حد مجاز");
                           }
                           return null;
                         },

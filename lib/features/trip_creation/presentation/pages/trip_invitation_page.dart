@@ -13,6 +13,7 @@ import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cu
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_friend_tile.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripInvitationPage extends StatefulWidget {
   const TripInvitationPage({super.key});
 
@@ -51,7 +52,7 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
               TextField(
                 onChanged: (value) => setState(() => _query = value),
                 decoration: InputDecoration(
-                  hintText: 'جستجو در دوستان...',
+                  hintText: AppTranslations.translate(context, 'جستجو در دوستان...'),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 20.sp,

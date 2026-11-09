@@ -6,6 +6,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripCommonPage extends StatelessWidget {
   const TripCommonPage({super.key});
 
@@ -25,8 +26,8 @@ class TripCommonPage extends StatelessWidget {
                 initialValue: draft.name,
                 textInputAction: TextInputAction.next,
                 onChanged: cubit.setName,
-                decoration: const InputDecoration(
-                  hintText: 'مثلاً سفر جنگل‌گردی شمال',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'مثلاً سفر جنگل‌گردی شمال'),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -36,8 +37,8 @@ class TripCommonPage extends StatelessWidget {
                 initialValue: draft.description,
                 maxLines: 3,
                 onChanged: cubit.setDescription,
-                decoration: const InputDecoration(
-                  hintText: 'درباره برنامه و فعالیت‌های سفر بنویسید...',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'درباره برنامه و فعالیت‌های سفر بنویسید...'),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -48,7 +49,7 @@ class TripCommonPage extends StatelessWidget {
                 textInputAction: TextInputAction.next,
                 onChanged: cubit.setLocation,
                 decoration: InputDecoration(
-                  hintText: 'شهر یا مقصد سفر',
+                  hintText: AppTranslations.translate(context, 'شهر یا مقصد سفر'),
                   prefixIcon: Icon(
                     Icons.location_on_outlined,
                     size: 20.sp,
@@ -63,7 +64,7 @@ class TripCommonPage extends StatelessWidget {
                 initialValue: draft.meetingPoint,
                 onChanged: cubit.setMeetingPoint,
                 decoration: InputDecoration(
-                  hintText: 'آدرس یا محل قرار اعضا',
+                  hintText: AppTranslations.translate(context, 'آدرس یا محل قرار اعضا'),
                   prefixIcon: Icon(
                     Icons.place_outlined,
                     size: 20.sp,

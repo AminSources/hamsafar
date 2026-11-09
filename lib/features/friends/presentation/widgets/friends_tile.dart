@@ -17,6 +17,7 @@ import 'package:hamsafar/features/friends/presentation/widgets/friends_request_b
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tile_info.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class FriendsTile extends StatelessWidget {
   final FriendEntity friendEntity;
   final FriendType friendType;
@@ -116,7 +117,7 @@ class FriendsTile extends StatelessWidget {
                 ),
                 if (onCancelRequest != null)
                   IconButton(
-                    tooltip: 'لغو درخواست',
+                    tooltip: AppTranslations.translate(context, 'لغو درخواست'),
                     onPressed: isActionLoading ? null : onCancelRequest,
                     icon: isActionLoading
                         ? SizedBox(

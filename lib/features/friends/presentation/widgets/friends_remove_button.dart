@@ -4,6 +4,7 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/widgets/txt.dart';
 class FriendsRemoveButton extends StatelessWidget {
   final VoidCallback onRemove;
   final bool isLoading;
@@ -18,18 +19,18 @@ class FriendsRemoveButton extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('حذف دوست'),
-        content: const Text(
+        title: const txt('حذف دوست'),
+        content: const txt(
           'آیا مطمئن هستید که می‌خواهید این کاربر را از فهرست دوستان حذف کنید؟',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('انصراف'),
+            child: const txt('انصراف'),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('حذف'),
+            child: const txt('حذف'),
           ),
         ],
       ),

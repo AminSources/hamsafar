@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/hs_check_box.dart';
 import 'package:hamsafar/core/widgets/hs_tile.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripTaskTile extends StatelessWidget {
   final String task;
   final bool isDone;
@@ -38,7 +39,7 @@ class TripTaskTile extends StatelessWidget {
               HsCheckBox(value: isDone, onTap: onDone),
               SizedBox(width: 8.w),
               Expanded(
-                child: Text(
+                child: txt(
                   task,
                   style: context.textTheme.bodyMedium?.copyWith(
                     decoration: isDone ? TextDecoration.lineThrough : null,
@@ -50,7 +51,7 @@ class TripTaskTile extends StatelessWidget {
               ),
               if (onEdit != null || onDelete != null)
                 PopupMenuButton<String>(
-                  tooltip: 'مدیریت وظیفه',
+                  tooltip: AppTranslations.translate(context, 'مدیریت وظیفه'),
                   onSelected: (value) {
                     if (value == 'edit') onEdit?.call();
                     if (value == 'delete') onDelete?.call();
@@ -59,12 +60,12 @@ class TripTaskTile extends StatelessWidget {
                     if (onEdit != null)
                       const PopupMenuItem(
                         value: 'edit',
-                        child: Text('ویرایش وظیفه'),
+                        child: txt('ویرایش وظیفه'),
                       ),
                     if (onDelete != null)
                       const PopupMenuItem(
                         value: 'delete',
-                        child: Text('حذف وظیفه'),
+                        child: txt('حذف وظیفه'),
                       ),
                   ],
                 ),

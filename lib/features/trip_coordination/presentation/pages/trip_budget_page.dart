@@ -6,6 +6,8 @@ import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/enums/payment_member_status.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripBudgetPage extends StatefulWidget {
   const TripBudgetPage({super.key});
 
@@ -43,7 +45,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
   void _message(String text, bool success) =>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(text),
+          content: txt(text),
           backgroundColor: success ? Colors.green : null,
         ),
       );
@@ -65,8 +67,13 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: Theme.of(context).textTheme.bodySmall),
-                  SelectableText(value.isEmpty ? 'ثبت نشده' : value),
+                  txt(label, style: Theme.of(context).textTheme.bodySmall),
+                  SelectableText(
+                    AppTranslations.translate(
+                      context,
+                      value.isEmpty ? 'ثبت نشده' : value,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -156,12 +163,12 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  txt(
                     _name(member),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  Text('${_money(member['share'])} تومان'),
-                  Text(
+                  txt('${_money(member['share'])} تومان'),
+                  txt(
                     status.label,
                     style: TextStyle(
                       color: status == PaymentMemberStatus.paid
@@ -174,9 +181,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                       (member['payment_reference'] ?? '')
                           .toString()
                           .isNotEmpty)
-                    Text('شماره پیگیری: ${member['payment_reference']}'),
+                    txt('شماره پیگیری: ${member['payment_reference']}'),
                   if (member['payment_method'] == 'cash')
-                    const Text('پرداخت نقدی'),
+                    const txt('پرداخت نقدی'),
                 ],
               ),
             ),
@@ -185,7 +192,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                 onPressed: _busy
                     ? null
                     : () => _confirm(member['user_id'] as String),
-                child: const Text('تأیید پرداخت'),
+                child: const txt('تأیید پرداخت'),
               ),
           ],
         ),
@@ -231,17 +238,17 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        txt(
                           data['trip_name'] as String? ?? 'سفر',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         SizedBox(height: 8.h),
-                        Text(
+                        txt(
                           'بودجه کل: ${_money(data['total_budget'])} تومان',
                         ),
-                        Text('تعداد اعضا: ${members.length} نفر'),
+                        txt('تعداد اعضا: ${members.length} نفر'),
                         const Divider(),
-                        Text(
+                        txt(
                           'سهم شما: ${_money(data['my_share'])} تومان',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
@@ -249,7 +256,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                         if (!leader)
                           Padding(
                             padding: EdgeInsets.only(top: 8.h),
-                            child: Text(
+                            child: txt(
                               'وضعیت شما: ${myStatus.label}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
@@ -273,7 +280,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                         onPressed: _busy ? null : _openPaymentSheet,
                         child: _busy
                             ? const CircularProgressIndicator()
-                            : const Text('پرداخت سهم'),
+                            : const txt('پرداخت سهم'),
                       ),
                     ),
                 ],
@@ -283,7 +290,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                         'پرداخت‌های ثبت‌شده اعضا را بررسی و پس از دریافت وجه تأیید کنید.',
                   ),
                 SizedBox(height: 20.h),
-                Text(
+                txt(
                   'وضعیت پرداخت اعضا',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
@@ -375,12 +382,12 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              txt(
                 'پرداخت سهم سفر',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8.h),
-              Text(
+              txt(
                 'مبلغ سهم شما: ${widget.moneyFormatter(data['my_share'])} تومان',
               ),
               SizedBox(height: 16.h),
@@ -388,12 +395,12 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
                 segments: const [
                   ButtonSegment(
                     value: 'bank_transfer',
-                    label: Text('کارت‌به‌کارت'),
+                    label: txt('کارت‌به‌کارت'),
                     icon: Icon(Icons.credit_card),
                   ),
                   ButtonSegment(
                     value: 'cash',
-                    label: Text('نقدی به لیدر'),
+                    label: txt('نقدی به لیدر'),
                     icon: Icon(Icons.payments_outlined),
                   ),
                 ],
@@ -425,8 +432,8 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
                     }
                   },
                   decoration: InputDecoration(
-                    labelText: 'شماره پیگیری تراکنش',
-                    hintText: 'شماره پیگیری را وارد کنید',
+                    labelText: AppTranslations.translate(context, 'شماره پیگیری تراکنش'),
+                    hintText: AppTranslations.translate(context, 'شماره پیگیری را وارد کنید'),
                     errorText: _referenceError,
                   ),
                 ),
@@ -443,7 +450,7 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _submit,
-                  child: const Text('ثبت پرداخت برای بررسی'),
+                  child: const txt('ثبت پرداخت برای بررسی'),
                 ),
               ),
             ],

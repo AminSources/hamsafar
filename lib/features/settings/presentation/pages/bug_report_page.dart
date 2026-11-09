@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class BugReportPage extends StatefulWidget {
   const BugReportPage({super.key});
 
@@ -60,8 +61,8 @@ class _BugReportPageState extends State<BugReportPage> {
               //* subject input
               TextField(
                 controller: _subjectController,
-                decoration: const InputDecoration(
-                  hintText: 'مثال: مشکل در ثبت تأیید پرداخت',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'مثال: مشکل در ثبت تأیید پرداخت'),
                 ),
               ),
               SizedBox(height: 20.h),
@@ -74,8 +75,8 @@ class _BugReportPageState extends State<BugReportPage> {
               TextField(
                 controller: _descriptionController,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  hintText: 'توضیحات مشکل را با جزئیات بنویسید...',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'توضیحات مشکل را با جزئیات بنویسید...'),
                 ),
               ),
               SizedBox(height: 20.h),
@@ -88,7 +89,7 @@ class _BugReportPageState extends State<BugReportPage> {
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'example@email.com',
                 ),
               ),

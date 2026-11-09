@@ -10,6 +10,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
 
@@ -39,7 +40,7 @@ class _TripsPageState extends State<TripsPage> {
                 readOnly: true,
                 onTap: () => context.push('/trip-search'),
                 decoration: InputDecoration(
-                  hintText: 'جستجوی سفر...',
+                  hintText: AppTranslations.translate(context, 'جستجوی سفر...'),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 20.sp,
@@ -82,7 +83,7 @@ class _TripsPageState extends State<TripsPage> {
                           TextButton(
                             onPressed: () =>
                                 context.read<TripsCubit>().loadMyTrips(),
-                            child: const Text('تلاش دوباره'),
+                            child: const txt('تلاش دوباره'),
                           ),
                         ],
                       ),

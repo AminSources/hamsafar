@@ -8,6 +8,7 @@ import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cu
 import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:hamsafar/core/localization/app_translations.dart';
 class TripExpenseSetupPage extends StatefulWidget {
   const TripExpenseSetupPage({super.key});
 
@@ -66,8 +67,8 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                       .replaceAll('۹', '9');
                   cubit.setBudget(int.tryParse(normalized) ?? 0);
                 },
-                decoration: const InputDecoration(
-                  hintText: 'مثلاً ۲۷۰۰۰۰۰',
+                decoration: InputDecoration(
+                  hintText: AppTranslations.translate(context, 'مثلاً ۲۷۰۰۰۰۰'),
                   prefixIcon: Icon(Icons.money_rounded),
                 ),
               ),
@@ -84,14 +85,14 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                 initialValue: draft.bankCardNumber,
                 keyboardType: TextInputType.number,
                 onChanged: cubit.setBankCardNumber,
-                decoration: const InputDecoration(labelText: 'شماره کارت', hintText: 'شماره کارت ۱۶ رقمی'),
+                decoration: InputDecoration(labelText: AppTranslations.translate(context, 'شماره کارت'), hintText: AppTranslations.translate(context, 'شماره کارت ۱۶ رقمی')),
               ),
               SizedBox(height: 10.h),
               TextFormField(
                 key: const ValueKey('trip-bank-account'),
                 initialValue: draft.bankAccountName,
                 onChanged: cubit.setBankAccountName,
-                decoration: const InputDecoration(labelText: 'نام صاحب حساب', hintText: 'نام و نام خانوادگی'),
+                decoration: InputDecoration(labelText: AppTranslations.translate(context, 'نام صاحب حساب'), hintText: AppTranslations.translate(context, 'نام و نام خانوادگی')),
               ),
               SizedBox(height: 16.h),
               const HsNote(note: 'اعضای سفر برای کارت‌به‌کارت از این اطلاعات استفاده می‌کنند. پرداخت نقدی به لیدر هم امکان‌پذیر است.'),
@@ -109,8 +110,8 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                     child: TextField(
                       controller: _costItemController,
                       onSubmitted: (_) => _addItem(),
-                      decoration: const InputDecoration(
-                        hintText: 'مثلاً اقامت، سوخت، خوراک',
+                      decoration: InputDecoration(
+                        hintText: AppTranslations.translate(context, 'مثلاً اقامت، سوخت، خوراک'),
                       ),
                     ),
                   ),
@@ -127,7 +128,7 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                 runSpacing: 8.h,
                 children: draft.costItems.map((item) {
                   return InputChip(
-                    label: Text(item),
+                    label: txt(item),
                     onDeleted: () => cubit.removeCostItem(item),
                   );
                 }).toList(),

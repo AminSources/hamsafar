@@ -12,8 +12,12 @@ class FriendsAvailableDaysCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final weekdays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
-    final isAvailable = weekdays.map((day) => freeDays.contains(day)).toList();
+    final isEnglish = Localizations.localeOf(context).languageCode == 'en';
+    final weekdays = isEnglish
+        ? ["Sa", "Su", "M", "Tu", "W", "Th", "F"]
+        : ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+    const dayCodes = ["sat", "sun", "mon", "tue", "wed", "thu", "fri"];
+    final isAvailable = dayCodes.map((day) => freeDays.contains(day)).toList();
 
     return HsContainer(
       padding: EdgeInsets.all(16.w),
