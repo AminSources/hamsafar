@@ -36,6 +36,9 @@ class TripsRepositoryImpl implements TripsRepository {
   Future<int> saveTrip(TripDraft draft, {int? tripId}) =>
       datasource.saveTrip(draft, tripId: tripId);
   @override
+  Future<void> startTrip(int tripId) => datasource.startTrip(tripId);
+
+  @override
   Future<void> deleteTrip(int tripId) => datasource.deleteTrip(tripId);
   @override
   Future<void> joinTrip(int tripId) => datasource.joinTrip(tripId);
