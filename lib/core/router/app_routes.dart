@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/auth_router_notifier.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
@@ -9,6 +10,8 @@ import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page
 import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
+import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
+import 'package:hamsafar/locator.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
@@ -153,11 +156,17 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/available-days",
-        builder: (context, state) => const AvailableDaysPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfilePreferencesCubit>()..load(),
+          child: const AvailableDaysPage(),
+        ),
       ),
       GoRoute(
         path: '/my-items',
-        builder: (context, state) => const MyToolsPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfilePreferencesCubit>()..load(),
+          child: const MyToolsPage(),
+        ),
       ),
       GoRoute(
         path: '/settings',

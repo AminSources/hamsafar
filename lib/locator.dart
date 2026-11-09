@@ -25,8 +25,12 @@ import 'package:hamsafar/features/profile/data/repositories/profile_repository_i
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
 import 'package:hamsafar/features/profile/domain/usecases/edit_profile_usecase.dart';
 import 'package:hamsafar/features/profile/domain/usecases/get_profile_usecase.dart';
+import 'package:hamsafar/features/profile/domain/usecases/get_profile_preferences_usecase.dart';
+import 'package:hamsafar/features/profile/domain/usecases/save_availability_usecase.dart';
+import 'package:hamsafar/features/profile/domain/usecases/save_tools_usecase.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trips/data/data_source/remote/supabase_trips_datasource.dart';
@@ -101,6 +105,22 @@ void setupLocator() {
   );
   sl.registerLazySingleton(
     () => GetProfileUsecase(profileRepository: sl<ProfileRepository>()),
+  );
+  sl.registerLazySingleton<GetProfilePreferencesUsecase>(
+    () => GetProfilePreferencesUsecase(profileRepository: sl<ProfileRepository>()),
+  );
+  sl.registerLazySingleton<SaveAvailabilityUsecase>(
+    () => SaveAvailabilityUsecase(profileRepository: sl<ProfileRepository>()),
+  );
+  sl.registerLazySingleton<SaveToolsUsecase>(
+    () => SaveToolsUsecase(profileRepository: sl<ProfileRepository>()),
+  );
+  sl.registerFactory<ProfilePreferencesCubit>(
+    () => ProfilePreferencesCubit(
+      getProfilePreferencesUsecase: sl<GetProfilePreferencesUsecase>(),
+      saveAvailabilityUsecase: sl<SaveAvailabilityUsecase>(),
+      saveToolsUsecase: sl<SaveToolsUsecase>(),
+    ),
   );
   sl.registerLazySingleton<GetHomeUsecase>(
     () => GetHomeUsecase(homeRepository: sl<HomeRepository>()),
