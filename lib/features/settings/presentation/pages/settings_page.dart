@@ -38,27 +38,27 @@ class SettingsPage extends StatelessWidget {
                         style: context.textTheme.titleMedium,
                       ),
                     ),
-                    RadioListTile<String>(
-                      contentPadding: EdgeInsets.zero,
-                      value: 'fa',
+                    RadioGroup<String>(
                       groupValue: state.localeCode,
-                      title: const txt('فارسی'),
                       onChanged: (value) {
                         if (value == null) return;
                         settingsCubit.setLanguage(value);
                         Navigator.of(sheetContext).pop();
                       },
-                    ),
-                    RadioListTile<String>(
-                      contentPadding: EdgeInsets.zero,
-                      value: 'en',
-                      groupValue: state.localeCode,
-                      title: const txt('انگلیسی'),
-                      onChanged: (value) {
-                        if (value == null) return;
-                        settingsCubit.setLanguage(value);
-                        Navigator.of(sheetContext).pop();
-                      },
+                      child: Column(
+                        children: [
+                          RadioListTile<String>(
+                            contentPadding: EdgeInsets.zero,
+                            value: 'fa',
+                            title: const txt('فارسی'),
+                          ),
+                          RadioListTile<String>(
+                            contentPadding: EdgeInsets.zero,
+                            value: 'en',
+                            title: const txt('انگلیسی'),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -94,38 +94,32 @@ class SettingsPage extends StatelessWidget {
                         style: context.textTheme.titleMedium,
                       ),
                     ),
-                    RadioListTile<ThemeMode>(
-                      contentPadding: EdgeInsets.zero,
-                      value: ThemeMode.system,
+                    RadioGroup<ThemeMode>(
                       groupValue: state.themeMode,
-                      title: const txt('پیشفرض سیستم'),
                       onChanged: (value) {
                         if (value == null) return;
                         settingsCubit.setThemeMode(value);
                         Navigator.of(sheetContext).pop();
                       },
-                    ),
-                    RadioListTile<ThemeMode>(
-                      contentPadding: EdgeInsets.zero,
-                      value: ThemeMode.light,
-                      groupValue: state.themeMode,
-                      title: const txt('روشن'),
-                      onChanged: (value) {
-                        if (value == null) return;
-                        settingsCubit.setThemeMode(value);
-                        Navigator.of(sheetContext).pop();
-                      },
-                    ),
-                    RadioListTile<ThemeMode>(
-                      contentPadding: EdgeInsets.zero,
-                      value: ThemeMode.dark,
-                      groupValue: state.themeMode,
-                      title: const txt('تیره'),
-                      onChanged: (value) {
-                        if (value == null) return;
-                        settingsCubit.setThemeMode(value);
-                        Navigator.of(sheetContext).pop();
-                      },
+                      child: Column(
+                        children: [
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.system,
+                            title: const txt('پیشفرض سیستم'),
+                          ),
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.light,
+                            title: const txt('روشن'),
+                          ),
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.dark,
+                            title: const txt('تیره'),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
