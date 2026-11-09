@@ -97,6 +97,11 @@ class _TripTasksPageState extends State<TripTasksPage> {
         : name;
   }
 
+  int? _parseMemberId(dynamic value) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
   Future<void> _openTaskSheet({Map<String, dynamic>? task}) async {
     if (!_isLeader || !_membershipClosed || _busy) return;
     if (_members.isEmpty) {
@@ -104,92 +109,21 @@ class _TripTasksPageState extends State<TripTasksPage> {
       return;
     }
 
-    final controller = TextEditingController(
-      text: task?['task'] as String? ?? '',
+    final initialTripMemberId = _parseMemberId(
+      task?['trip_member_id'] ?? _members.first['trip_member_id'],
     );
-    String? selectedMemberId =
-        task?['trip_member_id']?.toString() ??
-        _members.first['trip_member_id']?.toString();
 
     final draft = await showModalBottomSheet<_TaskDraft>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setSheetState) {
-          final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-          return SafeArea(
-            top: false,
-            child: AnimatedPadding(
-              duration: const Duration(milliseconds: 180),
-              padding: EdgeInsets.only(bottom: bottomInset),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task == null ? 'ایجاد وظیفه' : 'ویرایش وظیفه',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    SizedBox(height: 16.h),
-                    TextField(
-                      controller: controller,
-                      autofocus: true,
-                      maxLength: 120,
-                      decoration: const InputDecoration(
-                        labelText: 'عنوان وظیفه',
-                        hintText: 'مثلاً رزرو اقامتگاه',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                    DropdownButtonFormField<String>(
-                      value: selectedMemberId,
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'مسئول انجام وظیفه',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: _members.map((member) {
-                        final id = member['trip_member_id'].toString();
-                        return DropdownMenuItem(
-                          value: id,
-                          child: Text(_memberName(member)),
-                        );
-                      }).toList(),
-                      onChanged: (value) =>
-                          setSheetState(() => selectedMemberId = value),
-                    ),
-                    SizedBox(height: 18.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () {
-                          final title = controller.text.trim();
-                          if (title.isEmpty || selectedMemberId == null) return;
-                          Navigator.of(sheetContext).pop(
-                            _TaskDraft(
-                              title: title,
-                              tripMemberId: int.parse(selectedMemberId!),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          task == null ? 'افزودن وظیفه' : 'ذخیره تغییرات',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+      builder: (_) => _TripTaskFormSheet(
+        members: _members,
+        initialTitle: task?['task'] as String? ?? '',
+        initialTripMemberId: initialTripMemberId,
+        isEditing: task != null,
       ),
     );
-    controller.dispose();
     if (!mounted || draft == null) return;
 
     setState(() => _busy = true);
@@ -378,4 +312,149 @@ class _TaskDraft {
 
   final String title;
   final int tripMemberId;
+}
+
+/// Owns the text controller for the lifetime of the bottom-sheet route.
+///
+/// The route can remain mounted briefly after showModalBottomSheet completes
+/// its result future, while the reverse transition is still running. Keeping
+/// the controller here prevents disposing it while TextField is still mounted.
+class _TripTaskFormSheet extends StatefulWidget {
+  const _TripTaskFormSheet({
+    required this.members,
+    required this.initialTitle,
+    required this.initialTripMemberId,
+    required this.isEditing,
+  });
+
+  final List<Map<String, dynamic>> members;
+  final String initialTitle;
+  final int? initialTripMemberId;
+  final bool isEditing;
+
+  @override
+  State<_TripTaskFormSheet> createState() => _TripTaskFormSheetState();
+}
+
+class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
+  late final TextEditingController _titleController;
+  int? _selectedTripMemberId;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.initialTitle);
+
+    final availableIds = widget.members
+        .map((member) => _parseMemberId(member['trip_member_id']))
+        .whereType<int>()
+        .toSet();
+
+    if (availableIds.contains(widget.initialTripMemberId)) {
+      _selectedTripMemberId = widget.initialTripMemberId;
+    } else if (availableIds.isNotEmpty) {
+      _selectedTripMemberId = availableIds.first;
+    }
+  }
+
+  int? _parseMemberId(dynamic value) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  String _memberName(Map<String, dynamic> member) {
+    final name =
+        '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'.trim();
+    return name.isEmpty
+        ? (member['username'] as String? ?? 'عضو سفر')
+        : name;
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final members = widget.members
+        .map((member) {
+          final id = _parseMemberId(member['trip_member_id']);
+          if (id == null) return null;
+          return DropdownMenuItem<int>(
+            value: id,
+            child: Text(_memberName(member)),
+          );
+        })
+        .whereType<DropdownMenuItem<int>>()
+        .toList();
+
+    return SafeArea(
+      top: false,
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 24.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.isEditing ? 'ویرایش وظیفه' : 'ایجاد وظیفه',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SizedBox(height: 16.h),
+              TextField(
+                controller: _titleController,
+                autofocus: true,
+                maxLength: 120,
+                decoration: const InputDecoration(
+                  labelText: 'عنوان وظیفه',
+                  hintText: 'مثلاً رزرو اقامتگاه',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 12.h),
+              DropdownButtonFormField<int>(
+                value: _selectedTripMemberId,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                  labelText: 'مسئول انجام وظیفه',
+                  border: OutlineInputBorder(),
+                ),
+                items: members,
+                onChanged: (value) {
+                  setState(() => _selectedTripMemberId = value);
+                },
+              ),
+              SizedBox(height: 18.h),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    final title = _titleController.text.trim();
+                    final memberId = _selectedTripMemberId;
+                    if (title.isEmpty || memberId == null) return;
+
+                    Navigator.of(context).pop(
+                      _TaskDraft(
+                        title: title,
+                        tripMemberId: memberId,
+                      ),
+                    );
+                  },
+                  child: Text(
+                    widget.isEditing ? 'ذخیره تغییرات' : 'افزودن وظیفه',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
