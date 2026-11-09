@@ -13,19 +13,25 @@ class SupabaseProfileDatasource {
       throw Exception('User is not authenticated');
     }
 
-    await _supabaseClient
+    final updatedProfiles = await _supabaseClient
         .from('profiles')
         .update({
           'username': params.userName,
           'first_name': params.firstName,
           'last_name': params.lastName,
           'bio': params.bio ?? '',
-          "avatar_icon": params.avatarIcon,
-          "rate": params.rate ?? 0.0,
-          "trip_count": params.tripCount ?? 0,
-          "onboarding_completed": params.onboardingCompleted,
+          'avatar_icon': params.avatarIcon,
+          'rate': params.rate ?? 0.0,
+          'trip_count': params.tripCount ?? 0,
+          'onboarding_completed': params.onboardingCompleted,
+          'updated_at': DateTime.now().toUtc().toIso8601String(),
         })
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select('id');
+
+    if (updatedProfiles.isEmpty) {
+      throw Exception('Profile update was not applied for the current user');
+    }
   }
 
   Future<Map<String, dynamic>> getProfile() async {

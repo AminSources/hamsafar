@@ -13,8 +13,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class ProfileCard extends StatelessWidget {
   final ProfileEntity profileInfo;
+  final VoidCallback onEdit;
 
-  const ProfileCard({super.key, required this.profileInfo});
+  const ProfileCard({
+    super.key,
+    required this.profileInfo,
+    required this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +94,7 @@ class ProfileCard extends StatelessWidget {
             width: double.infinity,
             height: 46.h,
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: onEdit,
               child: txt('ویرایش پروفایل', style: context.textTheme.labelLarge),
             ),
           ),
