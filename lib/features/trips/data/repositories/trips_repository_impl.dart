@@ -21,6 +21,7 @@ class TripsRepositoryImpl implements TripsRepository {
     final rows = await datasource.getTrips(mode: 'details', tripId: tripId);
     if (rows.isEmpty) throw Exception('trip_not_found_or_forbidden');
     final status = await datasource.getMembershipStatus(tripId);
+    final membershipClosed = await datasource.getMembershipClosed(tripId);
     final options = await datasource.getDepartureOptions(tripId);
     final bankDetails = rows.first['is_creator'] == true
         ? await datasource.getTripPaymentDetails(tripId)
@@ -29,6 +30,7 @@ class TripsRepositoryImpl implements TripsRepository {
       ...rows.first,
       ...?bankDetails,
       'departure_options': options,
+      'membership_closed': membershipClosed,
     }, currentMemberStatus: status);
   }
 
@@ -37,6 +39,10 @@ class TripsRepositoryImpl implements TripsRepository {
       datasource.saveTrip(draft, tripId: tripId);
   @override
   Future<void> startTrip(int tripId) => datasource.startTrip(tripId);
+
+  @override
+  Future<void> setMembershipClosed(int tripId, bool closed) =>
+      datasource.setMembershipClosed(tripId, closed);
 
   @override
   Future<void> deleteTrip(int tripId) => datasource.deleteTrip(tripId);

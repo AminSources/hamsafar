@@ -11,8 +11,10 @@ import 'package:hamsafar/core/widgets/txt.dart';
 class TripTaskTile extends StatelessWidget {
   final String task;
   final bool isDone;
-  final ValueChanged<bool> onDone;
+  final ValueChanged<bool>? onDone;
   final String name;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const TripTaskTile({
     super.key,
@@ -20,41 +22,70 @@ class TripTaskTile extends StatelessWidget {
     required this.isDone,
     required this.onDone,
     required this.name,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     return HsTile(
       child: Column(
-        crossAxisAlignment: .start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8.h,
         children: [
-          //* task details
           Row(
-            spacing: 8.w,
             children: [
-              //* task checkbox
               HsCheckBox(value: isDone, onTap: onDone),
-
-              //* task title
-              txt(task),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  task,
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    decoration: isDone ? TextDecoration.lineThrough : null,
+                    color: isDone
+                        ? context.colorScheme.onSurfaceVariant
+                        : context.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              if (onEdit != null || onDelete != null)
+                PopupMenuButton<String>(
+                  tooltip: 'مدیریت وظیفه',
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit?.call();
+                    if (value == 'delete') onDelete?.call();
+                  },
+                  itemBuilder: (context) => [
+                    if (onEdit != null)
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text('ویرایش وظیفه'),
+                      ),
+                    if (onDelete != null)
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('حذف وظیفه'),
+                      ),
+                  ],
+                ),
             ],
           ),
-
-          //* user details
           Row(
             spacing: 8.w,
             children: [
-              //* profile avatar
               HsAvatar(
-                label: txt(name[0]),
+                label: txt(name.isEmpty ? '؟' : name[0]),
                 size: 24.w,
                 color: getAvatarColor(name),
                 type: HsAvatarType.profile,
               ),
-
-              //* name
               txt(name, style: context.textTheme.bodySmall),
+              if (isDone)
+                Icon(
+                  Icons.check_circle,
+                  size: 15.sp,
+                  color: context.colorScheme.primary,
+                ),
             ],
           ),
         ],

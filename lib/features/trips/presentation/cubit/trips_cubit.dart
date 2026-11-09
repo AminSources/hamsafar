@@ -14,6 +14,7 @@ class TripsState extends Equatable {
   final bool isSaving;
   final bool isDeleting;
   final bool isUpdatingStatus;
+  final bool isUpdatingMembership;
   final String? errorMessage;
 
   const TripsState({
@@ -26,6 +27,7 @@ class TripsState extends Equatable {
     this.isSaving = false,
     this.isDeleting = false,
     this.isUpdatingStatus = false,
+    this.isUpdatingMembership = false,
     this.errorMessage,
   });
 
@@ -40,6 +42,7 @@ class TripsState extends Equatable {
     bool? isSaving,
     bool? isDeleting,
     bool? isUpdatingStatus,
+    bool? isUpdatingMembership,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -54,6 +57,7 @@ class TripsState extends Equatable {
       isSaving: isSaving ?? this.isSaving,
       isDeleting: isDeleting ?? this.isDeleting,
       isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
+      isUpdatingMembership: isUpdatingMembership ?? this.isUpdatingMembership,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
@@ -69,6 +73,7 @@ class TripsState extends Equatable {
         isSaving,
         isDeleting,
         isUpdatingStatus,
+        isUpdatingMembership,
         errorMessage,
       ];
 }
@@ -153,6 +158,23 @@ class TripsCubit extends Cubit<TripsState> {
   Future<bool> removeTripMember(int tripId, String userId) =>
       _runMembershipAction(() => repository.removeTripMember(tripId, userId), tripId);
 
+  Future<bool> setMembershipClosed(int tripId, bool closed) async {
+    emit(state.copyWith(isUpdatingMembership: true, clearError: true));
+    try {
+      await repository.setMembershipClosed(tripId, closed);
+      await loadTripDetails(tripId);
+      await loadMyTrips();
+      emit(state.copyWith(isUpdatingMembership: false));
+      return true;
+    } catch (error) {
+      emit(state.copyWith(
+        isUpdatingMembership: false,
+        errorMessage: _friendlyError(error),
+      ));
+      return false;
+    }
+  }
+
   Future<bool> startTrip(int tripId) async {
     emit(state.copyWith(isUpdatingStatus: true, clearError: true));
     try {
@@ -208,6 +230,9 @@ class TripsCubit extends Cubit<TripsState> {
     final raw = error.toString().toLowerCase();
     if (raw.contains('not_authenticated')) {
       return 'برای انجام این عملیات وارد حساب خود شوید.';
+    }
+    if (raw.contains('membership_closed')) {
+      return 'عضوگیری این سفر بسته شده است و امکان تغییر عضویت وجود ندارد.';
     }
     if (raw.contains('already_in_another_trip')) {
       return 'شما در حال حاضر عضو سفر دیگری هستید؛ ابتدا از سفر فعلی خارج شوید.';

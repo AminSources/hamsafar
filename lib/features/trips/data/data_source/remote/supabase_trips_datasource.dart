@@ -44,6 +44,21 @@ class SupabaseTripsDatasource {
     return value as String?;
   }
 
+  Future<bool> getMembershipClosed(int tripId) async {
+    final value = await supabaseClient.rpc(
+      'get_trip_membership_closed',
+      params: {'p_trip_id': tripId},
+    );
+    return value == true;
+  }
+
+  Future<void> setMembershipClosed(int tripId, bool closed) async {
+    await supabaseClient.rpc(
+      'set_trip_membership_closed',
+      params: {'p_trip_id': tripId, 'p_closed': closed},
+    );
+  }
+
   Future<void> joinTrip(int tripId) async {
     await supabaseClient.rpc('join_trip', params: {'p_trip_id': tripId});
   }
