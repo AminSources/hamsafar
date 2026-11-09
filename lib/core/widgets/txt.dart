@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/core/localization/app_translations.dart';
 
 // ignore: camel_case_types
 class txt extends StatelessWidget {
@@ -32,6 +33,7 @@ class txt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final translatedText = AppTranslations.translate(context, text);
 
     final baseStyle = theme.textTheme.bodyMedium?.merge(style);
 
@@ -45,7 +47,7 @@ class txt extends StatelessWidget {
     );
 
     return Text(
-      text,
+      translatedText,
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
