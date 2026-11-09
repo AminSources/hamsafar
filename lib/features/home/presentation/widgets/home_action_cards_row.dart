@@ -8,7 +8,11 @@ class HomeActionCardsRow extends StatelessWidget {
   final bool isInTrip;
   final int? tripId;
 
-  const HomeActionCardsRow({super.key, required this.isInTrip, required this.tripId});
+  const HomeActionCardsRow({
+    super.key,
+    required this.isInTrip,
+    required this.tripId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +50,7 @@ class HomeActionCardsRow extends StatelessWidget {
           child: HomeActionCard(
             icon: Icons.checklist_outlined,
             title: 'وظایف سفر',
-            subtitle: isInTrip ? '۲ وظیفه امروز' : '۴ وظیفه',
+            subtitle: 'وظایف و مسئولیت‌های اعضا',
             bg: context.colorScheme.primaryContainer,
             fg: context.colorScheme.onPrimaryContainer,
             onTap: tripId == null
