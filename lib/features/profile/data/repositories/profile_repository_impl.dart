@@ -59,7 +59,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return DataSuccess(ProfilePreferencesModel.fromJson(response));
     } catch (e) {
       log.e(e);
-      return DataFailed('دریافت تنظیمات پروفایل ناموفق بود: ' + e.toString());
+      return DataFailed('دریافت تنظیمات پروفایل ناموفق بود: $e');
     }
   }
 
@@ -72,7 +72,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return DataSuccess(null);
     } catch (e) {
       log.e(e);
-      return DataFailed('ذخیره روزهای آزاد ناموفق بود: ' + e.toString());
+      return DataFailed('ذخیره روزهای آزاد ناموفق بود: $e');
     }
   }
 
@@ -83,8 +83,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       return DataSuccess(null);
     } catch (e) {
       log.e(e);
-      return DataFailed('ذخیره وسایل ناموفق بود: ' + e.toString());
+      return DataFailed('ذخیره وسایل ناموفق بود: $e');
     }
   }
-
 }

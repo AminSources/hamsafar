@@ -6,8 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseProfileDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseProfileDatasource({required SupabaseClient supabaseClient})
-    : _supabaseClient = supabaseClient;
+  SupabaseProfileDatasource({required this._supabaseClient});
 
   User _requireUser() {
     final user = _supabaseClient.auth.currentUser;
@@ -106,13 +105,14 @@ class SupabaseProfileDatasource {
       'save_user_tools',
       params: {
         'p_tools': tools
-            .map((tool) => {
-                  'name': tool.name.trim(),
-                  'is_available': tool.isAvailable,
-                })
+            .map(
+              (tool) => {
+                'name': tool.name.trim(),
+                'is_available': tool.isAvailable,
+              },
+            )
             .toList(),
       },
     );
   }
-
 }
