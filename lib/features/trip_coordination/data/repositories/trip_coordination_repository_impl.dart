@@ -42,9 +42,6 @@ class TripCoordinationRepositoryImpl implements TripCoordinationRepository {
   }
 
   @override
-  String? getCurrentUserId() => datasource.getCurrentUserId();
-
-  @override
   Future<void> saveTripTask({
     int? taskId,
     required int tripMemberId,

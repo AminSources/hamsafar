@@ -8,15 +8,23 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
-import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
+import 'package:hamsafar/core/params/no_params.dart';
+import 'package:hamsafar/core/resources/data_state.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
+import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
 class TripDetailsPage extends StatefulWidget {
   final int? tripId;
+  final GetFriendsUsecase getFriendsUsecase;
 
-  const TripDetailsPage({super.key, this.tripId});
+  const TripDetailsPage({
+    super.key,
+    this.tripId,
+    required this.getFriendsUsecase,
+  });
 
   @override
   State<TripDetailsPage> createState() => _TripDetailsPageState();
@@ -55,10 +63,32 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   }
 
   Future<void> _invite(TripEntity trip) async {
-    final friendsBloc = context.read<FriendsBloc>();
     final tripsCubit = context.read<TripsCubit>();
     final messenger = ScaffoldMessenger.of(context);
-    friendsBloc.add(GetFriendsEvent());
+
+    final friendsResult =
+        await widget.getFriendsUsecase(const NoParams());
+    if (!mounted) return;
+
+    if (friendsResult is! DataSuccess<List<FriendEntity>>) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: txt(
+            friendsResult.message ?? 'دریافت فهرست دوستان ناموفق بود.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final friends = friendsResult.data ?? const <FriendEntity>[];
+    if (friends.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: txt('دوستی برای دعوت وجود ندارد.')),
+      );
+      return;
+    }
+
     final selected = <String>{};
     final confirmed = await showDialog<bool>(
       context: context,
@@ -67,38 +97,28 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           title: const txt('دعوت دوستان به سفر'),
           content: SizedBox(
             width: double.maxFinite,
-            child: BlocBuilder<FriendsBloc, FriendsState>(
-              bloc: friendsBloc,
-              builder: (context, state) {
-                if (state is FriendsLoading || state is FriendsInitial) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is FriendsFailure) return txt(state.errorMessage);
-                if (state is! FriendsSuccess || state.friends.isEmpty) {
-                  return const txt('دوستی برای دعوت وجود ندارد.');
-                }
-                return ListView(
-                  shrinkWrap: true,
-                  children: state.friends
-                      .map(
-                        (friend) => CheckboxListTile(
-                          value: selected.contains(friend.id),
-                          title: txt(
-                            '${friend.firstName} ${friend.lastName}'.trim(),
-                          ),
-                          subtitle: txt('@${friend.userName}'),
-                          onChanged: (value) => setDialogState(() {
-                            if (value == true) {
-                              selected.add(friend.id);
-                            } else {
-                              selected.remove(friend.id);
-                            }
-                          }),
-                        ),
-                      )
-                      .toList(),
-                );
-              },
+            child: ListView(
+              shrinkWrap: true,
+              children: friends
+                  .map(
+                    (friend) => CheckboxListTile(
+                      value: selected.contains(friend.id),
+                      title: txt(
+                        '${friend.firstName} ${friend.lastName}'.trim().isEmpty
+                            ? friend.userName
+                            : '${friend.firstName} ${friend.lastName}'.trim(),
+                      ),
+                      subtitle: txt('@${friend.userName}'),
+                      onChanged: (value) => setDialogState(() {
+                        if (value == true) {
+                          selected.add(friend.id);
+                        } else {
+                          selected.remove(friend.id);
+                        }
+                      }),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
           actions: [
@@ -116,7 +136,9 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
         ),
       ),
     );
+
     if (confirmed != true || !mounted) return;
+
     final ok = await tripsCubit.inviteToTrip(trip.id, selected.toList());
     if (!mounted) return;
     messenger.showSnackBar(

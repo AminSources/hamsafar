@@ -13,7 +13,6 @@ abstract interface class TripCoordinationRepository {
   });
 
   Future<TripTaskContextEntity> getTripTaskContext(int tripId);
-  String? getCurrentUserId();
   Future<void> saveTripTask({
     int? taskId,
     required int tripMemberId,

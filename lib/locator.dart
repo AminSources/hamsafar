@@ -256,9 +256,6 @@ void setupLocator() {
   sl.registerLazySingleton<GetTripTaskContextUseCase>(
     () => GetTripTaskContextUseCase(sl<TripCoordinationRepository>()),
   );
-  sl.registerLazySingleton<GetCurrentUserIdUseCase>(
-    () => GetCurrentUserIdUseCase(sl<TripCoordinationRepository>()),
-  );
   sl.registerLazySingleton<SaveTripTaskUseCase>(
     () => SaveTripTaskUseCase(sl<TripCoordinationRepository>()),
   );

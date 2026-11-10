@@ -117,7 +117,10 @@ class AppRoutes {
         path: "/trip-detail",
         builder: (context, state) {
           final tripId = state.extra is int ? state.extra as int : null;
-          return TripDetailsPage(tripId: tripId);
+          return TripDetailsPage(
+            tripId: tripId,
+            getFriendsUsecase: sl<GetFriendsUsecase>(),
+          );
         },
       ),
       GoRoute(
@@ -195,7 +198,7 @@ class AppRoutes {
           return TripTasksPage(
             tripId: tripId,
             getTripTaskContextUseCase: sl<GetTripTaskContextUseCase>(),
-            getCurrentUserIdUseCase: sl<GetCurrentUserIdUseCase>(),
+            getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
             saveTripTaskUseCase: sl<SaveTripTaskUseCase>(),
             deleteTripTaskUseCase: sl<DeleteTripTaskUseCase>(),
             completeTripTaskUseCase: sl<CompleteTripTaskUseCase>(),

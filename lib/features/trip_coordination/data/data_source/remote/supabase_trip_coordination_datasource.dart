@@ -45,8 +45,6 @@ class SupabaseTripCoordinationDatasource {
     return Map<String, dynamic>.from(response as Map);
   }
 
-  String? getCurrentUserId() => client.auth.currentUser?.id;
-
   Future<void> saveTripTask({
     int? taskId,
     required int tripMemberId,

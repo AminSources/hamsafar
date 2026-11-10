@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/params/no_params.dart';
+import 'package:hamsafar/core/resources/data_state.dart';
+import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
+import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/trip_task_tile.dart';
@@ -12,7 +16,7 @@ class TripTasksPage extends StatefulWidget {
   final int tripId;
 
   final GetTripTaskContextUseCase getTripTaskContextUseCase;
-  final GetCurrentUserIdUseCase getCurrentUserIdUseCase;
+  final GetCurrentUserUsecase getCurrentUserUsecase;
   final SaveTripTaskUseCase saveTripTaskUseCase;
   final DeleteTripTaskUseCase deleteTripTaskUseCase;
   final CompleteTripTaskUseCase completeTripTaskUseCase;
@@ -21,7 +25,7 @@ class TripTasksPage extends StatefulWidget {
     super.key,
     required this.tripId,
     required this.getTripTaskContextUseCase,
-    required this.getCurrentUserIdUseCase,
+    required this.getCurrentUserUsecase,
     required this.saveTripTaskUseCase,
     required this.deleteTripTaskUseCase,
     required this.completeTripTaskUseCase,
@@ -35,8 +39,9 @@ class _TripTasksPageState extends State<TripTasksPage> {
   TripTaskContextEntity? _data;
   bool _loading = true;
   bool _busy = false;
+  String? _currentUserId;
 
-  String get _userId => widget.getCurrentUserIdUseCase() ?? '';
+  String get _userId => _currentUserId ?? '';
   bool get _isLeader => _data?.isLeader == true;
   bool get _membershipClosed => _data?.membershipClosed == true;
 
@@ -55,6 +60,24 @@ class _TripTasksPageState extends State<TripTasksPage> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
+      if (_currentUserId == null) {
+        final authResult =
+            await widget.getCurrentUserUsecase(const NoParams());
+        if (!mounted) return;
+
+        if (authResult is! DataSuccess<UserEntity?> ||
+            authResult.data == null) {
+          _message(
+            authResult.message ?? 'ابتدا وارد حساب کاربری شوید.',
+            false,
+          );
+          setState(() => _data = null);
+          return;
+        }
+
+        _currentUserId = authResult.data!.id;
+      }
+
       final response = await widget.getTripTaskContextUseCase(widget.tripId);
       if (!mounted) return;
       setState(() => _data = response);

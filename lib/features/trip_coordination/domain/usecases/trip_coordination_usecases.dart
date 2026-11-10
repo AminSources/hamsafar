@@ -40,12 +40,6 @@ class GetTripTaskContextUseCase {
       repository.getTripTaskContext(tripId);
 }
 
-class GetCurrentUserIdUseCase {
-  final TripCoordinationRepository repository;
-  const GetCurrentUserIdUseCase(this.repository);
-  String? call() => repository.getCurrentUserId();
-}
-
 class SaveTripTaskUseCase {
   final TripCoordinationRepository repository;
   const SaveTripTaskUseCase(this.repository);
