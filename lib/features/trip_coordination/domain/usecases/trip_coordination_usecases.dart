@@ -1,9 +1,10 @@
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coordination_repository.dart';
 
 class GetMyTripBudgetUseCase {
   final TripCoordinationRepository repository;
   const GetMyTripBudgetUseCase(this.repository);
-  Future<CoordinationJson?> call() => repository.getMyTripBudget();
+  Future<TripBudgetEntity?> call() => repository.getMyTripBudget();
 }
 
 class SubmitTripPaymentUseCase {
@@ -35,7 +36,7 @@ class ConfirmTripPaymentUseCase {
 class GetTripTaskContextUseCase {
   final TripCoordinationRepository repository;
   const GetTripTaskContextUseCase(this.repository);
-  Future<CoordinationJson> call(int tripId) =>
+  Future<TripTaskContextEntity> call(int tripId) =>
       repository.getTripTaskContext(tripId);
 }
 
@@ -77,7 +78,8 @@ class CompleteTripTaskUseCase {
 class GetMyDeparturePollsUseCase {
   final TripCoordinationRepository repository;
   const GetMyDeparturePollsUseCase(this.repository);
-  Future<List<CoordinationJson>> call() => repository.getMyDeparturePolls();
+  Future<List<DeparturePollEntity>> call() =>
+      repository.getMyDeparturePolls();
 }
 
 class CastDepartureVoteUseCase {

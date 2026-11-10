@@ -1,4 +1,3 @@
-import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coordination_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseTripCoordinationDatasource {
@@ -6,7 +5,7 @@ class SupabaseTripCoordinationDatasource {
 
   const SupabaseTripCoordinationDatasource({required this.client});
 
-  Future<CoordinationJson?> getMyTripBudget() async {
+  Future<Map<String, dynamic>?> getMyTripBudget() async {
     final response = await client.rpc('get_my_trip_budget');
     final rows = response as List;
     if (rows.isEmpty) return null;
@@ -38,7 +37,7 @@ class SupabaseTripCoordinationDatasource {
     );
   }
 
-  Future<CoordinationJson> getTripTaskContext(int tripId) async {
+  Future<Map<String, dynamic>> getTripTaskContext(int tripId) async {
     final response = await client.rpc(
       'get_trip_task_context',
       params: {'p_trip_id': tripId},
@@ -73,7 +72,7 @@ class SupabaseTripCoordinationDatasource {
         .eq('id', taskId);
   }
 
-  Future<List<CoordinationJson>> getMyDeparturePolls() async {
+  Future<List<Map<String, dynamic>>> getMyDeparturePolls() async {
     final response = await client.rpc('get_my_departure_polls');
     return (response as List)
         .map((row) => Map<String, dynamic>.from(row as Map))

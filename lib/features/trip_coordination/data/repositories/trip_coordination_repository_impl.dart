@@ -1,4 +1,6 @@
 import 'package:hamsafar/features/trip_coordination/data/data_source/remote/supabase_trip_coordination_datasource.dart';
+import 'package:hamsafar/features/trip_coordination/data/models/trip_coordination_models.dart';
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coordination_repository.dart';
 
 class TripCoordinationRepositoryImpl implements TripCoordinationRepository {
@@ -7,7 +9,10 @@ class TripCoordinationRepositoryImpl implements TripCoordinationRepository {
   const TripCoordinationRepositoryImpl({required this.datasource});
 
   @override
-  Future<CoordinationJson?> getMyTripBudget() => datasource.getMyTripBudget();
+  Future<TripBudgetEntity?> getMyTripBudget() async {
+    final json = await datasource.getMyTripBudget();
+    return json == null ? null : TripBudgetModel.fromJson(json);
+  }
 
   @override
   Future<void> submitTripPayment({
@@ -31,8 +36,10 @@ class TripCoordinationRepositoryImpl implements TripCoordinationRepository {
   }
 
   @override
-  Future<CoordinationJson> getTripTaskContext(int tripId) =>
-      datasource.getTripTaskContext(tripId);
+  Future<TripTaskContextEntity> getTripTaskContext(int tripId) async {
+    final json = await datasource.getTripTaskContext(tripId);
+    return TripTaskContextModel.fromJson(json);
+  }
 
   @override
   String? getCurrentUserId() => datasource.getCurrentUserId();
@@ -58,8 +65,10 @@ class TripCoordinationRepositoryImpl implements TripCoordinationRepository {
       datasource.completeTripTask(taskId);
 
   @override
-  Future<List<CoordinationJson>> getMyDeparturePolls() =>
-      datasource.getMyDeparturePolls();
+  Future<List<DeparturePollEntity>> getMyDeparturePolls() async {
+    final rows = await datasource.getMyDeparturePolls();
+    return rows.map(DeparturePollModel.fromJson).toList();
+  }
 
   @override
   Future<void> castDepartureVote({

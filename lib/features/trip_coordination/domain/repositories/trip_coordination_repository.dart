@@ -1,7 +1,7 @@
-typedef CoordinationJson = Map<String, dynamic>;
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 
 abstract interface class TripCoordinationRepository {
-  Future<CoordinationJson?> getMyTripBudget();
+  Future<TripBudgetEntity?> getMyTripBudget();
   Future<void> submitTripPayment({
     required int tripId,
     required String method,
@@ -12,7 +12,7 @@ abstract interface class TripCoordinationRepository {
     required String userId,
   });
 
-  Future<CoordinationJson> getTripTaskContext(int tripId);
+  Future<TripTaskContextEntity> getTripTaskContext(int tripId);
   String? getCurrentUserId();
   Future<void> saveTripTask({
     int? taskId,
@@ -22,7 +22,7 @@ abstract interface class TripCoordinationRepository {
   Future<void> deleteTripTask(int taskId);
   Future<void> completeTripTask(int taskId);
 
-  Future<List<CoordinationJson>> getMyDeparturePolls();
+  Future<List<DeparturePollEntity>> getMyDeparturePolls();
   Future<void> castDepartureVote({
     required int tripId,
     required int optionId,
