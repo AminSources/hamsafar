@@ -1,76 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trips/domain/usecases/trips_usecases.dart';
-
-class TripsState extends Equatable {
-  final List<TripEntity> myTrips;
-  final List<TripEntity> searchResults;
-  final TripEntity? selectedTrip;
-  final bool isLoadingMyTrips;
-  final bool isSearching;
-  final bool isLoadingDetails;
-  final bool isDeleting;
-  final bool isUpdatingStatus;
-  final bool isUpdatingMembership;
-  final String? errorMessage;
-
-  const TripsState({
-    this.myTrips = const [],
-    this.searchResults = const [],
-    this.selectedTrip,
-    this.isLoadingMyTrips = false,
-    this.isSearching = false,
-    this.isLoadingDetails = false,
-    this.isDeleting = false,
-    this.isUpdatingStatus = false,
-    this.isUpdatingMembership = false,
-    this.errorMessage,
-  });
-
-  TripsState copyWith({
-    List<TripEntity>? myTrips,
-    List<TripEntity>? searchResults,
-    TripEntity? selectedTrip,
-    bool clearSelectedTrip = false,
-    bool? isLoadingMyTrips,
-    bool? isSearching,
-    bool? isLoadingDetails,
-    bool? isDeleting,
-    bool? isUpdatingStatus,
-    bool? isUpdatingMembership,
-    String? errorMessage,
-    bool clearError = false,
-  }) {
-    return TripsState(
-      myTrips: myTrips ?? this.myTrips,
-      searchResults: searchResults ?? this.searchResults,
-      selectedTrip:
-          clearSelectedTrip ? null : (selectedTrip ?? this.selectedTrip),
-      isLoadingMyTrips: isLoadingMyTrips ?? this.isLoadingMyTrips,
-      isSearching: isSearching ?? this.isSearching,
-      isLoadingDetails: isLoadingDetails ?? this.isLoadingDetails,
-      isDeleting: isDeleting ?? this.isDeleting,
-      isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
-      isUpdatingMembership: isUpdatingMembership ?? this.isUpdatingMembership,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-    );
-  }
-
-  @override
-  List<Object?> get props => [
-        myTrips,
-        searchResults,
-        selectedTrip,
-        isLoadingMyTrips,
-        isSearching,
-        isLoadingDetails,
-        isDeleting,
-        isUpdatingStatus,
-        isUpdatingMembership,
-        errorMessage,
-      ];
-}
+import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
 
 class TripsCubit extends Cubit<TripsState> {
   final GetMyTripsUseCase getMyTripsUseCase;
@@ -107,10 +38,12 @@ class TripsCubit extends Cubit<TripsState> {
       final trips = await getMyTripsUseCase();
       emit(state.copyWith(myTrips: trips, isLoadingMyTrips: false));
     } catch (error) {
-      emit(state.copyWith(
-        isLoadingMyTrips: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(
+          isLoadingMyTrips: false,
+          errorMessage: _friendlyError(error),
+        ),
+      );
     }
   }
 
@@ -123,41 +56,54 @@ class TripsCubit extends Cubit<TripsState> {
       emit(state.copyWith(searchResults: trips, isSearching: false));
     } catch (error) {
       if (version != _searchVersion) return;
-      emit(state.copyWith(
-        isSearching: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(isSearching: false, errorMessage: _friendlyError(error)),
+      );
     }
   }
 
   Future<TripEntity?> loadTripDetails(int tripId) async {
-    emit(state.copyWith(
-      isLoadingDetails: true,
-      clearSelectedTrip: true,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        isLoadingDetails: true,
+        clearSelectedTrip: true,
+        clearError: true,
+      ),
+    );
     try {
       final trip = await getTripDetailsUseCase(tripId);
       emit(state.copyWith(selectedTrip: trip, isLoadingDetails: false));
       return trip;
     } catch (error) {
-      emit(state.copyWith(
-        isLoadingDetails: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(
+          isLoadingDetails: false,
+          errorMessage: _friendlyError(error),
+        ),
+      );
       return null;
     }
   }
 
-  Future<bool> joinTrip(int tripId) => _runMembershipAction(() => joinTripUseCase(tripId), tripId);
+  Future<bool> joinTrip(int tripId) =>
+      _runMembershipAction(() => joinTripUseCase(tripId), tripId);
   Future<bool> respondToInvitation(int tripId, {required bool accept}) =>
-      _runMembershipAction(() => respondToTripInvitationUseCase(tripId, accept: accept), tripId);
+      _runMembershipAction(
+        () => respondToTripInvitationUseCase(tripId, accept: accept),
+        tripId,
+      );
   Future<bool> leaveTrip(int tripId) =>
       _runMembershipAction(() => leaveTripUseCase(tripId), tripId);
   Future<bool> inviteToTrip(int tripId, List<String> userIds) =>
-      _runMembershipAction(() => inviteUsersToTripUseCase(tripId, userIds), tripId);
+      _runMembershipAction(
+        () => inviteUsersToTripUseCase(tripId, userIds),
+        tripId,
+      );
   Future<bool> removeTripMember(int tripId, String userId) =>
-      _runMembershipAction(() => removeTripMemberUseCase(tripId, userId), tripId);
+      _runMembershipAction(
+        () => removeTripMemberUseCase(tripId, userId),
+        tripId,
+      );
 
   Future<bool> setMembershipClosed(int tripId, bool closed) async {
     emit(state.copyWith(isUpdatingMembership: true, clearError: true));
@@ -168,10 +114,12 @@ class TripsCubit extends Cubit<TripsState> {
       emit(state.copyWith(isUpdatingMembership: false));
       return true;
     } catch (error) {
-      emit(state.copyWith(
-        isUpdatingMembership: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(
+          isUpdatingMembership: false,
+          errorMessage: _friendlyError(error),
+        ),
+      );
       return false;
     }
   }
@@ -185,15 +133,20 @@ class TripsCubit extends Cubit<TripsState> {
       emit(state.copyWith(isUpdatingStatus: false));
       return true;
     } catch (error) {
-      emit(state.copyWith(
-        isUpdatingStatus: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(
+          isUpdatingStatus: false,
+          errorMessage: _friendlyError(error),
+        ),
+      );
       return false;
     }
   }
 
-  Future<bool> _runMembershipAction(Future<void> Function() action, int tripId) async {
+  Future<bool> _runMembershipAction(
+    Future<void> Function() action,
+    int tripId,
+  ) async {
     emit(state.copyWith(clearError: true));
     try {
       await action();
@@ -210,19 +163,21 @@ class TripsCubit extends Cubit<TripsState> {
     emit(state.copyWith(isDeleting: true, clearError: true));
     try {
       await deleteTripUseCase(tripId);
-      emit(state.copyWith(
-        isDeleting: false,
-        myTrips: state.myTrips.where((trip) => trip.id != tripId).toList(),
-        searchResults:
-            state.searchResults.where((trip) => trip.id != tripId).toList(),
-        clearSelectedTrip: true,
-      ));
+      emit(
+        state.copyWith(
+          isDeleting: false,
+          myTrips: state.myTrips.where((trip) => trip.id != tripId).toList(),
+          searchResults: state.searchResults
+              .where((trip) => trip.id != tripId)
+              .toList(),
+          clearSelectedTrip: true,
+        ),
+      );
       return true;
     } catch (error) {
-      emit(state.copyWith(
-        isDeleting: false,
-        errorMessage: _friendlyError(error),
-      ));
+      emit(
+        state.copyWith(isDeleting: false, errorMessage: _friendlyError(error)),
+      );
       return false;
     }
   }
@@ -235,7 +190,8 @@ class TripsCubit extends Cubit<TripsState> {
     if (raw.contains('membership_closed')) {
       return 'عضوگیری این سفر بسته شده است و امکان تغییر عضویت وجود ندارد.';
     }
-    if (raw.contains('trip_not_preparing') || raw.contains('trip_already_started')) {
+    if (raw.contains('trip_not_preparing') ||
+        raw.contains('trip_already_started')) {
       return 'پس از شروع سفر، امکان تغییر وضعیت عضوگیری وجود ندارد.';
     }
     if (raw.contains('already_in_another_trip')) {

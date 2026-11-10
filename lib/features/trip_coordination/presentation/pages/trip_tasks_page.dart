@@ -12,6 +12,7 @@ import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordin
 
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class TripTasksPage extends StatefulWidget {
   final int tripId;
 
@@ -48,8 +49,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
   List<TripTaskMemberEntity> get _members =>
       _data?.members ?? const <TripTaskMemberEntity>[];
 
-  List<TripTaskEntity> get _tasks =>
-      _data?.tasks ?? const <TripTaskEntity>[];
+  List<TripTaskEntity> get _tasks => _data?.tasks ?? const <TripTaskEntity>[];
 
   @override
   void initState() {
@@ -61,16 +61,12 @@ class _TripTasksPageState extends State<TripTasksPage> {
     if (mounted) setState(() => _loading = true);
     try {
       if (_currentUserId == null) {
-        final authResult =
-            await widget.getCurrentUserUsecase(const NoParams());
+        final authResult = await widget.getCurrentUserUsecase(NoParams());
         if (!mounted) return;
 
         if (authResult is! DataSuccess<UserEntity?> ||
             authResult.data == null) {
-          _message(
-            authResult.message ?? 'ابتدا وارد حساب کاربری شوید.',
-            false,
-          );
+          _message(authResult.message ?? 'ابتدا وارد حساب کاربری شوید.', false);
           setState(() => _data = null);
           return;
         }
@@ -207,10 +203,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
   }
 
   Future<void> _completeTask(TripTaskEntity task) async {
-    if (!_membershipClosed ||
-        task.isDone ||
-        task.userId != _userId ||
-        _busy) {
+    if (!_membershipClosed || task.isDone || task.userId != _userId || _busy) {
       return;
     }
 
@@ -367,8 +360,6 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
     }
   }
 
-
-
   @override
   void dispose() {
     _titleController.dispose();
@@ -409,7 +400,10 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                 maxLength: 120,
                 decoration: InputDecoration(
                   labelText: AppTranslations.translate(context, 'عنوان وظیفه'),
-                  hintText: AppTranslations.translate(context, 'مثلاً رزرو اقامتگاه'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'مثلاً رزرو اقامتگاه',
+                  ),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -418,7 +412,10 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                 initialValue: _selectedTripMemberId,
                 isExpanded: true,
                 decoration: InputDecoration(
-                  labelText: AppTranslations.translate(context, 'مسئول انجام وظیفه'),
+                  labelText: AppTranslations.translate(
+                    context,
+                    'مسئول انجام وظیفه',
+                  ),
                   border: OutlineInputBorder(),
                 ),
                 items: members,

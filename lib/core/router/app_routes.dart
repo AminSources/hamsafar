@@ -49,8 +49,7 @@ class AppRoutes {
     initialLocation: "/splash",
     refreshListenable: authRouterNotifier,
     redirect: (context, state) async {
-      final authState =
-          await sl<GetCurrentUserUsecase>()(const NoParams());
+      final authState = await sl<GetCurrentUserUsecase>()(NoParams());
       final isLoggedIn =
           authState is DataSuccess<UserEntity?> && authState.data != null;
       final location = state.matchedLocation;
@@ -72,8 +71,9 @@ class AppRoutes {
         return '/login';
       }
 
-      final onboardingState =
-          await sl<GetOnboardingCompletedUseCase>()(const NoParams());
+      final onboardingState = await sl<GetOnboardingCompletedUseCase>()(
+        NoParams(),
+      );
       final onboardingCompleted =
           onboardingState is DataSuccess<bool> && onboardingState.data == true;
 
@@ -149,8 +149,12 @@ class AppRoutes {
                   budget: trip.budget,
                   departureOptions: trip.departureOptions.map((option) {
                     return DepartureOptionDraft(
-                      startsAt: DateTime.parse(option['starts_at'] as String).toLocal(),
-                      endsAt: DateTime.parse(option['ends_at'] as String).toLocal(),
+                      startsAt: DateTime.parse(
+                        option['starts_at'] as String,
+                      ).toLocal(),
+                      endsAt: DateTime.parse(
+                        option['ends_at'] as String,
+                      ).toLocal(),
                     );
                   }).toList(),
                   costItems: trip.costItems,

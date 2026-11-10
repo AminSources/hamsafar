@@ -8,6 +8,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
+import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
 import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';

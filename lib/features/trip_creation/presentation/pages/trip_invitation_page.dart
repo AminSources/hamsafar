@@ -19,10 +19,7 @@ import 'package:hamsafar/core/localization/app_translations.dart';
 class TripInvitationPage extends StatefulWidget {
   final GetFriendsUsecase getFriendsUsecase;
 
-  const TripInvitationPage({
-    super.key,
-    required this.getFriendsUsecase,
-  });
+  const TripInvitationPage({super.key, required this.getFriendsUsecase});
 
   @override
   State<TripInvitationPage> createState() => _TripInvitationPageState();
@@ -47,7 +44,7 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
     });
 
     try {
-      final result = await widget.getFriendsUsecase(const NoParams());
+      final result = await widget.getFriendsUsecase(NoParams());
       if (!mounted) return;
 
       if (result is DataSuccess<List<FriendEntity>>) {
@@ -75,7 +72,8 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
     if (query.isEmpty) return friends;
     return friends.where((friend) {
       final name = '\${friend.firstName} \${friend.lastName}'.toLowerCase();
-      return name.contains(query) || friend.userName.toLowerCase().contains(query);
+      return name.contains(query) ||
+          friend.userName.toLowerCase().contains(query);
     }).toList();
   }
 
@@ -91,7 +89,10 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
               TextField(
                 onChanged: (value) => setState(() => _query = value),
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'جستجو در دوستان...'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'جستجو در دوستان...',
+                  ),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 20.sp,
@@ -133,13 +134,17 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
                       separatorBuilder: (_, _) => SizedBox(height: 10.h),
                       itemBuilder: (context, index) {
                         final friend = friends[index];
-                        final selected = draft.invitedUserIds.contains(friend.id);
-                        final name = '\${friend.firstName} \${friend.lastName}'.trim();
+                        final selected = draft.invitedUserIds.contains(
+                          friend.id,
+                        );
+                        final name = '\${friend.firstName} \${friend.lastName}'
+                            .trim();
                         return TripFriendTile(
                           name: name.isEmpty ? friend.userName : name,
                           rate: friend.rate.toStringAsFixed(1),
                           tripCount: friend.tripCount.toString(),
-                          avatarColor: AppColors.avatars[index % AppColors.avatars.length],
+                          avatarColor: AppColors
+                              .avatars[index % AppColors.avatars.length],
                           isSelected: selected,
                           onSelected: (value) => context
                               .read<TripDraftCubit>()
@@ -151,7 +156,8 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
                 ),
               SizedBox(height: 16.h),
               const HsNote(
-                note: 'دوستان انتخاب‌شده پس از ثبت سفر، دعوت‌نامهٔ عضویت دریافت می‌کنند. دعوت‌کردن اختیاری است.',
+                note:
+                    'دوستان انتخاب‌شده پس از ثبت سفر، دعوت‌نامهٔ عضویت دریافت می‌کنند. دعوت‌کردن اختیاری است.',
                 noteMode: HsNoteType.warning,
               ),
               SizedBox(height: 24.h),
