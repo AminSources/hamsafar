@@ -9,9 +9,11 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
+import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
 import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class TripSearchPage extends StatefulWidget {
   const TripSearchPage({super.key});
 
@@ -59,14 +61,20 @@ class _TripSearchPageState extends State<TripSearchPage> {
                 onChanged: _onChanged,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'نام سفر یا مقصد را وارد کنید...'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'نام سفر یا مقصد را وارد کنید...',
+                  ),
                   prefixIcon: Icon(
                     Icons.search,
                     size: 20.sp,
                     color: context.colorScheme.onSurfaceVariant,
                   ),
                   suffixIcon: IconButton(
-                    tooltip: AppTranslations.translate(context, 'پاک کردن جستجو'),
+                    tooltip: AppTranslations.translate(
+                      context,
+                      'پاک کردن جستجو',
+                    ),
                     onPressed: () {
                       _controller.clear();
                       _onChanged('');

@@ -1,40 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/params/no_params.dart';
+import 'package:hamsafar/core/resources/data_state.dart';
+import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
+import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/trip_task_tile.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class TripTasksPage extends StatefulWidget {
   final int tripId;
 
-  const TripTasksPage({super.key, required this.tripId});
+  final GetTripTaskContextUseCase getTripTaskContextUseCase;
+  final GetCurrentUserUsecase getCurrentUserUsecase;
+  final SaveTripTaskUseCase saveTripTaskUseCase;
+  final DeleteTripTaskUseCase deleteTripTaskUseCase;
+  final CompleteTripTaskUseCase completeTripTaskUseCase;
+
+  const TripTasksPage({
+    super.key,
+    required this.tripId,
+    required this.getTripTaskContextUseCase,
+    required this.getCurrentUserUsecase,
+    required this.saveTripTaskUseCase,
+    required this.deleteTripTaskUseCase,
+    required this.completeTripTaskUseCase,
+  });
 
   @override
   State<TripTasksPage> createState() => _TripTasksPageState();
 }
 
 class _TripTasksPageState extends State<TripTasksPage> {
-  final SupabaseClient _client = Supabase.instance.client;
-  Map<String, dynamic>? _data;
+  TripTaskContextEntity? _data;
   bool _loading = true;
   bool _busy = false;
+  String? _currentUserId;
 
-  String get _userId => _client.auth.currentUser?.id ?? '';
-  bool get _isLeader => _data?['is_leader'] == true;
-  bool get _membershipClosed => _data?['membership_closed'] == true;
+  String get _userId => _currentUserId ?? '';
+  bool get _isLeader => _data?.isLeader == true;
+  bool get _membershipClosed => _data?.membershipClosed == true;
 
-  List<Map<String, dynamic>> get _members =>
-      (_data?['members'] as List? ?? const [])
-          .map((item) => Map<String, dynamic>.from(item as Map))
-          .toList();
+  List<TripTaskMemberEntity> get _members =>
+      _data?.members ?? const <TripTaskMemberEntity>[];
 
-  List<Map<String, dynamic>> get _tasks =>
-      (_data?['tasks'] as List? ?? const [])
-          .map((item) => Map<String, dynamic>.from(item as Map))
-          .toList();
+  List<TripTaskEntity> get _tasks => _data?.tasks ?? const <TripTaskEntity>[];
 
   @override
   void initState() {
@@ -45,12 +60,23 @@ class _TripTasksPageState extends State<TripTasksPage> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
-      final response = await _client.rpc(
-        'get_trip_task_context',
-        params: {'p_trip_id': widget.tripId},
-      );
+      if (_currentUserId == null) {
+        final authResult = await widget.getCurrentUserUsecase(NoParams());
+        if (!mounted) return;
+
+        if (authResult is! DataSuccess<UserEntity?> ||
+            authResult.data == null) {
+          _message(authResult.message ?? 'ابتدا وارد حساب کاربری شوید.', false);
+          setState(() => _data = null);
+          return;
+        }
+
+        _currentUserId = authResult.data!.id;
+      }
+
+      final response = await widget.getTripTaskContextUseCase(widget.tripId);
       if (!mounted) return;
-      setState(() => _data = Map<String, dynamic>.from(response as Map));
+      setState(() => _data = response);
     } catch (error) {
       if (!mounted) return;
       _message(_friendlyError(error), false);
@@ -91,27 +117,17 @@ class _TripTasksPageState extends State<TripTasksPage> {
     );
   }
 
-  String _memberName(Map<String, dynamic> member) {
-    final name = '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'
-        .trim();
-    return name.isEmpty ? (member['username'] as String? ?? 'عضو سفر') : name;
-  }
+  String _memberName(TripTaskEntity task) => task.memberDisplayName;
 
-  int? _parseMemberId(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '');
-  }
-
-  Future<void> _openTaskSheet({Map<String, dynamic>? task}) async {
+  Future<void> _openTaskSheet({TripTaskEntity? task}) async {
     if (!_isLeader || !_membershipClosed || _busy) return;
     if (_members.isEmpty) {
       _message('برای تخصیص وظیفه، عضو پذیرفته‌شده‌ای وجود ندارد.', false);
       return;
     }
 
-    final initialTripMemberId = _parseMemberId(
-      task?['trip_member_id'] ?? _members.first['trip_member_id'],
-    );
+    final initialTripMemberId =
+        task?.tripMemberId ?? _members.first.tripMemberId;
 
     final draft = await showModalBottomSheet<_TaskDraft>(
       context: context,
@@ -119,7 +135,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
       showDragHandle: true,
       builder: (_) => _TripTaskFormSheet(
         members: _members,
-        initialTitle: task?['task'] as String? ?? '',
+        initialTitle: task?.title ?? '',
         initialTripMemberId: initialTripMemberId,
         isEditing: task != null,
       ),
@@ -129,15 +145,16 @@ class _TripTasksPageState extends State<TripTasksPage> {
     setState(() => _busy = true);
     try {
       if (task == null) {
-        await _client.from('trip_member_tasks').insert({
-          'trip_member_id': draft.tripMemberId,
-          'task': draft.title,
-        });
+        await widget.saveTripTaskUseCase(
+          tripMemberId: draft.tripMemberId,
+          title: draft.title,
+        );
       } else {
-        await _client
-            .from('trip_member_tasks')
-            .update({'trip_member_id': draft.tripMemberId, 'task': draft.title})
-            .eq('id', task['id']);
+        await widget.saveTripTaskUseCase(
+          taskId: task.id,
+          tripMemberId: draft.tripMemberId,
+          title: draft.title,
+        );
       }
       await _load();
       if (mounted) {
@@ -150,15 +167,15 @@ class _TripTasksPageState extends State<TripTasksPage> {
     }
   }
 
-  Future<void> _deleteTask(Map<String, dynamic> task) async {
-    if (!_isLeader || !_membershipClosed || task['is_done'] == true || _busy) {
+  Future<void> _deleteTask(TripTaskEntity task) async {
+    if (!_isLeader || !_membershipClosed || task.isDone || _busy) {
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const txt('حذف وظیفه'),
-        content: txt('وظیفه «${task['task']}» حذف شود؟'),
+        content: txt('وظیفه «${task.title}» حذف شود؟'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -175,7 +192,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
 
     setState(() => _busy = true);
     try {
-      await _client.from('trip_member_tasks').delete().eq('id', task['id']);
+      await widget.deleteTripTaskUseCase(task.id);
       await _load();
       if (mounted) _message('وظیفه حذف شد.', true);
     } catch (error) {
@@ -185,20 +202,14 @@ class _TripTasksPageState extends State<TripTasksPage> {
     }
   }
 
-  Future<void> _completeTask(Map<String, dynamic> task) async {
-    if (!_membershipClosed ||
-        task['is_done'] == true ||
-        task['user_id'] != _userId ||
-        _busy) {
+  Future<void> _completeTask(TripTaskEntity task) async {
+    if (!_membershipClosed || task.isDone || task.userId != _userId || _busy) {
       return;
     }
 
     setState(() => _busy = true);
     try {
-      await _client
-          .from('trip_member_tasks')
-          .update({'is_done': true})
-          .eq('id', task['id']);
+      await widget.completeTripTaskUseCase(task.id);
       await _load();
       if (mounted) _message('وظیفه به‌عنوان انجام‌شده ثبت شد.', true);
     } catch (error) {
@@ -211,7 +222,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
   @override
   Widget build(BuildContext context) {
     final tasks = _tasks;
-    final completed = tasks.where((task) => task['is_done'] == true).length;
+    final completed = tasks.where((task) => task.isDone).length;
 
     return Scaffold(
       floatingActionButton: _isLeader && _membershipClosed
@@ -269,13 +280,13 @@ class _TripTasksPageState extends State<TripTasksPage> {
                   )
                 else
                   ...tasks.map((task) {
-                    final isDone = task['is_done'] == true;
-                    final isMine = task['user_id'] == _userId;
+                    final isDone = task.isDone;
+                    final isMine = task.userId == _userId;
                     final canManage = _isLeader && _membershipClosed && !isDone;
                     return Padding(
                       padding: EdgeInsets.only(bottom: 12.h),
                       child: TripTaskTile(
-                        task: task['task'] as String? ?? '',
+                        task: task.title as String? ?? '',
                         isDone: isDone,
                         name: _memberName(task),
                         onDone: _membershipClosed && isMine && !isDone && !_busy
@@ -320,7 +331,7 @@ class _TripTaskFormSheet extends StatefulWidget {
     required this.isEditing,
   });
 
-  final List<Map<String, dynamic>> members;
+  final List<TripTaskMemberEntity> members;
   final String initialTitle;
   final int? initialTripMemberId;
   final bool isEditing;
@@ -339,8 +350,7 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
     _titleController = TextEditingController(text: widget.initialTitle);
 
     final availableIds = widget.members
-        .map((member) => _parseMemberId(member['trip_member_id']))
-        .whereType<int>()
+        .map((member) => member.tripMemberId)
         .toSet();
 
     if (availableIds.contains(widget.initialTripMemberId)) {
@@ -348,17 +358,6 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
     } else if (availableIds.isNotEmpty) {
       _selectedTripMemberId = availableIds.first;
     }
-  }
-
-  int? _parseMemberId(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '');
-  }
-
-  String _memberName(Map<String, dynamic> member) {
-    final name = '${member['first_name'] ?? ''} ${member['last_name'] ?? ''}'
-        .trim();
-    return name.isEmpty ? (member['username'] as String? ?? 'عضو سفر') : name;
   }
 
   @override
@@ -371,15 +370,12 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final members = widget.members
-        .map((member) {
-          final id = _parseMemberId(member['trip_member_id']);
-          if (id == null) return null;
-          return DropdownMenuItem<int>(
-            value: id,
-            child: txt(_memberName(member)),
-          );
-        })
-        .whereType<DropdownMenuItem<int>>()
+        .map(
+          (member) => DropdownMenuItem<int>(
+            value: member.tripMemberId,
+            child: txt(member.displayName),
+          ),
+        )
         .toList();
 
     return SafeArea(
@@ -404,7 +400,10 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                 maxLength: 120,
                 decoration: InputDecoration(
                   labelText: AppTranslations.translate(context, 'عنوان وظیفه'),
-                  hintText: AppTranslations.translate(context, 'مثلاً رزرو اقامتگاه'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'مثلاً رزرو اقامتگاه',
+                  ),
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -413,7 +412,10 @@ class _TripTaskFormSheetState extends State<_TripTaskFormSheet> {
                 initialValue: _selectedTripMemberId,
                 isExpanded: true,
                 decoration: InputDecoration(
-                  labelText: AppTranslations.translate(context, 'مسئول انجام وظیفه'),
+                  labelText: AppTranslations.translate(
+                    context,
+                    'مسئول انجام وظیفه',
+                  ),
                   border: OutlineInputBorder(),
                 ),
                 items: members,

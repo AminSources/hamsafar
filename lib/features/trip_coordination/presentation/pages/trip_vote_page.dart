@@ -8,21 +8,28 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/vote_option_card.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 
 class TripVotePage extends StatefulWidget {
-  const TripVotePage({super.key});
+  final GetMyDeparturePollsUseCase getMyDeparturePollsUseCase;
+  final CastDepartureVoteUseCase castDepartureVoteUseCase;
+
+  const TripVotePage({
+    super.key,
+    required this.getMyDeparturePollsUseCase,
+    required this.castDepartureVoteUseCase,
+  });
 
   @override
   State<TripVotePage> createState() => _TripVotePageState();
 }
 
 class _TripVotePageState extends State<TripVotePage> {
-  final SupabaseClient _client = Supabase.instance.client;
   final Map<int, int?> _selectedOptionIds = {};
   final Set<int> _submittingTripIds = {};
 
-  List<Map<String, dynamic>> _polls = [];
+  List<DeparturePollEntity> _polls = [];
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -41,19 +48,13 @@ class _TripVotePageState extends State<TripVotePage> {
     }
 
     try {
-      final response = await _client.rpc('get_my_departure_polls');
-      final rows = List<Map<String, dynamic>>.from(
-        (response as List).map(
-          (row) => Map<String, dynamic>.from(row as Map),
-        ),
-      );
+      final rows = await widget.getMyDeparturePollsUseCase();
 
       if (!mounted) return;
 
       final selectedOptions = <int, int?>{};
       for (final poll in rows) {
-        final tripId = (poll['trip_id'] as num).toInt();
-        selectedOptions[tripId] = (poll['my_option_id'] as num?)?.toInt();
+        selectedOptions[poll.tripId] = poll.myOptionId;
       }
 
       setState(() {
@@ -73,8 +74,8 @@ class _TripVotePageState extends State<TripVotePage> {
     }
   }
 
-  String _formatDateTime(String value) {
-    final date = DateTime.parse(value).toLocal();
+  String _formatDateTime(DateTime value) {
+    final date = value.toLocal();
     final year = date.year.toString();
     final month = date.month.toString().padLeft(2, '0');
     final day = date.day.toString().padLeft(2, '0');
@@ -83,9 +84,9 @@ class _TripVotePageState extends State<TripVotePage> {
     return '$year/$month/$day - $hour:$minute';
   }
 
-  String _optionTitle(Map<String, dynamic> option) {
-    final start = _formatDateTime(option['starts_at'] as String);
-    final end = _formatDateTime(option['ends_at'] as String);
+  String _optionTitle(DeparturePollOptionEntity option) {
+    final start = _formatDateTime(option.startsAt);
+    final end = _formatDateTime(option.endsAt);
     return '$start تا $end';
   }
 
@@ -96,12 +97,9 @@ class _TripVotePageState extends State<TripVotePage> {
     setState(() => _submittingTripIds.add(tripId));
 
     try {
-      await _client.rpc(
-        'cast_departure_vote',
-        params: {
-          'p_trip_id': tripId,
-          'p_option_id': optionId,
-        },
+      await widget.castDepartureVoteUseCase(
+        tripId: tripId,
+        optionId: optionId,
       );
 
       await _loadPolls(showLoading: false);
@@ -124,18 +122,14 @@ class _TripVotePageState extends State<TripVotePage> {
     }
   }
 
-  Widget _buildPollCard(Map<String, dynamic> poll) {
-    final tripId = (poll['trip_id'] as num).toInt();
-    final options = List<Map<String, dynamic>>.from(
-      (poll['options'] as List? ?? const []).map(
-        (option) => Map<String, dynamic>.from(option as Map),
-      ),
-    );
+  Widget _buildPollCard(DeparturePollEntity poll) {
+    final tripId = poll.tripId;
+    final options = poll.options;
     final selectedOptionId = _selectedOptionIds[tripId];
-    final savedOptionId = (poll['my_option_id'] as num?)?.toInt();
+    final savedOptionId = poll.myOptionId;
     final totalVotes = options.fold<int>(
       0,
-      (sum, option) => sum + ((option['vote_count'] as num?)?.toInt() ?? 0),
+      (sum, option) => sum + option.voteCount,
     );
     final hasChangedVote = selectedOptionId != null &&
         selectedOptionId != savedOptionId;
@@ -156,14 +150,14 @@ class _TripVotePageState extends State<TripVotePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           txt(
-            poll['trip_name'] as String? ?? 'سفر',
+            poll.tripName.isEmpty ? 'سفر' : poll.tripName,
             style: context.textTheme.titleMedium,
             fontWeight: FontWeight.w800,
           ),
-          if ((poll['location'] as String?)?.trim().isNotEmpty == true) ...[
+          if (poll.location?.trim().isNotEmpty == true) ...[
             SizedBox(height: 4.h),
             txt(
-              poll['location'] as String,
+              poll.location!,
               style: context.textTheme.bodySmall,
               color: context.colorScheme.onSurfaceVariant,
             ),
@@ -178,8 +172,8 @@ class _TripVotePageState extends State<TripVotePage> {
           if (options.isEmpty)
             const HsNote(note: 'برای این سفر هنوز بازه‌ای ثبت نشده است.'),
           ...options.map((option) {
-            final optionId = (option['id'] as num).toInt();
-            final voteCount = (option['vote_count'] as num?)?.toInt() ?? 0;
+            final optionId = option.id;
+            final voteCount = option.voteCount;
             final isSelected = selectedOptionId == optionId;
             final percent = totalVotes == 0 ? 0.0 : voteCount / totalVotes;
 

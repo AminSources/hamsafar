@@ -38,6 +38,18 @@ class SupabaseProfileDatasource {
     }
   }
 
+
+  Future<bool> getOnboardingCompleted() async {
+    final user = _requireUser();
+    final profile = await _supabaseClient
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    return profile?['onboarding_completed'] == true;
+  }
+
   Future<Map<String, dynamic>> getProfile() async {
     final user = _requireUser();
 

@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 class TripDraftCubit extends Cubit<TripDraft> {
   TripDraftCubit() : super(TripDraft.empty());
 
-  void initialize(TripEntity? trip) {
-    emit(trip == null ? TripDraft.empty() : TripDraft.fromTrip(trip));
+  void initialize(TripCreationInitialData? initialData) {
+    emit(initialData?.toDraft() ?? TripDraft.empty());
   }
 
   void setName(String value) => emit(state.copyWith(name: value));
@@ -37,18 +37,13 @@ class TripDraftCubit extends Cubit<TripDraft> {
   }
 
   void updateDepartureOption(int index, DepartureOptionDraft option) {
-    final options = [...state.departureOptions];
-    if (index < 0 || index >= options.length) {
-      return;
-    }
-    options[index] = option;
+    if (index < 0 || index >= state.departureOptions.length) return;
+    final options = [...state.departureOptions]..[index] = option;
     emit(state.copyWith(departureOptions: options));
   }
 
   void removeDepartureOption(int index) {
-    if (index < 0 || index >= state.departureOptions.length) {
-      return;
-    }
+    if (index < 0 || index >= state.departureOptions.length) return;
     final options = [...state.departureOptions]..removeAt(index);
     emit(state.copyWith(departureOptions: options));
   }
@@ -65,9 +60,7 @@ class TripDraftCubit extends Cubit<TripDraft> {
 
   void addCostItem(String value) {
     final item = value.trim();
-    if (item.isEmpty || state.costItems.contains(item)) {
-      return;
-    }
+    if (item.isEmpty || state.costItems.contains(item)) return;
     emit(state.copyWith(costItems: [...state.costItems, item]));
   }
 
@@ -81,16 +74,14 @@ class TripDraftCubit extends Cubit<TripDraft> {
 
   void addRule(String value) {
     final rule = value.trim();
-    if (rule.isEmpty) {
-      return;
-    }
+    if (rule.isEmpty) return;
     emit(state.copyWith(rules: [...state.rules, rule]));
   }
 
   void removeRule(String value) {
     emit(
       state.copyWith(
-        rules: state.rules.where((rule) => rule != value).toList(),
+        rules: state.rules.where((item) => item != value).toList(),
       ),
     );
   }

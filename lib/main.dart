@@ -52,7 +52,7 @@ void main() async {
         BlocProvider(create: (context) => sl<HomeBloc>()),
         BlocProvider(create: (context) => sl<ProfileAvatarCubit>()),
         BlocProvider(create: (context) => sl<FriendsBloc>()),
-        BlocProvider(create: (context) => AppSettingsCubit()),
+        BlocProvider(create: (context) => sl<AppSettingsCubit>()),
       ],
       child: const MyApp(),
     ),

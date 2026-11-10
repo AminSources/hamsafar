@@ -4,20 +4,29 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/enums/payment_member_status.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
 
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
 class TripBudgetPage extends StatefulWidget {
-  const TripBudgetPage({super.key});
+  final GetMyTripBudgetUseCase getMyTripBudgetUseCase;
+  final SubmitTripPaymentUseCase submitTripPaymentUseCase;
+  final ConfirmTripPaymentUseCase confirmTripPaymentUseCase;
+
+  const TripBudgetPage({
+    super.key,
+    required this.getMyTripBudgetUseCase,
+    required this.submitTripPaymentUseCase,
+    required this.confirmTripPaymentUseCase,
+  });
 
   @override
   State<TripBudgetPage> createState() => _TripBudgetPageState();
 }
 
 class _TripBudgetPageState extends State<TripBudgetPage> {
-  final _client = Supabase.instance.client;
-  Map<String, dynamic>? _budget;
+  TripBudgetEntity? _budget;
   bool _loading = true, _busy = false;
 
   @override
@@ -29,13 +38,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
-      final rows = await _client.rpc('get_my_trip_budget');
+      final budget = await widget.getMyTripBudgetUseCase();
       if (!mounted) return;
-      setState(
-        () => _budget = (rows as List).isEmpty
-            ? null
-            : Map<String, dynamic>.from(rows.first as Map),
-      );
+      setState(() => _budget = budget);
     } catch (_) {
       if (mounted) _message('دریافت اطلاعات بودجه انجام نشد.', false);
     }
@@ -50,14 +55,11 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
         ),
       );
 
-  String _money(dynamic value) => ((value as num?)?.toInt() ?? 0)
+  String _money(num? value) => ((value ?? 0).toInt())
       .toString()
       .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '٬');
 
-  String _name(Map<String, dynamic> m) {
-    final n = '${m['first_name'] ?? ''} ${m['last_name'] ?? ''}';
-    return n.trim().isEmpty ? 'عضو سفر' : n.trim();
-  }
+  String _name(TripBudgetMemberEntity member) => member.displayName;
 
   Widget _copyRow(BuildContext context, String label, String value) => Padding(
         padding: EdgeInsets.only(bottom: 8.h),
@@ -110,13 +112,10 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (!mounted) return;
     setState(() => _busy = true);
     try {
-      await _client.rpc(
-        'submit_trip_payment',
-        params: {
-          'p_trip_id': _budget!['trip_id'],
-          'p_method': method,
-          'p_reference': reference,
-        },
+      await widget.submitTripPaymentUseCase(
+        tripId: _budget!.tripId,
+        method: method,
+        reference: reference,
       );
       await _load();
       if (mounted) {
@@ -134,9 +133,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (!mounted) return;
     setState(() => _busy = true);
     try {
-      await _client.rpc(
-        'confirm_trip_payment',
-        params: {'p_trip_id': _budget!['trip_id'], 'p_user_id': userId},
+      await widget.confirmTripPaymentUseCase(
+        tripId: _budget!.tripId,
+        userId: userId,
       );
       await _load();
       if (mounted) _message('پرداخت عضو تأیید شد.', true);
@@ -146,13 +145,11 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (mounted) setState(() => _busy = false);
   }
 
-  Widget _memberTile(Map<String, dynamic> member, bool leader) {
-    final status = PaymentMemberStatus.fromValue(
-      member['pay_status'] as String?,
-    );
+  Widget _memberTile(TripBudgetMemberEntity member, bool leader) {
+    final status = PaymentMemberStatus.fromValue(member.paymentStatus);
     final canConfirm = leader &&
-        member['member_type'] != 'leader' &&
-        member['pay_status'] == 'under_review';
+        member.memberType != 'leader' &&
+        member.paymentStatus == 'under_review';
     return Card(
       margin: EdgeInsets.only(bottom: 10.h),
       child: Padding(
@@ -167,7 +164,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                     _name(member),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  txt('${_money(member['share'])} تومان'),
+                  txt('${_money(member.share)} تومان'),
                   txt(
                     status.label,
                     style: TextStyle(
@@ -177,12 +174,12 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                       fontSize: 12.sp,
                     ),
                   ),
-                  if (member['payment_method'] == 'bank_transfer' &&
-                      (member['payment_reference'] ?? '')
+                  if (member.paymentMethod == 'bank_transfer' &&
+                      (member.paymentReference ?? '')
                           .toString()
                           .isNotEmpty)
-                    txt('شماره پیگیری: ${member['payment_reference']}'),
-                  if (member['payment_method'] == 'cash')
+                    txt('شماره پیگیری: ${member.paymentReference}'),
+                  if (member.paymentMethod == 'cash')
                     const txt('پرداخت نقدی'),
                 ],
               ),
@@ -191,7 +188,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
               TextButton(
                 onPressed: _busy
                     ? null
-                    : () => _confirm(member['user_id'] as String),
+                    : () => _confirm(member.userId),
                 child: const txt('تأیید پرداخت'),
               ),
           ],
@@ -203,13 +200,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
   @override
   Widget build(BuildContext context) {
     final data = _budget;
-    final leader = data?['is_leader'] == true;
-    final members = (data?['members'] as List? ?? const [])
-        .map((e) => Map<String, dynamic>.from(e as Map))
-        .toList();
-    final myStatus = PaymentMemberStatus.fromValue(
-      data?['my_pay_status'] as String?,
-    );
+    final leader = data?.isLeader == true;
+    final members = data?.members ?? const <TripBudgetMemberEntity>[];
+    final myStatus = PaymentMemberStatus.fromValue(data?.myPaymentStatus);
 
     return Scaffold(
       body: SafeArea(
@@ -239,17 +232,17 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         txt(
-                          data['trip_name'] as String? ?? 'سفر',
+                          data.tripName.isEmpty ? 'سفر' : data.tripName,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         SizedBox(height: 8.h),
                         txt(
-                          'بودجه کل: ${_money(data['total_budget'])} تومان',
+                          'بودجه کل: ${_money(data.totalBudget)} تومان',
                         ),
                         txt('تعداد اعضا: ${members.length} نفر'),
                         const Divider(),
                         txt(
-                          'سهم شما: ${_money(data['my_share'])} تومان',
+                          'سهم شما: ${_money(data.myShare)} تومان',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -325,8 +318,8 @@ class _TripPaymentSheet extends StatefulWidget {
     required this.copyRowBuilder,
   });
 
-  final Map<String, dynamic> data;
-  final String Function(dynamic value) moneyFormatter;
+  final TripBudgetEntity data;
+  final String Function(num? value) moneyFormatter;
   final Widget Function(BuildContext, String, String) copyRowBuilder;
 
   @override
@@ -388,7 +381,7 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
               ),
               SizedBox(height: 8.h),
               txt(
-                'مبلغ سهم شما: ${widget.moneyFormatter(data['my_share'])} تومان',
+                'مبلغ سهم شما: ${widget.moneyFormatter(data.myShare)} تومان',
               ),
               SizedBox(height: 16.h),
               SegmentedButton<String>(
@@ -417,12 +410,12 @@ class _TripPaymentSheetState extends State<_TripPaymentSheet> {
                 widget.copyRowBuilder(
                   context,
                   'شماره کارت',
-                  (data['bank_card_number'] ?? '').toString(),
+                  data.bankCardNumber ?? '',
                 ),
                 widget.copyRowBuilder(
                   context,
                   'نام صاحب حساب',
-                  (data['bank_account_name'] ?? '').toString(),
+                  data.bankAccountName ?? '',
                 ),
                 TextField(
                   controller: _referenceController,

@@ -52,6 +52,19 @@ class ProfileRepositoryImpl extends ProfileRepository {
     }
   }
 
+
+  @override
+  Future<DataState<bool>> getOnboardingCompleted(NoParams noParams) async {
+    try {
+      final isCompleted =
+          await supabaseProfileDatasource.getOnboardingCompleted();
+      return DataSuccess(isCompleted);
+    } catch (error) {
+      log.e(error);
+      return DataFailed('بررسی وضعیت تکمیل پروفایل ناموفق بود: $error');
+    }
+  }
+
   @override
   Future<DataState<ProfilePreferencesEntity>> getProfilePreferences() async {
     try {
