@@ -3,26 +3,39 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/trip_task_tile.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
 class TripTasksPage extends StatefulWidget {
   final int tripId;
 
-  const TripTasksPage({super.key, required this.tripId});
+  final GetTripTaskContextUseCase getTripTaskContextUseCase;
+  final GetCurrentUserIdUseCase getCurrentUserIdUseCase;
+  final SaveTripTaskUseCase saveTripTaskUseCase;
+  final DeleteTripTaskUseCase deleteTripTaskUseCase;
+  final CompleteTripTaskUseCase completeTripTaskUseCase;
+
+  const TripTasksPage({
+    super.key,
+    required this.tripId,
+    required this.getTripTaskContextUseCase,
+    required this.getCurrentUserIdUseCase,
+    required this.saveTripTaskUseCase,
+    required this.deleteTripTaskUseCase,
+    required this.completeTripTaskUseCase,
+  });
 
   @override
   State<TripTasksPage> createState() => _TripTasksPageState();
 }
 
 class _TripTasksPageState extends State<TripTasksPage> {
-  final SupabaseClient _client = Supabase.instance.client;
   Map<String, dynamic>? _data;
   bool _loading = true;
   bool _busy = false;
 
-  String get _userId => _client.auth.currentUser?.id ?? '';
+  String get _userId => widget.getCurrentUserIdUseCase() ?? '';
   bool get _isLeader => _data?['is_leader'] == true;
   bool get _membershipClosed => _data?['membership_closed'] == true;
 
@@ -45,12 +58,9 @@ class _TripTasksPageState extends State<TripTasksPage> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
-      final response = await _client.rpc(
-        'get_trip_task_context',
-        params: {'p_trip_id': widget.tripId},
-      );
+      final response = await widget.getTripTaskContextUseCase(widget.tripId);
       if (!mounted) return;
-      setState(() => _data = Map<String, dynamic>.from(response as Map));
+      setState(() => _data = response);
     } catch (error) {
       if (!mounted) return;
       _message(_friendlyError(error), false);
@@ -129,15 +139,16 @@ class _TripTasksPageState extends State<TripTasksPage> {
     setState(() => _busy = true);
     try {
       if (task == null) {
-        await _client.from('trip_member_tasks').insert({
-          'trip_member_id': draft.tripMemberId,
-          'task': draft.title,
-        });
+        await widget.saveTripTaskUseCase(
+          tripMemberId: draft.tripMemberId,
+          title: draft.title,
+        );
       } else {
-        await _client
-            .from('trip_member_tasks')
-            .update({'trip_member_id': draft.tripMemberId, 'task': draft.title})
-            .eq('id', task['id']);
+        await widget.saveTripTaskUseCase(
+          taskId: (task['id'] as num).toInt(),
+          tripMemberId: draft.tripMemberId,
+          title: draft.title,
+        );
       }
       await _load();
       if (mounted) {
@@ -175,7 +186,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
 
     setState(() => _busy = true);
     try {
-      await _client.from('trip_member_tasks').delete().eq('id', task['id']);
+      await widget.deleteTripTaskUseCase((task['id'] as num).toInt());
       await _load();
       if (mounted) _message('وظیفه حذف شد.', true);
     } catch (error) {
@@ -195,10 +206,7 @@ class _TripTasksPageState extends State<TripTasksPage> {
 
     setState(() => _busy = true);
     try {
-      await _client
-          .from('trip_member_tasks')
-          .update({'is_done': true})
-          .eq('id', task['id']);
+      await widget.completeTripTaskUseCase((task['id'] as num).toInt());
       await _load();
       if (mounted) _message('وظیفه به‌عنوان انجام‌شده ثبت شد.', true);
     } catch (error) {

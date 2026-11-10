@@ -7,7 +7,7 @@ import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/date_time_option.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 class TripScheduleSetupPage extends StatelessWidget {
   const TripScheduleSetupPage({super.key});

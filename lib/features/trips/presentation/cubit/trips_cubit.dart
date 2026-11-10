@@ -1,8 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
-import 'package:hamsafar/features/trips/domain/repositories/trips_repository.dart';
+import 'package:hamsafar/features/trips/domain/usecases/trips_usecases.dart';
 
 class TripsState extends Equatable {
   final List<TripEntity> myTrips;
@@ -11,7 +10,6 @@ class TripsState extends Equatable {
   final bool isLoadingMyTrips;
   final bool isSearching;
   final bool isLoadingDetails;
-  final bool isSaving;
   final bool isDeleting;
   final bool isUpdatingStatus;
   final bool isUpdatingMembership;
@@ -24,7 +22,6 @@ class TripsState extends Equatable {
     this.isLoadingMyTrips = false,
     this.isSearching = false,
     this.isLoadingDetails = false,
-    this.isSaving = false,
     this.isDeleting = false,
     this.isUpdatingStatus = false,
     this.isUpdatingMembership = false,
@@ -39,7 +36,6 @@ class TripsState extends Equatable {
     bool? isLoadingMyTrips,
     bool? isSearching,
     bool? isLoadingDetails,
-    bool? isSaving,
     bool? isDeleting,
     bool? isUpdatingStatus,
     bool? isUpdatingMembership,
@@ -54,7 +50,6 @@ class TripsState extends Equatable {
       isLoadingMyTrips: isLoadingMyTrips ?? this.isLoadingMyTrips,
       isSearching: isSearching ?? this.isSearching,
       isLoadingDetails: isLoadingDetails ?? this.isLoadingDetails,
-      isSaving: isSaving ?? this.isSaving,
       isDeleting: isDeleting ?? this.isDeleting,
       isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
       isUpdatingMembership: isUpdatingMembership ?? this.isUpdatingMembership,
@@ -70,7 +65,6 @@ class TripsState extends Equatable {
         isLoadingMyTrips,
         isSearching,
         isLoadingDetails,
-        isSaving,
         isDeleting,
         isUpdatingStatus,
         isUpdatingMembership,
@@ -79,15 +73,38 @@ class TripsState extends Equatable {
 }
 
 class TripsCubit extends Cubit<TripsState> {
-  final TripsRepository repository;
+  final GetMyTripsUseCase getMyTripsUseCase;
+  final SearchTripsUseCase searchTripsUseCase;
+  final GetTripDetailsUseCase getTripDetailsUseCase;
+  final StartTripUseCase startTripUseCase;
+  final SetTripMembershipClosedUseCase setMembershipClosedUseCase;
+  final DeleteTripUseCase deleteTripUseCase;
+  final JoinTripUseCase joinTripUseCase;
+  final RespondToTripInvitationUseCase respondToTripInvitationUseCase;
+  final LeaveTripUseCase leaveTripUseCase;
+  final InviteUsersToTripUseCase inviteUsersToTripUseCase;
+  final RemoveTripMemberUseCase removeTripMemberUseCase;
+
   int _searchVersion = 0;
 
-  TripsCubit({required this.repository}) : super(const TripsState());
+  TripsCubit({
+    required this.getMyTripsUseCase,
+    required this.searchTripsUseCase,
+    required this.getTripDetailsUseCase,
+    required this.startTripUseCase,
+    required this.setMembershipClosedUseCase,
+    required this.deleteTripUseCase,
+    required this.joinTripUseCase,
+    required this.respondToTripInvitationUseCase,
+    required this.leaveTripUseCase,
+    required this.inviteUsersToTripUseCase,
+    required this.removeTripMemberUseCase,
+  }) : super(const TripsState());
 
   Future<void> loadMyTrips() async {
     emit(state.copyWith(isLoadingMyTrips: true, clearError: true));
     try {
-      final trips = await repository.getMyTrips();
+      final trips = await getMyTripsUseCase();
       emit(state.copyWith(myTrips: trips, isLoadingMyTrips: false));
     } catch (error) {
       emit(state.copyWith(
@@ -101,7 +118,7 @@ class TripsCubit extends Cubit<TripsState> {
     final version = ++_searchVersion;
     emit(state.copyWith(isSearching: true, clearError: true));
     try {
-      final trips = await repository.searchTrips(query.trim());
+      final trips = await searchTripsUseCase(query.trim());
       if (version != _searchVersion) return;
       emit(state.copyWith(searchResults: trips, isSearching: false));
     } catch (error) {
@@ -120,7 +137,7 @@ class TripsCubit extends Cubit<TripsState> {
       clearError: true,
     ));
     try {
-      final trip = await repository.getTripDetails(tripId);
+      final trip = await getTripDetailsUseCase(tripId);
       emit(state.copyWith(selectedTrip: trip, isLoadingDetails: false));
       return trip;
     } catch (error) {
@@ -132,36 +149,20 @@ class TripsCubit extends Cubit<TripsState> {
     }
   }
 
-  Future<int?> saveTrip(TripDraft draft, {int? tripId}) async {
-    emit(state.copyWith(isSaving: true, clearError: true));
-    try {
-      final id = await repository.saveTrip(draft, tripId: tripId);
-      emit(state.copyWith(isSaving: false));
-      await loadMyTrips();
-      return id;
-    } catch (error) {
-      emit(state.copyWith(
-        isSaving: false,
-        errorMessage: _friendlyError(error),
-      ));
-      return null;
-    }
-  }
-
-  Future<bool> joinTrip(int tripId) => _runMembershipAction(() => repository.joinTrip(tripId), tripId);
+  Future<bool> joinTrip(int tripId) => _runMembershipAction(() => joinTripUseCase(tripId), tripId);
   Future<bool> respondToInvitation(int tripId, {required bool accept}) =>
-      _runMembershipAction(() => repository.respondToInvitation(tripId, accept: accept), tripId);
+      _runMembershipAction(() => respondToTripInvitationUseCase(tripId, accept: accept), tripId);
   Future<bool> leaveTrip(int tripId) =>
-      _runMembershipAction(() => repository.leaveTrip(tripId), tripId);
+      _runMembershipAction(() => leaveTripUseCase(tripId), tripId);
   Future<bool> inviteToTrip(int tripId, List<String> userIds) =>
-      _runMembershipAction(() => repository.inviteToTrip(tripId, userIds), tripId);
+      _runMembershipAction(() => inviteUsersToTripUseCase(tripId, userIds), tripId);
   Future<bool> removeTripMember(int tripId, String userId) =>
-      _runMembershipAction(() => repository.removeTripMember(tripId, userId), tripId);
+      _runMembershipAction(() => removeTripMemberUseCase(tripId, userId), tripId);
 
   Future<bool> setMembershipClosed(int tripId, bool closed) async {
     emit(state.copyWith(isUpdatingMembership: true, clearError: true));
     try {
-      await repository.setMembershipClosed(tripId, closed);
+      await setMembershipClosedUseCase(tripId, closed);
       await loadTripDetails(tripId);
       await loadMyTrips();
       emit(state.copyWith(isUpdatingMembership: false));
@@ -178,7 +179,7 @@ class TripsCubit extends Cubit<TripsState> {
   Future<bool> startTrip(int tripId) async {
     emit(state.copyWith(isUpdatingStatus: true, clearError: true));
     try {
-      await repository.startTrip(tripId);
+      await startTripUseCase(tripId);
       await loadTripDetails(tripId);
       await loadMyTrips();
       emit(state.copyWith(isUpdatingStatus: false));
@@ -208,7 +209,7 @@ class TripsCubit extends Cubit<TripsState> {
   Future<bool> deleteTrip(int tripId) async {
     emit(state.copyWith(isDeleting: true, clearError: true));
     try {
-      await repository.deleteTrip(tripId);
+      await deleteTripUseCase(tripId);
       emit(state.copyWith(
         isDeleting: false,
         myTrips: state.myTrips.where((trip) => trip.id != tripId).toList(),

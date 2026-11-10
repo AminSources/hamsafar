@@ -7,6 +7,11 @@ import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
+import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
+import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_creation_cubit.dart';
+import 'package:hamsafar/features/trip_creation/domain/usecases/save_trip_usecase.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_common_page.dart';
@@ -15,29 +20,57 @@ import 'package:hamsafar/features/trip_creation/presentation/pages/trip_invitati
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_rules_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_schedule_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_stepper.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
-import 'package:hamsafar/locator.dart';
 
 class TripCreationWrapper extends StatelessWidget {
-  final TripEntity? trip;
+  final TripCreationInitialData? initialData;
+  final GetFriendsUsecase getFriendsUsecase;
+  final SaveTripUseCase saveTripUseCase;
+  final VoidCallback? onSaved;
 
-  const TripCreationWrapper({super.key, this.trip});
+  const TripCreationWrapper({
+    super.key,
+    this.initialData,
+    required this.getFriendsUsecase,
+    required this.saveTripUseCase,
+    this.onSaved,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<TripDraftCubit>()..initialize(trip),
-      child: _TripCreationContent(trip: trip),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => TripDraftCubit()..initialize(initialData),
+        ),
+        BlocProvider(
+          create: (_) => TripCreationCubit(saveTripUseCase: saveTripUseCase),
+        ),
+      ],
+      child: _TripCreationContent(
+        isEditing: initialData != null,
+        tripId: initialData?.tripId,
+        getFriendsUsecase: getFriendsUsecase,
+        saveTripUseCase: saveTripUseCase,
+        onSaved: onSaved,
+      ),
     );
   }
 }
 
 class _TripCreationContent extends StatefulWidget {
-  final TripEntity? trip;
+  final bool isEditing;
+  final int? tripId;
+  final GetFriendsUsecase getFriendsUsecase;
+  final SaveTripUseCase saveTripUseCase;
+  final VoidCallback? onSaved;
 
-  const _TripCreationContent({this.trip});
+  const _TripCreationContent({
+    required this.isEditing,
+    this.tripId,
+    required this.getFriendsUsecase,
+    required this.saveTripUseCase,
+    this.onSaved,
+  });
 
   @override
   State<_TripCreationContent> createState() => _TripCreationContentState();
@@ -74,11 +107,20 @@ class _TripCreationContentState extends State<_TripCreationContent> {
       return;
     }
     if (draft.scheduleType == 'voting' && draft.departureOptions.length < 2) {
-      context.showHsSnackBar(text: 'برای رأی‌گیری حداقل دو بازهٔ پیشنهادی ثبت کنید.', hsSnackBarType: HsSnackBarType.warning);
+      context.showHsSnackBar(
+        text: 'برای رأی‌گیری حداقل دو بازهٔ پیشنهادی ثبت کنید.',
+        hsSnackBarType: HsSnackBarType.warning,
+      );
       return;
     }
-    if (draft.scheduleType == 'voting' && draft.departureOptions.any((option) => !option.endsAt.isAfter(option.startsAt))) {
-      context.showHsSnackBar(text: 'پایان هر بازه باید بعد از شروع آن باشد.', hsSnackBarType: HsSnackBarType.warning);
+    if (draft.scheduleType == 'voting' &&
+        draft.departureOptions.any(
+          (option) => !option.endsAt.isAfter(option.startsAt),
+        )) {
+      context.showHsSnackBar(
+        text: 'پایان هر بازه باید بعد از شروع آن باشد.',
+        hsSnackBarType: HsSnackBarType.warning,
+      );
       return;
     }
     if (!draft.returnAt.isAfter(draft.departureAt)) {
@@ -89,14 +131,14 @@ class _TripCreationContentState extends State<_TripCreationContent> {
       return;
     }
 
-    final tripId = await context.read<TripsCubit>().saveTrip(
+    final savedTripId = await context.read<TripCreationCubit>().save(
           draft,
-          tripId: widget.trip?.id,
+          tripId: widget.tripId,
         );
     if (!mounted) return;
 
-    if (tripId == null) {
-      final message = context.read<TripsCubit>().state.errorMessage ??
+    if (savedTripId == null) {
+      final message = context.read<TripCreationCubit>().state.errorMessage ??
           'ذخیره سفر انجام نشد.';
       context.showHsSnackBar(
         text: message,
@@ -105,22 +147,23 @@ class _TripCreationContentState extends State<_TripCreationContent> {
       return;
     }
 
+    widget.onSaved?.call();
     context.read<TripStepperCubit>().reset();
-    if (widget.trip != null) {
+    if (widget.isEditing) {
       context.pop(true);
     } else {
-      context.go('/trip-success', extra: tripId);
+      context.go('/trip-success', extra: savedTripId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pages = const [
-      TripCommonPage(),
-      TripScheduleSetupPage(),
-      TripExpenseSetupPage(),
-      TripRulesSetupPage(),
-      TripInvitationPage(),
+    final pages = [
+      const TripCommonPage(),
+      const TripScheduleSetupPage(),
+      const TripExpenseSetupPage(),
+      const TripRulesSetupPage(),
+      TripInvitationPage(getFriendsUsecase: widget.getFriendsUsecase),
     ];
 
     return Scaffold(
@@ -136,7 +179,7 @@ class _TripCreationContentState extends State<_TripCreationContent> {
                       vertical: 16.h,
                     ),
                     child: HsAppBar(
-                      title: widget.trip == null ? 'ایجاد سفر جدید' : 'ویرایش سفر',
+                      title: widget.isEditing ? 'ویرایش سفر' : 'ایجاد سفر جدید',
                       hasBack: true,
                       onTapBackButton: () {
                         if (step == 0) {
@@ -157,10 +200,10 @@ class _TripCreationContentState extends State<_TripCreationContent> {
                     child: SizedBox(
                       width: double.infinity,
                       height: 50.h,
-                      child: BlocBuilder<TripsCubit, TripsState>(
-                        builder: (context, tripsState) {
+                      child: BlocBuilder<TripCreationCubit, TripCreationState>(
+                        builder: (context, state) {
                           return HsButton(
-                            onTap: tripsState.isSaving
+                            onTap: state.isSaving
                                 ? null
                                 : () {
                                     if (step >= 4) {
@@ -169,7 +212,7 @@ class _TripCreationContentState extends State<_TripCreationContent> {
                                       context.read<TripStepperCubit>().nextStep();
                                     }
                                   },
-                            child: tripsState.isSaving
+                            child: state.isSaving
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
@@ -180,9 +223,9 @@ class _TripCreationContentState extends State<_TripCreationContent> {
                                   )
                                 : txt(
                                     step == 4
-                                        ? (widget.trip == null
-                                            ? 'ایجاد سفر'
-                                            : 'ذخیره تغییرات')
+                                        ? (widget.isEditing
+                                            ? 'ذخیره تغییرات'
+                                            : 'ایجاد سفر')
                                         : 'ادامه',
                                     color: Colors.white,
                                     fontWeight: FontWeight.w800,

@@ -6,7 +6,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_draft.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
 class TripRulesSetupPage extends StatefulWidget {

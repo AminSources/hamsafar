@@ -4,19 +4,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/features/trip_coordination/enums/payment_member_status.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
 class TripBudgetPage extends StatefulWidget {
-  const TripBudgetPage({super.key});
+  final GetMyTripBudgetUseCase getMyTripBudgetUseCase;
+  final SubmitTripPaymentUseCase submitTripPaymentUseCase;
+  final ConfirmTripPaymentUseCase confirmTripPaymentUseCase;
+
+  const TripBudgetPage({
+    super.key,
+    required this.getMyTripBudgetUseCase,
+    required this.submitTripPaymentUseCase,
+    required this.confirmTripPaymentUseCase,
+  });
 
   @override
   State<TripBudgetPage> createState() => _TripBudgetPageState();
 }
 
 class _TripBudgetPageState extends State<TripBudgetPage> {
-  final _client = Supabase.instance.client;
   Map<String, dynamic>? _budget;
   bool _loading = true, _busy = false;
 
@@ -29,13 +37,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
   Future<void> _load() async {
     if (mounted) setState(() => _loading = true);
     try {
-      final rows = await _client.rpc('get_my_trip_budget');
+      final budget = await widget.getMyTripBudgetUseCase();
       if (!mounted) return;
-      setState(
-        () => _budget = (rows as List).isEmpty
-            ? null
-            : Map<String, dynamic>.from(rows.first as Map),
-      );
+      setState(() => _budget = budget);
     } catch (_) {
       if (mounted) _message('دریافت اطلاعات بودجه انجام نشد.', false);
     }
@@ -110,13 +114,10 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (!mounted) return;
     setState(() => _busy = true);
     try {
-      await _client.rpc(
-        'submit_trip_payment',
-        params: {
-          'p_trip_id': _budget!['trip_id'],
-          'p_method': method,
-          'p_reference': reference,
-        },
+      await widget.submitTripPaymentUseCase(
+        tripId: (_budget!['trip_id'] as num).toInt(),
+        method: method,
+        reference: reference,
       );
       await _load();
       if (mounted) {
@@ -134,9 +135,9 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (!mounted) return;
     setState(() => _busy = true);
     try {
-      await _client.rpc(
-        'confirm_trip_payment',
-        params: {'p_trip_id': _budget!['trip_id'], 'p_user_id': userId},
+      await widget.confirmTripPaymentUseCase(
+        tripId: (_budget!['trip_id'] as num).toInt(),
+        userId: userId,
       );
       await _load();
       if (mounted) _message('پرداخت عضو تأیید شد.', true);

@@ -8,17 +8,23 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/widgets/vote_option_card.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 
 class TripVotePage extends StatefulWidget {
-  const TripVotePage({super.key});
+  final GetMyDeparturePollsUseCase getMyDeparturePollsUseCase;
+  final CastDepartureVoteUseCase castDepartureVoteUseCase;
+
+  const TripVotePage({
+    super.key,
+    required this.getMyDeparturePollsUseCase,
+    required this.castDepartureVoteUseCase,
+  });
 
   @override
   State<TripVotePage> createState() => _TripVotePageState();
 }
 
 class _TripVotePageState extends State<TripVotePage> {
-  final SupabaseClient _client = Supabase.instance.client;
   final Map<int, int?> _selectedOptionIds = {};
   final Set<int> _submittingTripIds = {};
 
@@ -41,12 +47,7 @@ class _TripVotePageState extends State<TripVotePage> {
     }
 
     try {
-      final response = await _client.rpc('get_my_departure_polls');
-      final rows = List<Map<String, dynamic>>.from(
-        (response as List).map(
-          (row) => Map<String, dynamic>.from(row as Map),
-        ),
-      );
+      final rows = await widget.getMyDeparturePollsUseCase();
 
       if (!mounted) return;
 
@@ -96,12 +97,9 @@ class _TripVotePageState extends State<TripVotePage> {
     setState(() => _submittingTripIds.add(tripId));
 
     try {
-      await _client.rpc(
-        'cast_departure_vote',
-        params: {
-          'p_trip_id': tripId,
-          'p_option_id': optionId,
-        },
+      await widget.castDepartureVoteUseCase(
+        tripId: tripId,
+        optionId: optionId,
       );
 
       await _loadPolls(showLoading: false);
