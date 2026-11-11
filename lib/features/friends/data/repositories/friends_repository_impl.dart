@@ -4,7 +4,6 @@ import 'package:hamsafar/features/friends/data/data_source/remote/supabase_frien
 import 'package:hamsafar/features/friends/data/models/friend_model.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/domain/repositories/friends_repository.dart';
-import 'package:logger/logger.dart';
 
 class FriendsRepositoryImpl extends FriendsRepository {
   final SupabaseFriendsDatasource supabaseFriendsDatasource;
@@ -15,7 +14,6 @@ class FriendsRepositoryImpl extends FriendsRepository {
   Future<DataState<List<FriendEntity>>> getFriends(NoParams noParams) async {
     try {
       final response = await supabaseFriendsDatasource.getFriends();
-      Logger().d(response);
       final data = [
         for (final row in response)
           FriendModel.fromJson({

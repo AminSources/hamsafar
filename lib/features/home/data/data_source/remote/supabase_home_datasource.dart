@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseHomeDatasource {
@@ -60,19 +59,25 @@ class SupabaseHomeDatasource {
   }
 
   Future<List<Map<String, dynamic>>> getRecentActivities(int tripId) async {
-    try {
-      final response = await _supabaseClient.rpc(
-        'get_recent_trip_activities',
-        params: {'p_trip_id': tripId},
+    final response = await _supabaseClient.rpc(
+      'get_recent_trip_activities',
+      params: {'p_trip_id': tripId},
+    );
+
+    if (response is! List) {
+      throw const FormatException(
+        'Invalid response from get_recent_trip_activities.',
       );
-      if (response is! List) return [];
-      return response
-          .map((row) => Map<String, dynamic>.from(row as Map))
-          .toList();
-    } catch (error) {
-      debugPrint('Error on getting recent trip activities: $error');
-      return [];
     }
+
+    return response.map((row) {
+      if (row is! Map) {
+        throw const FormatException(
+          'Invalid activity row in get_recent_trip_activities.',
+        );
+      }
+      return Map<String, dynamic>.from(row);
+    }).toList(growable: false);
   }
 
   Future<Map<String, dynamic>> getHomeData() async {

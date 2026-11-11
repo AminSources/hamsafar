@@ -34,11 +34,11 @@ class TripModel extends TripEntity {
     Map<String, dynamic> json, {
     String? currentMemberStatus,
   }) {
-    final status = _optionalString(json, 'status', fallback: 'preparing');
-    final members = _objectList(json, 'members')
+    final status = _requiredString(json, 'status');
+    final members = _requiredObjectList(json, 'members')
         .map(TripMemberModel.fromJson)
         .toList(growable: false);
-    final departureOptions = _objectList(json, 'departure_options')
+    final departureOptions = _optionalObjectList(json, 'departure_options')
         .map(TripDepartureOptionModel.fromJson)
         .toList(growable: false);
 
@@ -49,24 +49,20 @@ class TripModel extends TripEntity {
       departureAt: _dateTime(json, 'departure_at'),
       returnAt: _dateTime(json, 'return_at'),
       status: status,
-      budget: _optionalInt(json, 'budget', fallback: 0),
+      budget: _requiredInt(json, 'budget'),
       createdBy: _requiredString(json, 'created_by'),
       description: _nullableString(json, 'description'),
       meetingPoint: _nullableString(json, 'meeting_point'),
       bankCardNumber: _nullableString(json, 'bank_card_number'),
       bankAccountName: _nullableString(json, 'bank_account_name'),
-      scheduleType: _optionalString(json, 'schedule_type', fallback: 'fixed'),
-      costItems: _stringList(json, 'cost_items'),
-      rules: _stringList(json, 'rules'),
-      memberCount: _optionalInt(json, 'member_count', fallback: 0),
-      leaderName: _optionalString(
-        json,
-        'leader_name',
-        fallback: 'کاربر هم‌سفر',
-      ),
-      isCreator: _optionalBool(json, 'is_creator', fallback: false),
-      isMember: _optionalBool(json, 'is_member', fallback: false),
-      canJoin: _optionalBool(json, 'can_join', fallback: true),
+      scheduleType: _requiredString(json, 'schedule_type'),
+      costItems: _requiredStringList(json, 'cost_items'),
+      rules: _requiredStringList(json, 'rules'),
+      memberCount: _requiredInt(json, 'member_count'),
+      leaderName: _requiredString(json, 'leader_name'),
+      isCreator: _requiredBool(json, 'is_creator'),
+      isMember: _requiredBool(json, 'is_member'),
+      canJoin: _requiredBool(json, 'can_join'),
       membershipClosed:
           _optionalBool(json, 'membership_closed', fallback: false) ||
           status != 'preparing',
@@ -83,17 +79,6 @@ class TripModel extends TripEntity {
     throw FormatException('Invalid or missing trip field: $key');
   }
 
-  static String _optionalString(
-    Map<String, dynamic> json,
-    String key, {
-    required String fallback,
-  }) {
-    final value = json[key];
-    if (value == null) return fallback;
-    if (value is String) return value;
-    throw FormatException('Invalid trip field: $key');
-  }
-
   static String? _nullableString(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value == null) return null;
@@ -107,26 +92,10 @@ class TripModel extends TripEntity {
     throw FormatException('Invalid or missing trip field: $key');
   }
 
-  static int _optionalInt(
-    Map<String, dynamic> json,
-    String key, {
-    required int fallback,
-  }) {
+  static bool _requiredBool(Map<String, dynamic> json, String key) {
     final value = json[key];
-    if (value == null) return fallback;
-    if (value is num) return value.toInt();
-    throw FormatException('Invalid trip field: $key');
-  }
-
-  static bool _optionalBool(
-    Map<String, dynamic> json,
-    String key, {
-    required bool fallback,
-  }) {
-    final value = json[key];
-    if (value == null) return fallback;
     if (value is bool) return value;
-    throw FormatException('Invalid trip field: $key');
+    throw FormatException('Invalid or missing trip field: $key');
   }
 
   static DateTime _dateTime(Map<String, dynamic> json, String key) {
@@ -139,23 +108,44 @@ class TripModel extends TripEntity {
     throw FormatException('Invalid or missing trip field: $key');
   }
 
-  static List<String> _stringList(Map<String, dynamic> json, String key) {
+  static List<String> _requiredStringList(
+    Map<String, dynamic> json,
+    String key,
+  ) {
     final value = json[key];
-    if (value == null) return const [];
-    if (value is! List) throw FormatException('Invalid trip field: $key');
+    if (value is! List) {
+      throw FormatException('Invalid or missing trip field: $key');
+    }
     return value.map((item) {
       if (item is String) return item;
       throw FormatException('Invalid item in trip field: $key');
     }).toList(growable: false);
   }
 
-  static List<Map<String, dynamic>> _objectList(
+  static List<Map<String, dynamic>> _optionalObjectList(
     Map<String, dynamic> json,
     String key,
   ) {
     final value = json[key];
     if (value == null) return const [];
-    if (value is! List) throw FormatException('Invalid trip field: $key');
+    if (value is! List) {
+      throw FormatException('Invalid trip field: $key');
+    }
+    return value.map((item) {
+      if (item is Map<String, dynamic>) return item;
+      if (item is Map) return Map<String, dynamic>.from(item);
+      throw FormatException('Invalid item in trip field: $key');
+    }).toList(growable: false);
+  }
+
+  static List<Map<String, dynamic>> _requiredObjectList(
+    Map<String, dynamic> json,
+    String key,
+  ) {
+    final value = json[key];
+    if (value is! List) {
+      throw FormatException('Invalid or missing trip field: $key');
+    }
     return value.map((item) {
       if (item is Map<String, dynamic>) return item;
       if (item is Map) return Map<String, dynamic>.from(item);
