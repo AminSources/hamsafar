@@ -38,20 +38,23 @@ class TripCreationWrapper extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => TripStepperBloc()..add(const TripStepperResetRequested()),
+          create: (_) => TripStepperBloc()
+            ..add(const TripStepperResetRequested()),
         ),
         BlocProvider(
-          create: (_) => TripDraftBloc()..add(TripDraftInitialized(initialData)), 
+          create: (_) => TripDraftBloc()
+            ..add(TripDraftInitialized(initialData)),
         ),
         BlocProvider(
-          create: (_) => TripCreationBloc(saveTripUseCase: saveTripUseCase),
+          create: (_) => TripCreationBloc(
+            saveTripUseCase: saveTripUseCase,
+          ),
         ),
       ],
       child: _TripCreationContent(
         isEditing: initialData != null,
         tripId: initialData?.tripId,
         getFriendsUsecase: getFriendsUsecase,
-        ),
       ),
     );
   }
