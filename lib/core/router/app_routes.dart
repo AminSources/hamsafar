@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/auth_router_notifier.dart';
@@ -26,8 +27,8 @@ import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budg
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_tasks_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_vote_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_vote_page.dart';
-import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_creation_wrapper.dart';
 import 'package:hamsafar/features/trip_creation/domain/usecases/save_trip_usecase.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_success_page.dart';
@@ -36,11 +37,12 @@ import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
-import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
+
+int _redirectGeneration = 0;
 
 final authRouterNotifier = AuthRouterNotifier(
   authStateChanges: sl<AuthRepository>().authStateChanges,
@@ -53,43 +55,55 @@ class AppRoutes {
     initialLocation: "/splash",
     refreshListenable: authRouterNotifier,
     redirect: (context, state) async {
-      final authState = await sl<GetCurrentUserUsecase>()(NoParams());
-      final isLoggedIn =
-          authState is DataSuccess<UserEntity?> && authState.data != null;
+      final generation = ++_redirectGeneration;
       final location = state.matchedLocation;
-
       final isSplash = location == '/splash';
-
-      final isAuthRoute =
-          location == '/login' ||
+      final isSessionError = location == '/session-error';
+      final isAuthRoute = location == '/login' ||
           location == '/register' ||
           location == '/recovery';
-
       final isOnboarding = location == '/onboarding';
 
-      if (!isLoggedIn) {
-        if (isAuthRoute) {
-          return null;
-        }
+      final authState = await sl<GetCurrentUserUsecase>()(NoParams());
+      if (generation != _redirectGeneration) return null;
 
+      if (authState is DataFailed<UserEntity?>) {
+        return isSessionError ? null : '/session-error';
+      }
+
+      final user = authState is DataSuccess<UserEntity?>
+          ? authState.data
+          : null;
+
+      if (user == null) {
+        if (isAuthRoute) return null;
         return '/login';
       }
 
-      final onboardingState = await sl<GetOnboardingCompletedUseCase>()(
-        NoParams(),
-      );
-      final onboardingCompleted =
-          onboardingState is DataSuccess<bool> && onboardingState.data == true;
+      var onboardingCompleted =
+          authRouterNotifier.isOnboardingCompleted(user.id);
 
       if (!onboardingCompleted) {
-        if (isOnboarding) {
-          return null;
+        final onboardingState =
+            await sl<GetOnboardingCompletedUseCase>()(NoParams());
+        if (generation != _redirectGeneration) return null;
+
+        if (onboardingState is DataFailed<bool>) {
+          return isSessionError ? null : '/session-error';
+        }
+        if (onboardingState is! DataSuccess<bool>) {
+          return isSessionError ? null : '/session-error';
         }
 
-        return '/onboarding';
+        onboardingCompleted = onboardingState.data == true;
+        if (!onboardingCompleted) {
+          return isOnboarding ? null : '/onboarding';
+        }
+
+        authRouterNotifier.markOnboardingCompleted(user.id);
       }
 
-      if (isSplash || isAuthRoute || isOnboarding) {
+      if (isSplash || isAuthRoute || isOnboarding || isSessionError) {
         return '/main-wrapper';
       }
 
@@ -129,7 +143,11 @@ class AppRoutes {
       GoRoute(
         path: "/trip-detail",
         builder: (context, state) {
-          final tripId = state.extra is int ? state.extra as int : null;
+          if (state.extra != null &&
+              (state.extra is! int || (state.extra as int) <= 0)) {
+            return const _InvalidRouteArgumentsPage();
+          }
+          final tripId = state.extra as int?;
           return TripDetailsPage(
             tripId: tripId,
             getFriendsUsecase: sl<GetFriendsUsecase>(),
@@ -143,9 +161,10 @@ class AppRoutes {
       GoRoute(
         path: "/trip-create",
         builder: (context, state) {
-          final trip = state.extra is TripEntity
-              ? state.extra as TripEntity
-              : null;
+          if (state.extra != null && state.extra is! TripEntity) {
+            return const _InvalidRouteArgumentsPage();
+          }
+          final trip = state.extra as TripEntity?;
           final initialData = trip == null
               ? null
               : TripCreationInitialData(
@@ -186,15 +205,19 @@ class AppRoutes {
       GoRoute(
         path: "/trip-success",
         builder: (context, state) {
-          final tripId = state.extra is int ? state.extra as int : null;
+          final tripId = state.extra;
+          if (tripId is! int || tripId <= 0) {
+            return const _InvalidRouteArgumentsPage();
+          }
           return TripSuccessPage(tripId: tripId);
         },
       ),
       GoRoute(
         path: "/trip-vote",
-        builder: (context, state) => TripVotePage(
-          getMyDeparturePollsUseCase: sl<GetMyDeparturePollsUseCase>(),
-          castDepartureVoteUseCase: sl<CastDepartureVoteUseCase>(),
+        builder: (context, state) => BlocProvider(
+          create: (_) =>
+              sl<TripVoteBloc>()..add(const TripVotesLoadRequested()),
+          child: const TripVotePage(),
         ),
       ),
       GoRoute(
@@ -210,9 +233,7 @@ class AppRoutes {
         builder: (context, state) {
           final tripId = state.extra is int ? state.extra as int : null;
           if (tripId == null || tripId <= 0) {
-            return const Scaffold(
-              body: Center(child: Text('شناسه سفر معتبر نیست.')),
-            );
+            return const _InvalidRouteArgumentsPage();
           }
           return BlocProvider(
             create: (_) =>
@@ -224,9 +245,11 @@ class AppRoutes {
       GoRoute(
         path: "/friend-profile",
         builder: (context, state) {
-          final FriendEntity friendEntity = (state.extra as FriendEntity);
-
-          return FriendProfilePage(friendEntity: friendEntity);
+          final extra = state.extra;
+          if (extra is! FriendEntity) {
+            return const _InvalidRouteArgumentsPage();
+          }
+          return FriendProfilePage(friendEntity: extra);
         },
       ),
       GoRoute(
@@ -251,6 +274,82 @@ class AppRoutes {
         path: '/bug-report',
         builder: (context, state) => const BugReportPage(),
       ),
+      GoRoute(
+        path: '/session-error',
+        builder: (context, state) => const _SessionCheckFailedPage(),
+      ),
     ],
   );
+}
+
+
+class _SessionCheckFailedPage extends StatelessWidget {
+  const _SessionCheckFailedPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.cloud_off_outlined, size: 44),
+                const SizedBox(height: 16),
+                const Text(
+                  'بررسی وضعیت حساب یا پروفایل انجام نشد.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () => context.go('/splash'),
+                  child: const Text('تلاش مجدد'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InvalidRouteArgumentsPage extends StatelessWidget {
+  const _InvalidRouteArgumentsPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.warning_amber_rounded, size: 44),
+                const SizedBox(height: 16),
+                const Text(
+                  'اطلاعات ارسالی برای باز کردن این صفحه معتبر نیست.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () => context.go('/main-wrapper'),
+                  child: const Text('بازگشت'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
