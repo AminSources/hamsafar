@@ -23,7 +23,9 @@ import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_tasks_page.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_vote_page.dart';
 import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_creation_wrapper.dart';
@@ -197,23 +199,25 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/trip-budget",
-        builder: (context, state) => TripBudgetPage(
-          getMyTripBudgetUseCase: sl<GetMyTripBudgetUseCase>(),
-          submitTripPaymentUseCase: sl<SubmitTripPaymentUseCase>(),
-          confirmTripPaymentUseCase: sl<ConfirmTripPaymentUseCase>(),
+        builder: (context, state) => BlocProvider(
+          create: (_) =>
+              sl<TripBudgetBloc>()..add(const TripBudgetLoadRequested()),
+          child: const TripBudgetPage(),
         ),
       ),
       GoRoute(
         path: "/trip-tasks",
         builder: (context, state) {
-          final tripId = state.extra is int ? state.extra as int : -1;
-          return TripTasksPage(
-            tripId: tripId,
-            getTripTaskContextUseCase: sl<GetTripTaskContextUseCase>(),
-            getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
-            saveTripTaskUseCase: sl<SaveTripTaskUseCase>(),
-            deleteTripTaskUseCase: sl<DeleteTripTaskUseCase>(),
-            completeTripTaskUseCase: sl<CompleteTripTaskUseCase>(),
+          final tripId = state.extra is int ? state.extra as int : null;
+          if (tripId == null || tripId <= 0) {
+            return const Scaffold(
+              body: Center(child: Text('شناسه سفر معتبر نیست.')),
+            );
+          }
+          return BlocProvider(
+            create: (_) =>
+                sl<TripTasksBloc>()..add(TripTasksLoadRequested(tripId)),
+            child: TripTasksPage(tripId: tripId),
           );
         },
       ),

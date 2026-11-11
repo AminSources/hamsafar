@@ -45,6 +45,8 @@ import 'package:hamsafar/features/trip_coordination/data/data_source/remote/supa
 import 'package:hamsafar/features/trip_coordination/data/repositories/trip_coordination_repository_impl.dart';
 import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coordination_repository.dart';
 import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hamsafar/features/settings/data/data_source/local/get_storage_app_settings_datasource.dart';
 import 'package:hamsafar/features/settings/data/repositories/app_settings_repository_impl.dart';
@@ -271,6 +273,22 @@ void setupLocator() {
   );
 
   // Feature Blocs
+  sl.registerFactory<TripTasksBloc>(
+    () => TripTasksBloc(
+      getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
+      getTripTaskContextUseCase: sl<GetTripTaskContextUseCase>(),
+      saveTripTaskUseCase: sl<SaveTripTaskUseCase>(),
+      deleteTripTaskUseCase: sl<DeleteTripTaskUseCase>(),
+      completeTripTaskUseCase: sl<CompleteTripTaskUseCase>(),
+    ),
+  );
+  sl.registerFactory<TripBudgetBloc>(
+    () => TripBudgetBloc(
+      getMyTripBudgetUseCase: sl<GetMyTripBudgetUseCase>(),
+      submitTripPaymentUseCase: sl<SubmitTripPaymentUseCase>(),
+      confirmTripPaymentUseCase: sl<ConfirmTripPaymentUseCase>(),
+    ),
+  );
   sl.registerFactory<AppSettingsBloc>(
     () => AppSettingsBloc(
       loadSettingsUseCase: sl<LoadAppSettingsUseCase>(),
