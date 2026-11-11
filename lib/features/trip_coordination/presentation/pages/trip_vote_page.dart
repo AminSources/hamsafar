@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
@@ -7,71 +8,22 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_coordination/presentation/widgets/vote_option_card.dart';
-import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_vote_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/widgets/vote_option_card.dart';
 
-class TripVotePage extends StatefulWidget {
-  final GetMyDeparturePollsUseCase getMyDeparturePollsUseCase;
-  final CastDepartureVoteUseCase castDepartureVoteUseCase;
+class TripVotePage extends StatelessWidget {
+  const TripVotePage({super.key});
 
-  const TripVotePage({
-    super.key,
-    required this.getMyDeparturePollsUseCase,
-    required this.castDepartureVoteUseCase,
-  });
-
-  @override
-  State<TripVotePage> createState() => _TripVotePageState();
-}
-
-class _TripVotePageState extends State<TripVotePage> {
-  final Map<int, int?> _selectedOptionIds = {};
-  final Set<int> _submittingTripIds = {};
-
-  List<DeparturePollEntity> _polls = [];
-  bool _isLoading = true;
-  String? _errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPolls();
-  }
-
-  Future<void> _loadPolls({bool showLoading = true}) async {
-    if (showLoading && mounted) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
+  Future<void> _refresh(BuildContext context) async {
+    final bloc = context.read<TripVoteBloc>();
+    if (bloc.state.isLoading || bloc.state.submittingTripIds.isNotEmpty) {
+      return;
     }
 
-    try {
-      final rows = await widget.getMyDeparturePollsUseCase();
-
-      if (!mounted) return;
-
-      final selectedOptions = <int, int?>{};
-      for (final poll in rows) {
-        selectedOptions[poll.tripId] = poll.myOptionId;
-      }
-
-      setState(() {
-        _polls = rows;
-        _selectedOptionIds
-          ..clear()
-          ..addAll(selectedOptions);
-        _isLoading = false;
-        _errorMessage = null;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'دریافت رأی‌گیری‌ها انجام نشد. اتصال اینترنت را بررسی کنید.';
-      });
-    }
+    final completed = bloc.stream.firstWhere((state) => !state.isLoading);
+    bloc.add(const TripVotesLoadRequested());
+    await completed;
   }
 
   String _formatDateTime(DateTime value) {
@@ -84,58 +36,20 @@ class _TripVotePageState extends State<TripVotePage> {
     return '$year/$month/$day - $hour:$minute';
   }
 
-  String _optionTitle(DeparturePollOptionEntity option) {
-    final start = _formatDateTime(option.startsAt);
-    final end = _formatDateTime(option.endsAt);
-    return '$start تا $end';
-  }
-
-  Future<void> _submitVote(int tripId) async {
-    final optionId = _selectedOptionIds[tripId];
-    if (optionId == null || _submittingTripIds.contains(tripId)) return;
-
-    setState(() => _submittingTripIds.add(tripId));
-
-    try {
-      await widget.castDepartureVoteUseCase(
-        tripId: tripId,
-        optionId: optionId,
-      );
-
-      await _loadPolls(showLoading: false);
-      if (!mounted) return;
-
-      context.showHsSnackBar(
-        text: 'رأی شما با موفقیت ثبت شد.',
-        hsSnackBarType: HsSnackBarType.success,
-      );
-    } catch (_) {
-      if (!mounted) return;
-      context.showHsSnackBar(
-        text: 'ثبت رأی انجام نشد. دوباره تلاش کنید.',
-        hsSnackBarType: HsSnackBarType.error,
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _submittingTripIds.remove(tripId));
-      }
-    }
-  }
-
-  Widget _buildPollCard(DeparturePollEntity poll) {
-    final tripId = poll.tripId;
-    final options = poll.options;
-    final selectedOptionId = _selectedOptionIds[tripId];
+  Widget _buildPollCard(
+    BuildContext context,
+    DeparturePollEntity poll,
+    TripVoteState state,
+  ) {
+    final selectedOptionId = state.selectedOptionIds[poll.tripId];
     final savedOptionId = poll.myOptionId;
-    final totalVotes = options.fold<int>(
+    final totalVotes = poll.options.fold<int>(
       0,
       (sum, option) => sum + option.voteCount,
     );
-    final hasChangedVote = selectedOptionId != null &&
-        selectedOptionId != savedOptionId;
-    final canSubmit = selectedOptionId != null &&
-        hasChangedVote &&
-        !_submittingTripIds.contains(tripId);
+    final hasChangedVote =
+        selectedOptionId != null && selectedOptionId != savedOptionId;
+    final isSubmitting = state.submittingTripIds.contains(poll.tripId);
 
     return Container(
       width: double.infinity,
@@ -169,24 +83,31 @@ class _TripVotePageState extends State<TripVotePage> {
             fontWeight: FontWeight.w700,
           ),
           SizedBox(height: 10.h),
-          if (options.isEmpty)
+          if (poll.options.isEmpty)
             const HsNote(note: 'برای این سفر هنوز بازه‌ای ثبت نشده است.'),
-          ...options.map((option) {
-            final optionId = option.id;
-            final voteCount = option.voteCount;
-            final isSelected = selectedOptionId == optionId;
-            final percent = totalVotes == 0 ? 0.0 : voteCount / totalVotes;
+          ...poll.options.map((option) {
+            final percent =
+                totalVotes == 0 ? 0.0 : option.voteCount / totalVotes;
+            final isSelected = selectedOptionId == option.id;
+            final title =
+                '${_formatDateTime(option.startsAt)} تا '
+                '${_formatDateTime(option.endsAt)}';
 
             return Padding(
               padding: EdgeInsets.only(bottom: 10.h),
               child: VoteOptionCard(
-                title: _optionTitle(option),
+                title: title,
                 percent: percent,
-                vote: voteCount,
+                vote: option.voteCount,
                 isVoted: isSelected,
                 onVote: (selected) {
-                  if (!selected) return;
-                  setState(() => _selectedOptionIds[tripId] = optionId);
+                  if (!selected || isSubmitting) return;
+                  context.read<TripVoteBloc>().add(
+                        TripVoteSelectionChanged(
+                          tripId: poll.tripId,
+                          optionId: option.id,
+                        ),
+                      );
                 },
               ),
             );
@@ -194,8 +115,12 @@ class _TripVotePageState extends State<TripVotePage> {
           SizedBox(height: 4.h),
           HsButton(
             width: double.infinity,
-            onTap: canSubmit ? () => _submitVote(tripId) : null,
-            child: _submittingTripIds.contains(tripId)
+            onTap: hasChangedVote && !isSubmitting
+                ? () => context
+                    .read<TripVoteBloc>()
+                    .add(TripVoteSubmissionRequested(poll.tripId))
+                : null,
+            child: isSubmitting
                 ? SizedBox(
                     width: 20.w,
                     height: 20.w,
@@ -221,97 +146,117 @@ class _TripVotePageState extends State<TripVotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: _isLoading
-            ? Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 12.h,
-                    ),
-                    child: const HsAppBar(
-                      title: 'رأی‌گیری سفرها',
-                      hasBack: true,
-                    ),
-                  ),
-                  const Expanded(
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ],
-              )
-            : RefreshIndicator(
-                onRefresh: () => _loadPolls(showLoading: false),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocConsumer<TripVoteBloc, TripVoteState>(
+      listener: (context, state) {
+        if (state.feedback == null) return;
+        context.showHsSnackBar(
+          text: state.feedback!,
+          hsSnackBarType: state.feedbackIsSuccess == true
+              ? HsSnackBarType.success
+              : HsSnackBarType.error,
+        );
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: state.isLoading && state.polls.isEmpty
+                ? Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 12.h,
+                        ),
                         child: const HsAppBar(
                           title: 'رأی‌گیری سفرها',
                           hasBack: true,
                         ),
                       ),
-                      SizedBox(height: 8.h),
-                      if (_errorMessage != null) ...[
-                        HsNote(
-                          note: _errorMessage!,
-                        ),
-                        SizedBox(height: 12.h),
-                        HsButton(
-                          width: double.infinity,
-                          onTap: () => _loadPolls(),
-                          child: txt(
-                            'تلاش مجدد',
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ] else if (_polls.isEmpty)
-                        Padding(
-                          padding: EdgeInsets.only(top: 80.h),
-                          child: Center(
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.how_to_vote_outlined,
-                                  size: 54.sp,
-                                  color: context.colorScheme.onSurfaceVariant,
-                                ),
-                                SizedBox(height: 16.h),
-                                txt(
-                                  'رأی‌گیری فعالی وجود ندارد.',
-                                  style: context.textTheme.titleMedium,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                                SizedBox(height: 8.h),
-                                txt(
-                                  'وقتی برای یکی از سفرهای شما رأی‌گیری زمان حرکت ایجاد شود، اینجا نمایش داده می‌شود.',
-                                  textAlign: TextAlign.center,
-                                  color: context.colorScheme.onSurfaceVariant,
-                                  size: 12.sp,
-                                ),
-                              ],
+                      const Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    ],
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _refresh(context),
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            child: const HsAppBar(
+                              title: 'رأی‌گیری سفرها',
+                              hasBack: true,
                             ),
                           ),
-                        )
-                      else ...[
-                        HsNote(
-                          note: 'برای هر سفر یکی از بازه‌های پیشنهادی را انتخاب کنید. بعد از ثبت رأی هم می‌توانید انتخاب خود را تغییر دهید.',
-                        ),
-                        SizedBox(height: 16.h),
-                        ..._polls.map(_buildPollCard),
-                      ],
-                      SizedBox(height: 24.h),
-                    ],
+                          if (state.isLoading) const LinearProgressIndicator(),
+                          SizedBox(height: 8.h),
+                          if (state.errorMessage != null &&
+                              state.polls.isEmpty) ...[
+                            HsNote(note: state.errorMessage!),
+                            SizedBox(height: 12.h),
+                            HsButton(
+                              width: double.infinity,
+                              onTap: () => context.read<TripVoteBloc>().add(
+                                    const TripVotesLoadRequested(),
+                                  ),
+                              child: txt(
+                                'تلاش مجدد',
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ] else if (state.polls.isEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(top: 80.h),
+                              child: Center(
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.how_to_vote_outlined,
+                                      size: 54.sp,
+                                      color:
+                                          context.colorScheme.onSurfaceVariant,
+                                    ),
+                                    SizedBox(height: 16.h),
+                                    txt(
+                                      'رأی‌گیری فعالی وجود ندارد.',
+                                      style: context.textTheme.titleMedium,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    txt(
+                                      'وقتی برای یکی از سفرهای شما رأی‌گیری زمان حرکت ایجاد شود، اینجا نمایش داده می‌شود.',
+                                      textAlign: TextAlign.center,
+                                      color:
+                                          context.colorScheme.onSurfaceVariant,
+                                      size: 12.sp,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else ...[
+                            const HsNote(
+                              note:
+                                  'برای هر سفر یکی از بازه‌های پیشنهادی را انتخاب کنید. بعد از ثبت رأی هم می‌توانید انتخاب خود را تغییر دهید.',
+                            ),
+                            SizedBox(height: 16.h),
+                            ...state.polls.map(
+                              (poll) => _buildPollCard(context, poll, state),
+                            ),
+                          ],
+                          SizedBox(height: 24.h),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
