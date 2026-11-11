@@ -7,7 +7,7 @@ Map<String, dynamic> validTripJson({
   List<Map<String, dynamic>>? members,
   Object? departureOptions,
 }) {
-  return {
+  final Map<String, dynamic> json = {
     'id': 42,
     'name': 'North trip',
     'location': 'Tabriz',
@@ -50,8 +50,11 @@ Map<String, dynamic> validTripJson({
             'member_status': 'pending',
           },
         ],
-    if (departureOptions != null) 'departure_options': departureOptions,
   };
+  if (departureOptions != null) {
+    json['departure_options'] = departureOptions;
+  }
+  return json;
 }
 
 void main() {
