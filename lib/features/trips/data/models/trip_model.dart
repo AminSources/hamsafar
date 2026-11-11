@@ -92,6 +92,17 @@ class TripModel extends TripEntity {
     throw FormatException('Invalid or missing trip field: $key');
   }
 
+  static bool _optionalBool(
+    Map<String, dynamic> json,
+    String key, {
+    required bool fallback,
+  }) {
+    final value = json[key];
+    if (value == null) return fallback;
+    if (value is bool) return value;
+    throw FormatException('Invalid trip field: $key');
+  }
+
   static bool _requiredBool(Map<String, dynamic> json, String key) {
     final value = json[key];
     if (value is bool) return value;
