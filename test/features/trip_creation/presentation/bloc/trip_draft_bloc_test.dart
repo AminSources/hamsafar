@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 
 void main() {
@@ -7,11 +8,8 @@ void main() {
       final bloc = TripDraftBloc();
       addTearDown(bloc.close);
 
-      final emitted = expectLater(
-        bloc.stream,
-        emitsThrough(
-          predicate((state) => state.name == 'Weekend trip'),
-        ),
+      final emitted = bloc.stream.firstWhere(
+        (TripDraft state) => state.name == 'Weekend trip',
       );
 
       bloc.add(const TripNameChanged('Weekend trip'));
@@ -24,11 +22,8 @@ void main() {
       final bloc = TripDraftBloc();
       addTearDown(bloc.close);
 
-      final emitted = expectLater(
-        bloc.stream,
-        emitsThrough(
-          predicate((state) => state.costItems.contains('transport')),
-        ),
+      final emitted = bloc.stream.firstWhere(
+        (TripDraft state) => state.costItems.contains('transport'),
       );
 
       bloc.add(const TripCostItemAdded('  transport  '));
