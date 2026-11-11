@@ -38,17 +38,15 @@ class TripCreationWrapper extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => TripStepperBloc()
-            ..add(const TripStepperResetRequested()),
+          create: (_) =>
+              TripStepperBloc()..add(const TripStepperResetRequested()),
         ),
         BlocProvider(
-          create: (_) => TripDraftBloc()
-            ..add(TripDraftInitialized(initialData)),
+          create: (_) =>
+              TripDraftBloc()..add(TripDraftInitialized(initialData)),
         ),
         BlocProvider(
-          create: (_) => TripCreationBloc(
-            saveTripUseCase: saveTripUseCase,
-          ),
+          create: (_) => TripCreationBloc(saveTripUseCase: saveTripUseCase),
         ),
       ],
       child: _TripCreationContent(
@@ -153,82 +151,95 @@ class _TripCreationContentState extends State<_TripCreationContent> {
           final savedTripId = state.savedTripId;
           if (savedTripId == null) return;
 
-          context.read<TripStepperBloc>().add(const TripStepperResetRequested());
+          context.read<TripStepperBloc>().add(
+            const TripStepperResetRequested(),
+          );
           context.pop(savedTripId);
         },
         child: SingleChildScrollView(
-        child: SafeArea(
-          child: BlocBuilder<TripStepperBloc, int>(
-            builder: (context, step) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 16.h,
-                    ),
-                    child: HsAppBar(
-                      title: widget.isEditing ? 'ویرایش سفر' : 'ایجاد سفر جدید',
-                      hasBack: true,
-                      onTapBackButton: () {
-                        if (step == 0) {
-                          context.read<TripStepperBloc>().add(const TripStepperResetRequested());
-                          context.pop();
-                        } else {
-                          context.read<TripStepperBloc>().add(const TripStepperPreviousRequested());
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TripStepper(title: _titles[step], stepperIndex: step),
-                  SizedBox(height: 20.h),
-                  pages[step],
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 50.h,
-                      child: BlocBuilder<TripCreationBloc, TripCreationState>(
-                        builder: (context, state) {
-                          return HsButton(
-                            onTap: state.isSaving
-                                ? null
-                                : () {
-                                    if (step >= 4) {
-                                      _save(context.read<TripDraftBloc>().state);
-                                    } else {
-                                      context.read<TripStepperBloc>().add(const TripStepperNextRequested());
-                                    }
-                                  },
-                            child: state.isSaving
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : txt(
-                                    step == 4
-                                        ? (widget.isEditing
-                                            ? 'ذخیره تغییرات'
-                                            : 'ایجاد سفر')
-                                        : 'ادامه',
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    size: 14.sp,
-                                  ),
-                          );
+          child: SafeArea(
+            child: BlocBuilder<TripStepperBloc, int>(
+              builder: (context, step) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 16.h,
+                      ),
+                      child: HsAppBar(
+                        title: widget.isEditing
+                            ? 'ویرایش سفر'
+                            : 'ایجاد سفر جدید',
+                        hasBack: true,
+                        onTapBackButton: () {
+                          if (step == 0) {
+                            context.read<TripStepperBloc>().add(
+                              const TripStepperResetRequested(),
+                            );
+                            context.pop();
+                          } else {
+                            context.read<TripStepperBloc>().add(
+                              const TripStepperPreviousRequested(),
+                            );
+                          }
                         },
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                ],
-              );
-            },
+                    SizedBox(height: 20.h),
+                    TripStepper(title: _titles[step], stepperIndex: step),
+                    SizedBox(height: 20.h),
+                    pages[step],
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50.h,
+                        child: BlocBuilder<TripCreationBloc, TripCreationState>(
+                          builder: (context, state) {
+                            return HsButton(
+                              onTap: state.isSaving
+                                  ? null
+                                  : () {
+                                      if (step >= 4) {
+                                        _save(
+                                          context.read<TripDraftBloc>().state,
+                                        );
+                                      } else {
+                                        context.read<TripStepperBloc>().add(
+                                          const TripStepperNextRequested(),
+                                        );
+                                      }
+                                    },
+                              child: state.isSaving
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : txt(
+                                      step == 4
+                                          ? (widget.isEditing
+                                                ? 'ذخیره تغییرات'
+                                                : 'ایجاد سفر')
+                                          : 'ادامه',
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800,
+                                      size: 14.sp,
+                                    ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
