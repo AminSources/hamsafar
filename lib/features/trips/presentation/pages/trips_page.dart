@@ -91,7 +91,7 @@ class _TripsPageState extends State<TripsPage> {
                           txt(state.errorMessage!, textAlign: TextAlign.center),
                           TextButton(
                             onPressed: () =>
-                                context.read<TripsBloc>().loadMyTrips(),
+                                context.read<TripsBloc>().add(const TripsLoadRequested()),
                             child: const txt('تلاش دوباره'),
                           ),
                         ],
