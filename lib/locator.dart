@@ -47,6 +47,7 @@ import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coo
 import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_vote_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hamsafar/features/settings/data/data_source/local/get_storage_app_settings_datasource.dart';
 import 'package:hamsafar/features/settings/data/repositories/app_settings_repository_impl.dart';
@@ -287,6 +288,12 @@ void setupLocator() {
       getMyTripBudgetUseCase: sl<GetMyTripBudgetUseCase>(),
       submitTripPaymentUseCase: sl<SubmitTripPaymentUseCase>(),
       confirmTripPaymentUseCase: sl<ConfirmTripPaymentUseCase>(),
+    ),
+  );
+  sl.registerFactory<TripVoteBloc>(
+    () => TripVoteBloc(
+      getMyDeparturePollsUseCase: sl<GetMyDeparturePollsUseCase>(),
+      castDepartureVoteUseCase: sl<CastDepartureVoteUseCase>(),
     ),
   );
   sl.registerFactory<AppSettingsBloc>(
