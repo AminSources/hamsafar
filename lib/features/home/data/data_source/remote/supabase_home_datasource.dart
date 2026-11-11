@@ -3,7 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseHomeDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseHomeDatasource({required this._supabaseClient});
+  SupabaseHomeDatasource({required SupabaseClient supabaseClient})
+      : _supabaseClient = supabaseClient;
 
   String get _userId {
     final userId = _supabaseClient.auth.currentUser?.id;
