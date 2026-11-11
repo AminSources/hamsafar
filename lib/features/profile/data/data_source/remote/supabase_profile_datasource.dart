@@ -6,17 +6,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseProfileDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseProfileDatasource({required this._supabaseClient});
+  SupabaseProfileDatasource({required SupabaseClient supabaseClient})
+      : _supabaseClient = supabaseClient;
 
   User _requireUser() {
     final user = _supabaseClient.auth.currentUser;
-    if (user == null) throw Exception('User is not authenticated');
+    if (user == null) throw StateError('User is not authenticated');
     return user;
   }
 
   Future<void> editProfile({required EditProfileParams params}) async {
     final user = _requireUser();
-
     final updatedProfiles = await _supabaseClient
         .from('profiles')
         .update({
@@ -25,8 +25,7 @@ class SupabaseProfileDatasource {
           'last_name': params.lastName,
           'bio': params.bio ?? '',
           'avatar_icon': params.avatarIcon,
-          'rate': params.rate ?? 0.0,
-          'trip_count': params.tripCount ?? 0,
+          // Rating and trip_count are server-owned; clients must not overwrite them.
           'onboarding_completed': params.onboardingCompleted,
           'updated_at': DateTime.now().toUtc().toIso8601String(),
         })
@@ -34,10 +33,9 @@ class SupabaseProfileDatasource {
         .select('id');
 
     if (updatedProfiles.isEmpty) {
-      throw Exception('Profile update was not applied for the current user');
+      throw StateError('Profile update was not applied for the current user.');
     }
   }
-
 
   Future<bool> getOnboardingCompleted() async {
     final user = _requireUser();
@@ -46,57 +44,50 @@ class SupabaseProfileDatasource {
         .select('onboarding_completed')
         .eq('id', user.id)
         .maybeSingle();
-
     return profile?['onboarding_completed'] == true;
   }
 
   Future<Map<String, dynamic>> getProfile() async {
     final user = _requireUser();
+    final results = await Future.wait<Object?>([
+      _supabaseClient.from('profiles').select().eq('id', user.id).single(),
+      _supabaseClient.from('friendships').select('id').eq('user_id', user.id),
+      _supabaseClient
+          .from('user_availability')
+          .select('day_of_week')
+          .eq('user_id', user.id),
+      _supabaseClient.from('user_tools').select('id').eq('user_id', user.id),
+    ]);
 
-    final profile = await _supabaseClient
-        .from('profiles')
-        .select()
-        .eq('id', user.id)
-        .single();
-
-    final friends = await _supabaseClient
-        .from('friendships')
-        .select('id')
-        .eq('user_id', user.id);
-
-    final freeDays = await _supabaseClient
-        .from('user_availability')
-        .select('day_of_week')
-        .eq('user_id', user.id);
-
-    final userTools = await _supabaseClient
-        .from('user_tools')
-        .select('id')
-        .eq('user_id', user.id);
-
+    final profile = Map<String, dynamic>.from(results[0] as Map);
+    final friends = results[1] as List;
+    final freeDays = results[2] as List;
+    final userTools = results[3] as List;
     return {
       ...profile,
       'friend_count': friends.length,
       'tool_count': userTools.length,
-      'free_days': freeDays.map((day) => day['day_of_week']).toList(),
+      'free_days': freeDays.map((day) => (day as Map)['day_of_week']).toList(),
     };
   }
 
   Future<Map<String, dynamic>> getProfilePreferences() async {
     final user = _requireUser();
-
-    final availability = await _supabaseClient
-        .from('user_availability')
-        .select('day_of_week, time_from, time_to')
-        .eq('user_id', user.id);
-
-    final tools = await _supabaseClient
-        .from('user_tools')
-        .select('id, tool_id, is_available, tools(id, name)')
-        .eq('user_id', user.id)
-        .order('id');
-
-    return {'availability': availability, 'tools': tools};
+    final results = await Future.wait<Object?>([
+      _supabaseClient
+          .from('user_availability')
+          .select('day_of_week, time_from, time_to')
+          .eq('user_id', user.id),
+      _supabaseClient
+          .from('user_tools')
+          .select('id, tool_id, is_available, tools(id, name)')
+          .eq('user_id', user.id)
+          .order('id'),
+    ]);
+    return {
+      'availability': results[0] as List,
+      'tools': results[1] as List,
+    };
   }
 
   Future<void> saveAvailability(SaveAvailabilityParams params) async {
