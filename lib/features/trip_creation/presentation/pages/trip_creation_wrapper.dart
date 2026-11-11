@@ -30,6 +30,7 @@ class TripCreationWrapper extends StatelessWidget {
     super.key,
     this.initialData,
     required this.getFriendsUsecase,
+    required this.saveTripUseCase,
   });
 
   @override
@@ -65,7 +66,6 @@ class _TripCreationContent extends StatefulWidget {
     required this.isEditing,
     this.tripId,
     required this.getFriendsUsecase,
-    required this.saveTripUseCase,
   });
 
   @override
