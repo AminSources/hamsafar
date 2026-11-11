@@ -11,7 +11,7 @@ import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_friend_tile.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -81,7 +81,7 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: BlocBuilder<TripDraftCubit, TripDraft>(
+      child: BlocBuilder<TripDraftBloc, TripDraft>(
         builder: (context, draft) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,8 +147,8 @@ class _TripInvitationPageState extends State<TripInvitationPage> {
                               .avatars[index % AppColors.avatars.length],
                           isSelected: selected,
                           onSelected: (value) => context
-                              .read<TripDraftCubit>()
-                              .toggleInvite(friend.id, value),
+                              .read<TripDraftBloc>()
+                              .add(TripInviteToggled(friend.id, value)),
                         );
                       },
                     );

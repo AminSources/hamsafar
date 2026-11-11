@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_tab_bar_bloc.dart';
 
 class FriendsTabBar extends StatefulWidget {
   final int tabbarIndex;
@@ -33,7 +33,7 @@ class _FriendsTabBarState extends State<FriendsTabBar> {
             child: InkWell(
               onTap: () {
                 //? change tab
-                context.read<FriendsTabBarCubit>().onChangeTabbar(index);
+                context.read<FriendsTabBarBloc>().add(FriendsTabChanged(index));
               },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10.h),

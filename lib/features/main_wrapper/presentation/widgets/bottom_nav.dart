@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
+import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/widgets/bottom_nav_item.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -41,7 +41,7 @@ class BottomNav extends StatelessWidget {
             value: index,
             onSelect: (value) {
               //? change bottom nav state index
-              context.read<BottomNavCubit>().onChangePage(value);
+              context.read<BottomNavBloc>().add(BottomNavIndexChanged(value));
 
               //? change page view page
               pageController.jumpToPage(value);

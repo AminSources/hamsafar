@@ -15,7 +15,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hamsafar/features/profile/domain/entities/profile_entity.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/edit_profile_bottom_sheet.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/profile_card.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/profile_menu_tile.dart';
@@ -45,8 +45,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _openEditProfile(ProfileEntity profile) {
-    context.read<ProfileAvatarCubit>().changeAvatar(
-      AvatarConverter.stringToIconData(avatarName: profile.avatarIcon),
+    context.read<ProfileAvatarBloc>().add(
+      ProfileAvatarChanged(
+        AvatarConverter.stringToIconData(avatarName: profile.avatarIcon),
+      ),
     );
 
     showModalBottomSheet<void>(

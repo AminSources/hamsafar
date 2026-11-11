@@ -13,7 +13,7 @@ import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile/domain/params/save_availability_params.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/profile_available_day_chip.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/time_range_tile.dart';
 
@@ -92,35 +92,36 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
       return;
     }
 
-    final cubit = context.read<ProfilePreferencesCubit>();
-    final saved = await cubit.saveAvailability(SaveAvailabilityParams(
-      days: _dayCodes.where(_selectedDays.contains).toList(),
-      timeFrom: _formatTime(_startTime),
-      timeTo: _formatTime(_endTime),
-    ));
-    if (!mounted) return;
-
-    if (saved) {
-      context.showHsSnackBar(
-        text: 'روزها و ساعت آزاد با موفقیت ذخیره شد',
-        hsSnackBarType: HsSnackBarType.success,
-      );
-      context.pop(true);
-    } else {
-      context.showHsSnackBar(
-        text: cubit.state.message ?? 'ذخیره تغییرات ناموفق بود',
-        hsSnackBarType: HsSnackBarType.error,
-      );
-    }
+    context.read<ProfilePreferencesBloc>().add(
+      ProfileAvailabilitySaveRequested(
+        SaveAvailabilityParams(
+          days: _dayCodes.where(_selectedDays.contains).toList(),
+          timeFrom: _formatTime(_startTime),
+          timeTo: _formatTime(_endTime),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: BlocConsumer<ProfilePreferencesCubit, ProfilePreferencesState>(
+        child: BlocConsumer<ProfilePreferencesBloc, ProfilePreferencesState>(
           listener: (context, state) {
             if (state.isLoaded && !_initialized) _initializeForm(state);
+            if (state.saveSucceeded == true) {
+              context.showHsSnackBar(
+                text: 'روزها و ساعت آزاد با موفقیت ذخیره شد',
+                hsSnackBarType: HsSnackBarType.success,
+              );
+              context.pop(true);
+            } else if (state.saveSucceeded == false) {
+              context.showHsSnackBar(
+                text: state.message ?? 'ذخیره تغییرات ناموفق بود',
+                hsSnackBarType: HsSnackBarType.error,
+              );
+            }
           },
           builder: (context, state) {
             if (state.isLoading || (!state.isLoaded && state.message == null)) {
@@ -138,7 +139,7 @@ class _AvailableDaysPageState extends State<AvailableDaysPage> {
                       SizedBox(height: 12.h),
                       TextButton(
                         onPressed: () =>
-                            context.read<ProfilePreferencesCubit>().load(),
+                            context.read<ProfilePreferencesBloc>().add(const ProfilePreferencesLoadRequested()),
                         child: const txt('تلاش دوباره'),
                       ),
                     ],

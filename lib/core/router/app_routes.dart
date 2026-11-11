@@ -10,7 +10,7 @@ import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page
 import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_bloc.dart';
 import 'package:hamsafar/locator.dart';
 import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
@@ -32,7 +32,7 @@ import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
@@ -169,7 +169,7 @@ class AppRoutes {
             initialData: initialData,
             getFriendsUsecase: sl<GetFriendsUsecase>(),
             saveTripUseCase: sl<SaveTripUseCase>(),
-            onSaved: () => sl<TripsCubit>().loadMyTrips(),
+            onSaved: () => sl<TripsBloc>().add(const TripsLoadRequested()),
           );
         },
       ),
@@ -220,14 +220,14 @@ class AppRoutes {
       GoRoute(
         path: "/available-days",
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProfilePreferencesCubit>()..load(),
+          create: (_) => sl<ProfilePreferencesBloc>()..add(const ProfilePreferencesLoadRequested()),
           child: const AvailableDaysPage(),
         ),
       ),
       GoRoute(
         path: '/my-items',
         builder: (context, state) => BlocProvider(
-          create: (_) => sl<ProfilePreferencesCubit>()..load(),
+          create: (_) => sl<ProfilePreferencesBloc>()..add(const ProfilePreferencesLoadRequested()),
           child: const MyToolsPage(),
         ),
       ),

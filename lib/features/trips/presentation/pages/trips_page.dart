@@ -7,8 +7,8 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_error.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_state.dart';
 import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -24,7 +24,7 @@ class _TripsPageState extends State<TripsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<TripsCubit>().loadMyTrips();
+    context.read<TripsBloc>().add(const TripsLoadRequested());
   }
 
   @override
@@ -67,7 +67,7 @@ class _TripsPageState extends State<TripsPage> {
                 fontWeight: FontWeight.w800,
               ),
               SizedBox(height: 12.h),
-              BlocBuilder<TripsCubit, TripsState>(
+              BlocBuilder<TripsBloc, TripsState>(
                 builder: (context, state) {
                   if (state.isLoadingMyTrips) {
                     return const Center(
@@ -84,7 +84,7 @@ class _TripsPageState extends State<TripsPage> {
                           txt(state.errorMessage!, textAlign: TextAlign.center),
                           TextButton(
                             onPressed: () =>
-                                context.read<TripsCubit>().loadMyTrips(),
+                                context.read<TripsBloc>().loadMyTrips(),
                             child: const txt('تلاش دوباره'),
                           ),
                         ],

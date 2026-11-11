@@ -11,7 +11,7 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile/domain/entities/profile_preferences_entity.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/tool_tile.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -73,32 +73,31 @@ class _MyToolsPageState extends State<MyToolsPage> {
   }
 
   Future<void> _save() async {
-    final cubit = context.read<ProfilePreferencesCubit>();
-    final saved = await cubit.saveTools(List.unmodifiable(_tools));
-    if (!mounted) return;
-
-    if (saved) {
-      context.showHsSnackBar(
-        text: 'فهرست وسایل با موفقیت ذخیره شد',
-        hsSnackBarType: HsSnackBarType.success,
-      );
-      context.pop(true);
-    } else {
-      context.showHsSnackBar(
-        text: cubit.state.message ?? 'ذخیره تغییرات ناموفق بود',
-        hsSnackBarType: HsSnackBarType.error,
-      );
-    }
+    context.read<ProfilePreferencesBloc>().add(
+      ProfileToolsSaveRequested(List.unmodifiable(_tools)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: BlocConsumer<ProfilePreferencesCubit, ProfilePreferencesState>(
+        child: BlocConsumer<ProfilePreferencesBloc, ProfilePreferencesState>(
           listener: (context, state) {
             if (state.isLoaded && !_initialized) {
               _initializeTools(state);
+            }
+            if (state.saveSucceeded == true) {
+              context.showHsSnackBar(
+                text: 'فهرست وسایل با موفقیت ذخیره شد',
+                hsSnackBarType: HsSnackBarType.success,
+              );
+              context.pop(true);
+            } else if (state.saveSucceeded == false) {
+              context.showHsSnackBar(
+                text: state.message ?? 'ذخیره تغییرات ناموفق بود',
+                hsSnackBarType: HsSnackBarType.error,
+              );
             }
           },
           builder: (context, state) {
@@ -120,7 +119,7 @@ class _MyToolsPageState extends State<MyToolsPage> {
                       SizedBox(height: 12.h),
                       TextButton(
                         onPressed: () {
-                          context.read<ProfilePreferencesCubit>().load();
+                          context.read<ProfilePreferencesBloc>().add(const ProfilePreferencesLoadRequested());
                         },
                         child: const txt('تلاش دوباره'),
                       ),

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
@@ -12,8 +14,8 @@ import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_state.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -37,17 +39,14 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   void initState() {
     super.initState();
     if (widget.tripId != null) {
-      context.read<TripsCubit>().loadTripDetails(widget.tripId!);
+      context.read<TripsBloc>().add(TripDetailsLoadRequested(widget.tripId!));
     } else {
       _loadCurrentTrip();
     }
   }
 
-  Future<void> _loadCurrentTrip() async {
-    final cubit = context.read<TripsCubit>();
-    await cubit.loadMyTrips();
-    if (!mounted || cubit.state.myTrips.isEmpty) return;
-    await cubit.loadTripDetails(cubit.state.myTrips.first.id);
+  void _loadCurrentTrip() {
+    context.read<TripsBloc>().add(const CurrentTripDetailsLoadRequested());
   }
 
   String _date(DateTime value) =>
@@ -58,34 +57,29 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   Future<void> _edit(TripEntity trip) async {
     final router = GoRouter.of(context);
-    final tripsCubit = context.read<TripsCubit>();
+    final tripsBloc = context.read<TripsBloc>();
     await router.push('/trip-create', extra: trip);
     if (!mounted) return;
-    tripsCubit.loadTripDetails(trip.id);
+    tripsBloc.add(TripDetailsLoadRequested(trip.id));
   }
 
   Future<void> _invite(TripEntity trip) async {
-    final tripsCubit = context.read<TripsCubit>();
-    final messenger = ScaffoldMessenger.of(context);
-
     final friendsResult = await widget.getFriendsUsecase(NoParams());
     if (!mounted) return;
 
     if (friendsResult is! DataSuccess<List<FriendEntity>>) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: txt(
-            friendsResult.message ?? 'دریافت فهرست دوستان ناموفق بود.',
-          ),
-        ),
+      context.showHsSnackBar(
+        text: friendsResult.message ?? 'دریافت فهرست دوستان ناموفق بود.',
+        hsSnackBarType: HsSnackBarType.error,
       );
       return;
     }
 
     final friends = friendsResult.data ?? const <FriendEntity>[];
     if (friends.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(content: txt('دوستی برای دعوت وجود ندارد.')),
+      context.showHsSnackBar(
+        text: 'دوستی برای دعوت وجود ندارد.',
+        hsSnackBarType: HsSnackBarType.warning,
       );
       return;
     }
@@ -140,22 +134,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
     if (confirmed != true || !mounted) return;
 
-    final ok = await tripsCubit.inviteToTrip(trip.id, selected.toList());
-    if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(
-        content: txt(
-          ok
-              ? 'دعوت‌ها ارسال شدند.'
-              : tripsCubit.state.errorMessage ?? 'ارسال دعوت ناموفق بود.',
-        ),
-      ),
+    context.read<TripsBloc>().add(
+      TripUsersInviteRequested(trip.id, selected.toList()),
     );
   }
 
   Future<void> _delete(TripEntity trip) async {
-    final tripsCubit = context.read<TripsCubit>();
-    final router = GoRouter.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -175,51 +159,55 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
     );
 
     if (confirmed != true || !mounted) return;
-    final deleted = await tripsCubit.deleteTrip(trip.id);
-    if (!mounted) return;
-    if (deleted) router.pop();
+    context.read<TripsBloc>().add(TripDeletionRequested(trip.id));
   }
 
-  Future<void> _toggleMembership(TripEntity trip) async {
-    final tripsCubit = context.read<TripsCubit>();
-    final messenger = ScaffoldMessenger.of(context);
-    final closed = !trip.membershipClosed;
-    final changed = await tripsCubit.setMembershipClosed(trip.id, closed);
-    if (!mounted) return;
-    messenger.showSnackBar(
-      SnackBar(
-        content: txt(
-          changed
-              ? (closed ? 'عضوگیری سفر بسته شد.' : 'عضوگیری سفر دوباره باز شد.')
-              : tripsCubit.state.errorMessage ??
-                    'تغییر وضعیت عضوگیری انجام نشد.',
-        ),
-      ),
+  void _toggleMembership(TripEntity trip) {
+    context.read<TripsBloc>().add(
+      TripMembershipClosureChanged(trip.id, !trip.membershipClosed),
     );
   }
 
-  Future<void> _startTrip(TripEntity trip) async {
-    final tripsCubit = context.read<TripsCubit>();
-    final messenger = ScaffoldMessenger.of(context);
-    final started = await tripsCubit.startTrip(trip.id);
-    if (!mounted) return;
-
-    messenger.showSnackBar(
-      SnackBar(
-        content: txt(
-          started
-              ? 'وضعیت سفر به «درحال سفر» تغییر کرد.'
-              : tripsCubit.state.errorMessage ?? 'شروع سفر انجام نشد.',
-        ),
-      ),
-    );
+  void _startTrip(TripEntity trip) {
+    context.read<TripsBloc>().add(TripStartRequested(trip.id));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: BlocBuilder<TripsCubit, TripsState>(
+    return BlocListener<TripsBloc, TripsState>(
+      listener: (context, state) {
+        final result = state.lastActionResult;
+        if (result == null) return;
+
+        if (result.type == TripActionType.deleted && result.succeeded) {
+          context.pop();
+          return;
+        }
+
+        final successMessage = switch (result.type) {
+          TripActionType.joined => 'به سفر پیوستید.',
+          TripActionType.invitationResponded => 'وضعیت دعوت به‌روزرسانی شد.',
+          TripActionType.left => 'از سفر خارج شدید.',
+          TripActionType.invited => 'دعوت‌ها ارسال شدند.',
+          TripActionType.memberRemoved => 'عضو از سفر حذف شد.',
+          TripActionType.membershipChanged =>
+            state.selectedTrip?.membershipClosed == true
+                ? 'عضوگیری سفر بسته شد.'
+                : 'عضوگیری سفر دوباره باز شد.',
+          TripActionType.started => 'وضعیت سفر به «درحال سفر» تغییر کرد.',
+          TripActionType.deleted => 'سفر حذف شد.',
+        };
+        context.showHsSnackBar(
+          text: result.succeeded
+              ? successMessage
+              : state.errorMessage ?? 'عملیات سفر انجام نشد.',
+          hsSnackBarType:
+              result.succeeded ? HsSnackBarType.success : HsSnackBarType.error,
+        );
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: BlocBuilder<TripsBloc, TripsState>(
           builder: (context, state) {
             final trip = state.selectedTrip;
             if (state.isLoadingDetails && trip == null) {
@@ -470,8 +458,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     Icons.person_remove_alt_1_outlined,
                                   ),
                                   onPressed: () async {
-                                    final tripsCubit = context
-                                        .read<TripsCubit>();
+                                    final tripsBloc = context
+                                        .read<TripsBloc>();
                                     final yes = await showDialog<bool>(
                                       context: context,
                                       builder: (d) => AlertDialog(
@@ -494,10 +482,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                       ),
                                     );
                                     if (!mounted || yes != true) return;
-                                    await tripsCubit.removeTripMember(
-                                      trip.id,
-                                      userId,
-                                    );
+                                    tripsBloc.add(TripMemberRemovalRequested(trip.id, userId));
                                   },
                                 )
                               : null,
@@ -533,8 +518,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                                     ),
                                     icon: const Icon(Icons.close),
                                     onPressed: () => context
-                                        .read<TripsCubit>()
-                                        .removeTripMember(trip.id, userId),
+                                        .read<TripsBloc>()
+                                        .add(TripMemberRemovalRequested(trip.id, userId)),
                                   ),
                           );
                         }),
@@ -555,11 +540,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                             onPressed: trip.membershipClosed
                                 ? null
                                 : () => context
-                                      .read<TripsCubit>()
-                                      .respondToInvitation(
-                                        trip.id,
-                                        accept: true,
-                                      ),
+                                      .read<TripsBloc>()
+                                      .add(TripInvitationResponseRequested(trip.id, accept: true)),
                             child: const txt('پذیرفتن دعوت'),
                           ),
                         ),
@@ -567,8 +549,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => context
-                                .read<TripsCubit>()
-                                .respondToInvitation(trip.id, accept: false),
+                                .read<TripsBloc>()
+                                .add(TripInvitationResponseRequested(trip.id, accept: false)),
                             child: const txt('رد دعوت'),
                           ),
                         ),
@@ -580,7 +562,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                     SizedBox(height: 12.h),
                     OutlinedButton.icon(
                       onPressed: () async {
-                        final tripsCubit = context.read<TripsCubit>();
+                        final tripsBloc = context.read<TripsBloc>();
                         final yes = await showDialog<bool>(
                           context: context,
                           builder: (d) => AlertDialog(
@@ -601,7 +583,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           ),
                         );
                         if (!mounted || yes != true) return;
-                        await tripsCubit.leaveTrip(trip.id);
+                        tripsBloc.add(TripLeaveRequested(trip.id));
                       },
                       icon: const Icon(Icons.logout),
                       label: const txt('خروج از سفر'),
@@ -619,7 +601,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       width: double.infinity,
                       child: FilledButton.icon(
                         onPressed: () =>
-                            context.read<TripsCubit>().joinTrip(trip.id),
+                            context.read<TripsBloc>().add(TripJoinRequested(trip.id)),
                         icon: const Icon(Icons.group_add_outlined),
                         label: const txt('پیوستن به سفر'),
                       ),
@@ -674,6 +656,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
               ),
             );
           },
+          ),
         ),
       ),
     );

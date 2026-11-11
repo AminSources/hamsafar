@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/widgets/avatar_picker_widget.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -27,7 +27,7 @@ class OnboardingAvatar extends StatelessWidget {
             HsAvatar(
               size: 90.w,
               type: HsAvatarType.profile,
-              label: BlocBuilder<ProfileAvatarCubit, IconData>(
+              label: BlocBuilder<ProfileAvatarBloc, IconData>(
                 builder: (context, state) {
                   return Icon(state, size: 40.sp);
                 },
