@@ -60,17 +60,20 @@ class _ProfilePageState extends State<ProfilePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
       ),
       builder: (sheetContext) {
-        return EditProfileBottomSheet(
-          profile: profile,
-          onSaved: () {
-            Navigator.of(sheetContext).pop();
-            if (!mounted) return;
+        return BlocProvider.value(
+          value: context.read<ProfileAvatarBloc>(),
+          child: EditProfileBottomSheet(
+            profile: profile,
+            onSaved: () {
+              Navigator.of(sheetContext).pop();
+              if (!mounted) return;
 
-            context.showHsSnackBar(
-              text: 'پروفایل با موفقیت به‌روزرسانی شد',
-              hsSnackBarType: HsSnackBarType.success,
-            );
-          },
+              context.showHsSnackBar(
+                text: 'پروفایل با موفقیت به‌روزرسانی شد',
+                hsSnackBarType: HsSnackBarType.success,
+              );
+            },
+          ),
         );
       },
     );
