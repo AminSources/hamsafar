@@ -11,6 +11,8 @@ import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_bloc.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
+import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/locator.dart';
 import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
@@ -105,12 +107,21 @@ class AppRoutes {
       ),
       GoRoute(
         path: "/onboarding",
-        builder: (context, state) => const OnboardingPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfileAvatarBloc>(),
+          child: const OnboardingPage(),
+        ),
       ),
       GoRoute(path: "/home", builder: (context, state) => const HomePage()),
       GoRoute(
         path: "/main-wrapper",
-        builder: (context, state) => const MainWrapper(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => sl<BottomNavBloc>()),
+            BlocProvider(create: (_) => sl<ProfileAvatarBloc>()),
+          ],
+          child: const MainWrapper(),
+        ),
       ),
       GoRoute(path: "/trips", builder: (context, state) => const TripsPage()),
       GoRoute(
@@ -169,7 +180,6 @@ class AppRoutes {
             initialData: initialData,
             getFriendsUsecase: sl<GetFriendsUsecase>(),
             saveTripUseCase: sl<SaveTripUseCase>(),
-            onSaved: () => sl<TripsBloc>().add(const TripsLoadRequested()),
           );
         },
       ),

@@ -27,6 +27,13 @@ class _TripsPageState extends State<TripsPage> {
     context.read<TripsBloc>().add(const TripsLoadRequested());
   }
 
+  Future<void> _createTrip() async {
+    final tripId = await context.push<int>('/trip-create');
+    if (!mounted || tripId == null) return;
+    context.read<TripsBloc>().add(const TripsLoadRequested());
+    context.go('/trip-success', extra: tripId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +59,7 @@ class _TripsPageState extends State<TripsPage> {
               ),
               SizedBox(height: 16.h),
               HsButton(
-                onTap: () => context.push('/trip-create'),
+                onTap: _createTrip,
                 child: txt(
                   'ایجاد سفر جدید',
                   color: Colors.white,

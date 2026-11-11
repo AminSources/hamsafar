@@ -25,13 +25,11 @@ class TripCreationWrapper extends StatelessWidget {
   final TripCreationInitialData? initialData;
   final GetFriendsUsecase getFriendsUsecase;
   final SaveTripUseCase saveTripUseCase;
-  final VoidCallback? onSaved;
 
   const TripCreationWrapper({
     super.key,
     this.initialData,
     required this.getFriendsUsecase,
-    this.onSaved,
   });
 
   @override
@@ -52,7 +50,6 @@ class TripCreationWrapper extends StatelessWidget {
         isEditing: initialData != null,
         tripId: initialData?.tripId,
         getFriendsUsecase: getFriendsUsecase,
-        onSaved: onSaved,
         ),
       ),
     );
@@ -63,14 +60,12 @@ class _TripCreationContent extends StatefulWidget {
   final bool isEditing;
   final int? tripId;
   final GetFriendsUsecase getFriendsUsecase;
-  final VoidCallback? onSaved;
 
   const _TripCreationContent({
     required this.isEditing,
     this.tripId,
     required this.getFriendsUsecase,
     required this.saveTripUseCase,
-    this.onSaved,
   });
 
   @override
@@ -155,13 +150,8 @@ class _TripCreationContentState extends State<_TripCreationContent> {
           final savedTripId = state.savedTripId;
           if (savedTripId == null) return;
 
-          widget.onSaved?.call();
           context.read<TripStepperBloc>().add(const TripStepperResetRequested());
-          if (widget.isEditing) {
-            context.pop(true);
-          } else {
-            context.go('/trip-success', extra: savedTripId);
-          }
+          context.pop(savedTripId);
         },
         child: SingleChildScrollView(
         child: SafeArea(

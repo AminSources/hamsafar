@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
@@ -24,8 +25,10 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return BlocProvider(
+      create: (_) => sl<FriendsTabBarBloc>(),
+      child: Scaffold(
+        body: SafeArea(
         child: SizedBox.expand(
           child: SingleChildScrollView(
             child: Padding(
@@ -50,6 +53,7 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

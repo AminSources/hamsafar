@@ -279,7 +279,7 @@ void setupLocator() {
     ),
   );
   sl.registerFactory<BottomNavBloc>(() => BottomNavBloc());
-  sl.registerLazySingleton<TripsBloc>(
+  sl.registerFactory<TripsBloc>(
     () => TripsBloc(
       getMyTripsUseCase: sl<GetMyTripsUseCase>(),
       searchTripsUseCase: sl<SearchTripsUseCase>(),

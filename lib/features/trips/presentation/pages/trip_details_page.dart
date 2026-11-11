@@ -58,8 +58,8 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
   Future<void> _edit(TripEntity trip) async {
     final router = GoRouter.of(context);
     final tripsBloc = context.read<TripsBloc>();
-    await router.push('/trip-create', extra: trip);
-    if (!mounted) return;
+    final result = await router.push<int>('/trip-create', extra: trip);
+    if (!mounted || result == null) return;
     tripsBloc.add(TripDetailsLoadRequested(trip.id));
   }
 

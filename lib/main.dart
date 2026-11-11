@@ -6,13 +6,10 @@ import 'package:get_storage/get_storage.dart';
 import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
 import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
-import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:hamsafar/features/friends/presentation/bloc/friends_tab_bar_bloc.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:hamsafar/locator.dart';
@@ -40,13 +37,10 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => sl<BottomNavBloc>()),
         BlocProvider(create: (context) => sl<TripsBloc>()),
-        BlocProvider(create: (context) => sl<FriendsTabBarBloc>()),
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<ProfileBloc>()),
         BlocProvider(create: (context) => sl<HomeBloc>()),
-        BlocProvider(create: (context) => sl<ProfileAvatarBloc>()),
         BlocProvider(create: (context) => sl<FriendsBloc>()),
         BlocProvider(create: (context) => sl<AppSettingsBloc>()),
       ],
