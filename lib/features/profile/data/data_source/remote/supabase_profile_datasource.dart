@@ -4,20 +4,19 @@ import 'package:hamsafar/features/profile/domain/params/save_availability_params
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseProfileDatasource {
-  final SupabaseClient _supabaseClient;
+  final SupabaseClient supabaseClient;
 
-  SupabaseProfileDatasource({required SupabaseClient supabaseClient})
-      : _supabaseClient = supabaseClient;
+  SupabaseProfileDatasource({required this.supabaseClient});
 
   User _requireUser() {
-    final user = _supabaseClient.auth.currentUser;
+    final user = supabaseClient.auth.currentUser;
     if (user == null) throw StateError('User is not authenticated');
     return user;
   }
 
   Future<void> editProfile({required EditProfileParams params}) async {
     final user = _requireUser();
-    final updatedProfiles = await _supabaseClient
+    final updatedProfiles = await supabaseClient
         .from('profiles')
         .update({
           'username': params.userName,
@@ -39,7 +38,7 @@ class SupabaseProfileDatasource {
 
   Future<bool> getOnboardingCompleted() async {
     final user = _requireUser();
-    final profile = await _supabaseClient
+    final profile = await supabaseClient
         .from('profiles')
         .select('onboarding_completed')
         .eq('id', user.id)
@@ -50,13 +49,13 @@ class SupabaseProfileDatasource {
   Future<Map<String, dynamic>> getProfile() async {
     final user = _requireUser();
     final results = await Future.wait<Object?>([
-      _supabaseClient.from('profiles').select().eq('id', user.id).single(),
-      _supabaseClient.from('friendships').select('id').eq('user_id', user.id),
-      _supabaseClient
+      supabaseClient.from('profiles').select().eq('id', user.id).single(),
+      supabaseClient.from('friendships').select('id').eq('user_id', user.id),
+      supabaseClient
           .from('user_availability')
           .select('day_of_week')
           .eq('user_id', user.id),
-      _supabaseClient.from('user_tools').select('id').eq('user_id', user.id),
+      supabaseClient.from('user_tools').select('id').eq('user_id', user.id),
     ]);
 
     final profile = Map<String, dynamic>.from(results[0] as Map);
@@ -74,11 +73,11 @@ class SupabaseProfileDatasource {
   Future<Map<String, dynamic>> getProfilePreferences() async {
     final user = _requireUser();
     final results = await Future.wait<Object?>([
-      _supabaseClient
+      supabaseClient
           .from('user_availability')
           .select('day_of_week, time_from, time_to')
           .eq('user_id', user.id),
-      _supabaseClient
+      supabaseClient
           .from('user_tools')
           .select('id, tool_id, is_available, tools(id, name)')
           .eq('user_id', user.id)
@@ -92,7 +91,7 @@ class SupabaseProfileDatasource {
 
   Future<void> saveAvailability(SaveAvailabilityParams params) async {
     _requireUser();
-    await _supabaseClient.rpc(
+    await supabaseClient.rpc(
       'replace_user_availability',
       params: {
         'p_days': params.days,
@@ -104,7 +103,7 @@ class SupabaseProfileDatasource {
 
   Future<void> saveTools(List<ProfileToolEntity> tools) async {
     _requireUser();
-    await _supabaseClient.rpc(
+    await supabaseClient.rpc(
       'save_user_tools',
       params: {
         'p_tools': tools
