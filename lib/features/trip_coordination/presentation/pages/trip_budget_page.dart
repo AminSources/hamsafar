@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
@@ -47,13 +49,12 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
     if (mounted) setState(() => _loading = false);
   }
 
-  void _message(String text, bool success) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: txt(text),
-          backgroundColor: success ? Colors.green : null,
-        ),
-      );
+  void _message(String text, bool success) {
+    context.showHsSnackBar(
+      text: text,
+      hsSnackBarType: success ? HsSnackBarType.success : HsSnackBarType.error,
+    );
+  }
 
   String _money(num? value) => ((value ?? 0).toInt())
       .toString()

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
@@ -109,11 +111,9 @@ class _TripTasksPageState extends State<TripTasksPage> {
   }
 
   void _message(String message, bool success) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: txt(message),
-        backgroundColor: success ? Colors.green : null,
-      ),
+    context.showHsSnackBar(
+      text: message,
+      hsSnackBarType: success ? HsSnackBarType.success : HsSnackBarType.error,
     );
   }
 
