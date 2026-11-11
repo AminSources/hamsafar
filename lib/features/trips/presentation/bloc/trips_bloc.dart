@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trips/domain/usecases/trips_usecases.dart';
 import 'package:hamsafar/features/trips/presentation/bloc/trips_state.dart';
 
