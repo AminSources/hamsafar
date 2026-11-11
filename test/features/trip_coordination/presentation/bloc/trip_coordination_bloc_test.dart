@@ -11,6 +11,7 @@ import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coo
 import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_vote_bloc.dart';
 
 class _FakeAuthRepository implements AuthRepository {
   @override
@@ -68,6 +69,24 @@ class _FakeTripCoordinationRepository implements TripCoordinationRepository {
   int savedTasks = 0;
   int deletedTasks = 0;
   int completedTasks = 0;
+  int castVotes = 0;
+
+  List<DeparturePollEntity> departurePolls = [
+    DeparturePollEntity(
+      tripId: 22,
+      myOptionId: null,
+      tripName: 'Voting trip',
+      location: 'Tabriz',
+      options: [
+        DeparturePollOptionEntity(
+          id: 9,
+          startsAt: DateTime.utc(2026, 12, 1, 7),
+          endsAt: DateTime.utc(2026, 12, 1, 9),
+          voteCount: 3,
+        ),
+      ],
+    ),
+  ];
 
   @override
   Future<TripBudgetEntity?> getMyTripBudget() async => budget;
@@ -113,13 +132,15 @@ class _FakeTripCoordinationRepository implements TripCoordinationRepository {
   }
 
   @override
-  Future<List<DeparturePollEntity>> getMyDeparturePolls() async => [];
+  Future<List<DeparturePollEntity>> getMyDeparturePolls() async => departurePolls;
 
   @override
   Future<void> castDepartureVote({
     required int tripId,
     required int optionId,
-  }) async {}
+  }) async {
+    castVotes++;
+  }
 }
 
 void main() {
@@ -239,6 +260,55 @@ void main() {
 
       expect(repository.confirmedPayments, 1);
       expect(state.feedback, 'پرداخت عضو تأیید شد.');
+    });
+  });
+  group('TripVoteBloc', () {
+    test('loads polls and validates selected options', () async {
+      final repository = _FakeTripCoordinationRepository();
+      final bloc = TripVoteBloc(
+        getMyDeparturePollsUseCase: GetMyDeparturePollsUseCase(repository),
+        castDepartureVoteUseCase: CastDepartureVoteUseCase(repository),
+      );
+      addTearDown(bloc.close);
+
+      final loaded = bloc.stream.firstWhere((state) => state.polls.isNotEmpty);
+      bloc.add(const TripVotesLoadRequested());
+      final loadedState = await loaded;
+
+      expect(loadedState.polls.single.tripId, 22);
+      bloc.add(const TripVoteSelectionChanged(tripId: 22, optionId: 9));
+      await bloc.stream.firstWhere(
+        (state) => state.selectedOptionIds[22] == 9,
+      );
+      expect(bloc.state.selectedOptionIds[22], 9);
+    });
+
+    test('submits a vote and reports the successful result', () async {
+      final repository = _FakeTripCoordinationRepository();
+      final bloc = TripVoteBloc(
+        getMyDeparturePollsUseCase: GetMyDeparturePollsUseCase(repository),
+        castDepartureVoteUseCase: CastDepartureVoteUseCase(repository),
+      );
+      addTearDown(bloc.close);
+
+      final loaded = bloc.stream.firstWhere((state) => state.polls.isNotEmpty);
+      bloc.add(const TripVotesLoadRequested());
+      await loaded;
+
+      bloc.add(const TripVoteSelectionChanged(tripId: 22, optionId: 9));
+      await bloc.stream.firstWhere(
+        (state) => state.selectedOptionIds[22] == 9,
+      );
+
+      final submitted = bloc.stream.firstWhere(
+        (state) => state.feedbackIsSuccess == true,
+      );
+      bloc.add(const TripVoteSubmissionRequested(22));
+      final state = await submitted;
+
+      expect(repository.castVotes, 1);
+      expect(state.feedback, 'رأی شما با موفقیت ثبت شد.');
+      expect(state.submittingTripIds, isEmpty);
     });
   });
 }
