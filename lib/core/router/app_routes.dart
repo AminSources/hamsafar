@@ -158,21 +158,19 @@ class AppRoutes {
                   departureAt: trip.departureAt,
                   returnAt: trip.returnAt,
                   budget: trip.budget,
-                  departureOptions: trip.departureOptions.map((option) {
-                    return DepartureOptionDraft(
-                      startsAt: DateTime.parse(
-                        option['starts_at'] as String,
-                      ).toLocal(),
-                      endsAt: DateTime.parse(
-                        option['ends_at'] as String,
-                      ).toLocal(),
-                    );
-                  }).toList(),
+                  departureOptions: trip.departureOptions
+                      .map(
+                        (option) => DepartureOptionDraft(
+                          startsAt: option.startsAt,
+                          endsAt: option.endsAt,
+                        ),
+                      )
+                      .toList(),
                   costItems: trip.costItems,
                   rules: trip.rules,
                   invitedUserIds: trip.members
-                      .where((member) => member['member_status'] == 'pending')
-                      .map((member) => member['id'] as String)
+                      .where((member) => member.memberStatus == 'pending')
+                      .map((member) => member.id)
                       .toList(),
                 );
 

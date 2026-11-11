@@ -424,14 +424,12 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                   ),
                   SizedBox(height: 10.h),
                   ...trip.members
-                      .where((m) => m['member_status'] == 'accepted')
+                      .where((member) => member.memberStatus == 'accepted')
                       .map((member) {
-                        final first = member['first_name'] as String? ?? '';
-                        final last = member['last_name'] as String? ?? '';
-                        final username = member['username'] as String? ?? '';
-                        final userId = member['id'] as String? ?? '';
-                        final displayName = '$first $last'.trim();
-                        final isLeader = member['member_type'] == 'leader';
+                        final username = member.username;
+                        final userId = member.id;
+                        final displayName = member.displayName;
+                        final isLeader = member.isLeader;
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
@@ -495,19 +493,13 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                       style: context.textTheme.titleSmall,
                     ),
                     ...trip.members
-                        .where((m) => m['member_status'] == 'pending')
+                        .where((member) => member.memberStatus == 'pending')
                         .map((member) {
-                          final first = member['first_name'] as String? ?? '';
-                          final last = member['last_name'] as String? ?? '';
-                          final userId = member['id'] as String? ?? '';
-                          final name = '$first $last'.trim();
+                          final userId = member.id;
+                          final name = member.displayName;
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: txt(
-                              name.isEmpty
-                                  ? (member['username'] as String? ?? '')
-                                  : name,
-                            ),
+                            title: txt(name),
                             subtitle: const txt('در انتظار پاسخ'),
                             trailing: trip.membershipClosed
                                 ? null
