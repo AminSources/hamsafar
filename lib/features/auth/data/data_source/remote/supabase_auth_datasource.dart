@@ -3,7 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseAuthDatasource {
   final SupabaseClient _supabaseClient;
 
-  SupabaseAuthDatasource({required this._supabaseClient});
+  SupabaseAuthDatasource({required SupabaseClient supabaseClient})
+      : _supabaseClient = supabaseClient;
 
   Future<AuthResponse> signUp({
     required String email,
