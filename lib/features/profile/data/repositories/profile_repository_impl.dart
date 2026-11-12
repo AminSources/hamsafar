@@ -8,14 +8,12 @@ import 'package:hamsafar/features/profile/domain/entities/profile_preferences_en
 import 'package:hamsafar/features/profile/domain/params/edit_profile_params.dart';
 import 'package:hamsafar/features/profile/domain/params/save_availability_params.dart';
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
-import 'package:logger/logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
   final SupabaseProfileDatasource supabaseProfileDatasource;
 
   ProfileRepositoryImpl({required this.supabaseProfileDatasource});
-
-  Logger log = Logger();
 
   @override
   Future<DataState<void>> editProfile(
@@ -23,18 +21,19 @@ class ProfileRepositoryImpl extends ProfileRepository {
   ) async {
     try {
       await supabaseProfileDatasource.editProfile(params: editProfileParams);
-
-      return DataSuccess(null);
-    } catch (e) {
-      log.e(e);
-
-      final rawError = e.toString();
-      if (rawError.contains('23505') ||
-          rawError.contains('profiles_username_key')) {
-        return DataFailed('این نام کاربری قبلاً انتخاب شده است');
+      return const DataSuccess<void>(null);
+    } on PostgrestException catch (error) {
+      if (error.code == '23505' &&
+          error.message.contains('profiles_username_key')) {
+        return const DataFailed('این نام کاربری قبلاً انتخاب شده است');
       }
-
-      return DataFailed('خطای ناشناخته‌ای رخ داد: $rawError');
+      return const DataFailed(
+        'ویرایش اطلاعات پروفایل ناموفق بود. دوباره تلاش کنید.',
+      );
+    } catch (_) {
+      return const DataFailed(
+        'ویرایش اطلاعات پروفایل ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
 
@@ -42,26 +41,24 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<DataState<ProfileEntity>> getProfile(NoParams noParams) async {
     try {
       final response = await supabaseProfileDatasource.getProfile();
-
-      final profileData = ProfileModel.fromJson(response);
-
-      return DataSuccess(profileData);
-    } catch (e) {
-      log.e(e);
-      return DataFailed('خطای ناشناخته‌ای رخ داد: ${e.toString()}');
+      return DataSuccess(ProfileModel.fromJson(response));
+    } catch (_) {
+      return const DataFailed(
+        'دریافت اطلاعات پروفایل ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
-
 
   @override
   Future<DataState<bool>> getOnboardingCompleted(NoParams noParams) async {
     try {
-      final isCompleted =
+      final completed =
           await supabaseProfileDatasource.getOnboardingCompleted();
-      return DataSuccess(isCompleted);
-    } catch (error) {
-      log.e(error);
-      return DataFailed('بررسی وضعیت تکمیل پروفایل ناموفق بود: $error');
+      return DataSuccess(completed);
+    } catch (_) {
+      return const DataFailed(
+        'بررسی وضعیت تکمیل پروفایل ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
 
@@ -70,9 +67,10 @@ class ProfileRepositoryImpl extends ProfileRepository {
     try {
       final response = await supabaseProfileDatasource.getProfilePreferences();
       return DataSuccess(ProfilePreferencesModel.fromJson(response));
-    } catch (e) {
-      log.e(e);
-      return DataFailed('دریافت تنظیمات پروفایل ناموفق بود: $e');
+    } catch (_) {
+      return const DataFailed(
+        'دریافت تنظیمات پروفایل ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
 
@@ -82,10 +80,11 @@ class ProfileRepositoryImpl extends ProfileRepository {
   ) async {
     try {
       await supabaseProfileDatasource.saveAvailability(params);
-      return DataSuccess(null);
-    } catch (e) {
-      log.e(e);
-      return DataFailed('ذخیره روزهای آزاد ناموفق بود: $e');
+      return const DataSuccess<void>(null);
+    } catch (_) {
+      return const DataFailed(
+        'ذخیره روزهای آزاد ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
 
@@ -93,10 +92,11 @@ class ProfileRepositoryImpl extends ProfileRepository {
   Future<DataState<void>> saveTools(List<ProfileToolEntity> tools) async {
     try {
       await supabaseProfileDatasource.saveTools(tools);
-      return DataSuccess(null);
-    } catch (e) {
-      log.e(e);
-      return DataFailed('ذخیره وسایل ناموفق بود: $e');
+      return const DataSuccess<void>(null);
+    } catch (_) {
+      return const DataFailed(
+        'ذخیره وسایل ناموفق بود. دوباره تلاش کنید.',
+      );
     }
   }
 }

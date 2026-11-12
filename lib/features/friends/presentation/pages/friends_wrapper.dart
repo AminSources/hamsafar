@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hamsafar/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
-import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_tab_bar_bloc.dart';
 import 'package:hamsafar/features/friends/presentation/pages/my_friends_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friends_requests_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friends_search_page.dart';
@@ -24,13 +25,15 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return BlocProvider(
+      create: (_) => sl<FriendsTabBarBloc>(),
+      child: Scaffold(
+        body: SafeArea(
         child: SizedBox.expand(
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              child: BlocBuilder<FriendsTabBarCubit, int>(
+              child: BlocBuilder<FriendsTabBarBloc, int>(
                 builder: (context, state) {
                   return Column(
                     children: [
@@ -50,6 +53,7 @@ class _FriendsWrapperState extends State<FriendsWrapper> {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

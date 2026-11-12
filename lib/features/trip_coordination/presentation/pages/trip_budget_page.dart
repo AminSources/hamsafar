@@ -1,67 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
-import 'package:hamsafar/features/trip_coordination/enums/payment_member_status.dart';
-import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
-import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
-
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
-class TripBudgetPage extends StatefulWidget {
-  final GetMyTripBudgetUseCase getMyTripBudgetUseCase;
-  final SubmitTripPaymentUseCase submitTripPaymentUseCase;
-  final ConfirmTripPaymentUseCase confirmTripPaymentUseCase;
+import 'package:hamsafar/features/trip_coordination/domain/entities/trip_coordination_entities.dart';
+import 'package:hamsafar/features/trip_coordination/enums/payment_member_status.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
 
-  const TripBudgetPage({
-    super.key,
-    required this.getMyTripBudgetUseCase,
-    required this.submitTripPaymentUseCase,
-    required this.confirmTripPaymentUseCase,
-  });
+class TripBudgetPage extends StatelessWidget {
+  const TripBudgetPage({super.key});
 
-  @override
-  State<TripBudgetPage> createState() => _TripBudgetPageState();
-}
-
-class _TripBudgetPageState extends State<TripBudgetPage> {
-  TripBudgetEntity? _budget;
-  bool _loading = true, _busy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
+  Future<void> _refresh(BuildContext context) async {
+    final bloc = context.read<TripBudgetBloc>();
+    if (bloc.state.isBusy || bloc.state.isLoading) return;
+    bloc.add(const TripBudgetLoadRequested());
+    await bloc.stream.firstWhere((state) => !state.isLoading);
   }
-
-  Future<void> _load() async {
-    if (mounted) setState(() => _loading = true);
-    try {
-      final budget = await widget.getMyTripBudgetUseCase();
-      if (!mounted) return;
-      setState(() => _budget = budget);
-    } catch (_) {
-      if (mounted) _message('دریافت اطلاعات بودجه انجام نشد.', false);
-    }
-    if (mounted) setState(() => _loading = false);
-  }
-
-  void _message(String text, bool success) =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: txt(text),
-          backgroundColor: success ? Colors.green : null,
-        ),
-      );
 
   String _money(num? value) => ((value ?? 0).toInt())
       .toString()
       .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '٬');
 
-  String _name(TripBudgetMemberEntity member) => member.displayName;
-
-  Widget _copyRow(BuildContext context, String label, String value) => Padding(
+  Widget _copyRow(BuildContext context, String label, String value) =>
+      Padding(
         padding: EdgeInsets.only(bottom: 8.h),
         child: Row(
           children: [
@@ -89,10 +55,10 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
         ),
       );
 
-  Future<void> _openPaymentSheet() async {
-    final data = _budget;
-    if (data == null || !mounted) return;
-
+  Future<void> _openPaymentSheet(
+    BuildContext context,
+    TripBudgetEntity data,
+  ) async {
     final result = await showModalBottomSheet<_PaymentSubmission>(
       context: context,
       isScrollControlled: true,
@@ -104,52 +70,26 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
       ),
     );
 
-    if (!mounted || result == null) return;
-    await _submitPayment(result.method, result.reference);
+    if (!context.mounted || result == null) return;
+    context.read<TripBudgetBloc>().add(
+      TripPaymentSubmissionRequested(
+        method: result.method,
+        reference: result.reference,
+      ),
+    );
   }
 
-  Future<void> _submitPayment(String method, String? reference) async {
-    if (!mounted) return;
-    setState(() => _busy = true);
-    try {
-      await widget.submitTripPaymentUseCase(
-        tripId: _budget!.tripId,
-        method: method,
-        reference: reference,
-      );
-      await _load();
-      if (mounted) {
-        _message('پرداخت ثبت شد و در انتظار تأیید لیدر است.', true);
-      }
-    } catch (_) {
-      if (mounted) {
-        _message('ثبت پرداخت انجام نشد. دوباره تلاش کنید.', false);
-      }
-    }
-    if (mounted) setState(() => _busy = false);
-  }
-
-  Future<void> _confirm(String userId) async {
-    if (!mounted) return;
-    setState(() => _busy = true);
-    try {
-      await widget.confirmTripPaymentUseCase(
-        tripId: _budget!.tripId,
-        userId: userId,
-      );
-      await _load();
-      if (mounted) _message('پرداخت عضو تأیید شد.', true);
-    } catch (_) {
-      if (mounted) _message('تأیید پرداخت انجام نشد.', false);
-    }
-    if (mounted) setState(() => _busy = false);
-  }
-
-  Widget _memberTile(TripBudgetMemberEntity member, bool leader) {
+  Widget _memberTile(
+    BuildContext context,
+    TripBudgetMemberEntity member, {
+    required bool leader,
+    required bool isBusy,
+  }) {
     final status = PaymentMemberStatus.fromValue(member.paymentStatus);
     final canConfirm = leader &&
         member.memberType != 'leader' &&
         member.paymentStatus == 'under_review';
+
     return Card(
       margin: EdgeInsets.only(bottom: 10.h),
       child: Padding(
@@ -161,7 +101,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   txt(
-                    _name(member),
+                    member.displayName,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   txt('${_money(member.share)} تومان'),
@@ -175,9 +115,7 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
                     ),
                   ),
                   if (member.paymentMethod == 'bank_transfer' &&
-                      (member.paymentReference ?? '')
-                          .toString()
-                          .isNotEmpty)
+                      (member.paymentReference ?? '').isNotEmpty)
                     txt('شماره پیگیری: ${member.paymentReference}'),
                   if (member.paymentMethod == 'cash')
                     const txt('پرداخت نقدی'),
@@ -186,9 +124,11 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
             ),
             if (canConfirm)
               TextButton(
-                onPressed: _busy
+                onPressed: isBusy
                     ? null
-                    : () => _confirm(member.userId),
+                    : () => context.read<TripBudgetBloc>().add(
+                          TripPaymentConfirmationRequested(member.userId),
+                        ),
                 child: const txt('تأیید پرداخت'),
               ),
           ],
@@ -199,104 +139,149 @@ class _TripBudgetPageState extends State<TripBudgetPage> {
 
   @override
   Widget build(BuildContext context) {
-    final data = _budget;
-    final leader = data?.isLeader == true;
-    final members = data?.members ?? const <TripBudgetMemberEntity>[];
-    final myStatus = PaymentMemberStatus.fromValue(data?.myPaymentStatus);
+    return BlocConsumer<TripBudgetBloc, TripBudgetState>(
+      listener: (context, state) {
+        final feedback = state.feedback;
+        if (feedback == null) return;
+        context.showHsSnackBar(
+          text: feedback,
+          hsSnackBarType: state.feedbackIsSuccess == true
+              ? HsSnackBarType.success
+              : HsSnackBarType.error,
+        );
+      },
+      builder: (context, state) {
+        final data = state.data;
+        final leader = data?.isLeader == true;
+        final members = data?.members ?? const <TripBudgetMemberEntity>[];
+        final myStatus = PaymentMemberStatus.fromValue(data?.myPaymentStatus);
 
-    return Scaffold(
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _load,
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-            children: [
-              const HsAppBar(title: 'پرداخت و بودجه', hasBack: true),
-              SizedBox(height: 18.h),
-              if (_loading)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(40),
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              else if (data == null)
-                const HsNote(
-                  note: 'در حال حاضر سفر فعالی برای نمایش بودجه وجود ندارد.',
-                )
-              else ...[
-                Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        txt(
-                          data.tripName.isEmpty ? 'سفر' : data.tripName,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        SizedBox(height: 8.h),
-                        txt(
-                          'بودجه کل: ${_money(data.totalBudget)} تومان',
-                        ),
-                        txt('تعداد اعضا: ${members.length} نفر'),
-                        const Divider(),
-                        txt(
-                          'سهم شما: ${_money(data.myShare)} تومان',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        if (!leader)
-                          Padding(
-                            padding: EdgeInsets.only(top: 8.h),
-                            child: txt(
-                              'وضعیت شما: ${myStatus.label}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+        return Scaffold(
+          body: SafeArea(
+            child: RefreshIndicator(
+              onRefresh: () => _refresh(context),
+              child: ListView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 20.w,
+                  vertical: 16.h,
                 ),
-                SizedBox(height: 12.h),
-                if (!leader && myStatus != PaymentMemberStatus.paid) ...[
-                  if (myStatus == PaymentMemberStatus.underReview)
-                    const HsNote(
-                      note: 'پرداخت شما ثبت شده و در انتظار تأیید لیدر است.',
+                children: [
+                  const HsAppBar(title: 'پرداخت و بودجه', hasBack: true),
+                  SizedBox(height: 18.h),
+                  if (state.isLoading && data == null)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: CircularProgressIndicator(),
+                      ),
                     )
-                  else
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: _busy ? null : _openPaymentSheet,
-                        child: _busy
-                            ? const CircularProgressIndicator()
-                            : const txt('پرداخت سهم'),
+                  else if (data == null)
+                    Column(
+                      children: [
+                        HsNote(
+                          note: state.errorMessage ??
+                              'در حال حاضر سفر فعالی برای نمایش بودجه وجود ندارد.',
+                        ),
+                        if (state.errorMessage != null) ...[
+                          SizedBox(height: 12.h),
+                          FilledButton(
+                            onPressed: () => context
+                                .read<TripBudgetBloc>()
+                                .add(const TripBudgetLoadRequested()),
+                            child: const txt('تلاش مجدد'),
+                          ),
+                        ],
+                      ],
+                    )
+                  else ...[
+                    if (state.errorMessage != null)
+                      HsNote(note: state.errorMessage!),
+                    Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            txt(
+                              data.tripName.isEmpty ? 'سفر' : data.tripName,
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            SizedBox(height: 8.h),
+                            txt('بودجه کل: ${_money(data.totalBudget)} تومان'),
+                            txt('تعداد اعضا: ${members.length} نفر'),
+                            const Divider(),
+                            txt(
+                              'سهم شما: ${_money(data.myShare)} تومان',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            if (!leader)
+                              Padding(
+                                padding: EdgeInsets.only(top: 8.h),
+                                child: txt(
+                                  'وضعیت شما: ${myStatus.label}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                ],
-                if (leader)
-                  const HsNote(
-                    note:
-                        'پرداخت‌های ثبت‌شده اعضا را بررسی و پس از دریافت وجه تأیید کنید.',
-                  ),
-                SizedBox(height: 20.h),
-                txt(
-                  'وضعیت پرداخت اعضا',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                    SizedBox(height: 12.h),
+                    if (!leader && myStatus != PaymentMemberStatus.paid) ...[
+                      if (myStatus == PaymentMemberStatus.underReview)
+                        const HsNote(
+                          note: 'پرداخت شما ثبت شده و در انتظار تأیید لیدر است.',
+                        )
+                      else
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: state.isBusy
+                                ? null
+                                : () => _openPaymentSheet(context, data),
+                            child: state.isBusy
+                                ? const CircularProgressIndicator()
+                                : const txt('پرداخت سهم'),
+                          ),
+                        ),
+                    ],
+                    if (leader)
+                      const HsNote(
+                        note:
+                            'پرداخت‌های ثبت‌شده اعضا را بررسی و پس از دریافت وجه تأیید کنید.',
                       ),
-                ),
-                SizedBox(height: 10.h),
-                ...members.map((m) => _memberTile(m, leader)),
-              ],
-              SizedBox(height: 24.h),
-            ],
+                    SizedBox(height: 20.h),
+                    txt(
+                      'وضعیت پرداخت اعضا',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                    ),
+                    SizedBox(height: 10.h),
+                    ...members.map(
+                      (member) => _memberTile(
+                        context,
+                        member,
+                        leader: leader,
+                        isBusy: state.isBusy,
+                      ),
+                    ),
+                    if (state.isBusy)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: LinearProgressIndicator(),
+                      ),
+                  ],
+                  SizedBox(height: 24.h),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -26,7 +26,7 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
   }
 
   void _addItem() {
-    context.read<TripDraftCubit>().addCostItem(_costItemController.text);
+    context.read<TripDraftBloc>().add(TripCostItemAdded(_costItemController.text));
     _costItemController.clear();
   }
 
@@ -34,9 +34,9 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: BlocBuilder<TripDraftCubit, TripDraft>(
+      child: BlocBuilder<TripDraftBloc, TripDraft>(
         builder: (context, draft) {
-          final cubit = context.read<TripDraftCubit>();
+          final cubit = context.read<TripDraftBloc>();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -65,7 +65,7 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                       .replaceAll('۷', '7')
                       .replaceAll('۸', '8')
                       .replaceAll('۹', '9');
-                  cubit.setBudget(int.tryParse(normalized) ?? 0);
+                  cubit.add(TripBudgetChanged(int.tryParse(normalized) ?? 0));
                 },
                 decoration: InputDecoration(
                   hintText: AppTranslations.translate(context, 'مثلاً ۲۷۰۰۰۰۰'),
@@ -84,14 +84,14 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                 key: const ValueKey('trip-bank-card'),
                 initialValue: draft.bankCardNumber,
                 keyboardType: TextInputType.number,
-                onChanged: cubit.setBankCardNumber,
+                onChanged: (value) => cubit.add(TripBankCardNumberChanged(value)),
                 decoration: InputDecoration(labelText: AppTranslations.translate(context, 'شماره کارت'), hintText: AppTranslations.translate(context, 'شماره کارت ۱۶ رقمی')),
               ),
               SizedBox(height: 10.h),
               TextFormField(
                 key: const ValueKey('trip-bank-account'),
                 initialValue: draft.bankAccountName,
-                onChanged: cubit.setBankAccountName,
+                onChanged: (value) => cubit.add(TripBankAccountNameChanged(value)),
                 decoration: InputDecoration(labelText: AppTranslations.translate(context, 'نام صاحب حساب'), hintText: AppTranslations.translate(context, 'نام و نام خانوادگی')),
               ),
               SizedBox(height: 16.h),
@@ -129,7 +129,7 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                 children: draft.costItems.map((item) {
                   return InputChip(
                     label: txt(item),
-                    onDeleted: () => cubit.removeCostItem(item),
+                    onDeleted: () => cubit.add(TripCostItemRemoved(item)),
                   );
                 }).toList(),
               ),

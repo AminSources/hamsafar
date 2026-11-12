@@ -19,12 +19,20 @@ class TripsRepositoryImpl implements TripsRepository {
   Future<TripEntity> getTripDetails(int tripId) async {
     final rows = await datasource.getTrips(mode: 'details', tripId: tripId);
     if (rows.isEmpty) throw Exception('trip_not_found_or_forbidden');
-    final status = await datasource.getMembershipStatus(tripId);
-    final membershipClosed = await datasource.getMembershipClosed(tripId);
-    final options = await datasource.getDepartureOptions(tripId);
-    final bankDetails = rows.first['is_creator'] == true
-        ? await datasource.getTripPaymentDetails(tripId)
-        : null;
+    final isCreator = rows.first['is_creator'] == true;
+    final results = await Future.wait<Object?>([
+      datasource.getMembershipStatus(tripId),
+      datasource.getMembershipClosed(tripId),
+      datasource.getDepartureOptions(tripId),
+      isCreator
+          ? datasource.getTripPaymentDetails(tripId)
+          : Future<Map<String, dynamic>?>.value(null),
+    ]);
+
+    final status = results[0] as String?;
+    final membershipClosed = results[1] as bool;
+    final options = results[2] as List<Map<String, dynamic>>;
+    final bankDetails = results[3] as Map<String, dynamic>?;
     return TripModel.fromJson({
       ...rows.first,
       ...?bankDetails,

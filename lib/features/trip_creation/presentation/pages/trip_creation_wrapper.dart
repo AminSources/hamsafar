@@ -10,10 +10,10 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_creation_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_creation_bloc.dart';
 import 'package:hamsafar/features/trip_creation/domain/usecases/save_trip_usecase.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_stepper_bloc.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_common_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_expense_setup_page.dart';
 import 'package:hamsafar/features/trip_creation/presentation/pages/trip_invitation_page.dart';
@@ -25,14 +25,12 @@ class TripCreationWrapper extends StatelessWidget {
   final TripCreationInitialData? initialData;
   final GetFriendsUsecase getFriendsUsecase;
   final SaveTripUseCase saveTripUseCase;
-  final VoidCallback? onSaved;
 
   const TripCreationWrapper({
     super.key,
     this.initialData,
     required this.getFriendsUsecase,
     required this.saveTripUseCase,
-    this.onSaved,
   });
 
   @override
@@ -40,18 +38,21 @@ class TripCreationWrapper extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => TripDraftCubit()..initialize(initialData),
+          create: (_) =>
+              TripStepperBloc()..add(const TripStepperResetRequested()),
         ),
         BlocProvider(
-          create: (_) => TripCreationCubit(saveTripUseCase: saveTripUseCase),
+          create: (_) =>
+              TripDraftBloc()..add(TripDraftInitialized(initialData)),
+        ),
+        BlocProvider(
+          create: (_) => TripCreationBloc(saveTripUseCase: saveTripUseCase),
         ),
       ],
       child: _TripCreationContent(
         isEditing: initialData != null,
         tripId: initialData?.tripId,
         getFriendsUsecase: getFriendsUsecase,
-        saveTripUseCase: saveTripUseCase,
-        onSaved: onSaved,
       ),
     );
   }
@@ -61,15 +62,11 @@ class _TripCreationContent extends StatefulWidget {
   final bool isEditing;
   final int? tripId;
   final GetFriendsUsecase getFriendsUsecase;
-  final SaveTripUseCase saveTripUseCase;
-  final VoidCallback? onSaved;
 
   const _TripCreationContent({
     required this.isEditing,
     this.tripId,
     required this.getFriendsUsecase,
-    required this.saveTripUseCase,
-    this.onSaved,
   });
 
   @override
@@ -85,13 +82,7 @@ class _TripCreationContentState extends State<_TripCreationContent> {
     'دعوت اعضا از لیست دوستان',
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<TripStepperCubit>().reset();
-  }
-
-  Future<void> _save(TripDraft draft) async {
+  void _save(TripDraft draft) {
     if (draft.name.trim().isEmpty) {
       context.showHsSnackBar(
         text: 'نام سفر را وارد کنید.',
@@ -131,29 +122,9 @@ class _TripCreationContentState extends State<_TripCreationContent> {
       return;
     }
 
-    final savedTripId = await context.read<TripCreationCubit>().save(
-          draft,
-          tripId: widget.tripId,
-        );
-    if (!mounted) return;
-
-    if (savedTripId == null) {
-      final message = context.read<TripCreationCubit>().state.errorMessage ??
-          'ذخیره سفر انجام نشد.';
-      context.showHsSnackBar(
-        text: message,
-        hsSnackBarType: HsSnackBarType.error,
-      );
-      return;
-    }
-
-    widget.onSaved?.call();
-    context.read<TripStepperCubit>().reset();
-    if (widget.isEditing) {
-      context.pop(true);
-    } else {
-      context.go('/trip-success', extra: savedTripId);
-    }
+    context.read<TripCreationBloc>().add(
+      TripCreationSaveRequested(draft, tripId: widget.tripId),
+    );
   }
 
   @override
@@ -167,79 +138,108 @@ class _TripCreationContentState extends State<_TripCreationContent> {
     ];
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: BlocBuilder<TripStepperCubit, int>(
-            builder: (context, step) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 16.h,
-                    ),
-                    child: HsAppBar(
-                      title: widget.isEditing ? 'ویرایش سفر' : 'ایجاد سفر جدید',
-                      hasBack: true,
-                      onTapBackButton: () {
-                        if (step == 0) {
-                          context.read<TripStepperCubit>().reset();
-                          context.pop();
-                        } else {
-                          context.read<TripStepperCubit>().previousStep();
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  TripStepper(title: _titles[step], stepperIndex: step),
-                  SizedBox(height: 20.h),
-                  pages[step],
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 50.h,
-                      child: BlocBuilder<TripCreationCubit, TripCreationState>(
-                        builder: (context, state) {
-                          return HsButton(
-                            onTap: state.isSaving
-                                ? null
-                                : () {
-                                    if (step >= 4) {
-                                      _save(context.read<TripDraftCubit>().state);
-                                    } else {
-                                      context.read<TripStepperCubit>().nextStep();
-                                    }
-                                  },
-                            child: state.isSaving
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : txt(
-                                    step == 4
-                                        ? (widget.isEditing
-                                            ? 'ذخیره تغییرات'
-                                            : 'ایجاد سفر')
-                                        : 'ادامه',
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    size: 14.sp,
-                                  ),
-                          );
+      body: BlocListener<TripCreationBloc, TripCreationState>(
+        listener: (context, state) {
+          if (state.isSaving) return;
+          if (state.errorMessage != null) {
+            context.showHsSnackBar(
+              text: state.errorMessage!,
+              hsSnackBarType: HsSnackBarType.error,
+            );
+            return;
+          }
+          final savedTripId = state.savedTripId;
+          if (savedTripId == null) return;
+
+          context.read<TripStepperBloc>().add(
+            const TripStepperResetRequested(),
+          );
+          context.pop(savedTripId);
+        },
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: BlocBuilder<TripStepperBloc, int>(
+              builder: (context, step) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20.w,
+                        vertical: 16.h,
+                      ),
+                      child: HsAppBar(
+                        title: widget.isEditing
+                            ? 'ویرایش سفر'
+                            : 'ایجاد سفر جدید',
+                        hasBack: true,
+                        onTapBackButton: () {
+                          if (step == 0) {
+                            context.read<TripStepperBloc>().add(
+                              const TripStepperResetRequested(),
+                            );
+                            context.pop();
+                          } else {
+                            context.read<TripStepperBloc>().add(
+                              const TripStepperPreviousRequested(),
+                            );
+                          }
                         },
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
-                ],
-              );
-            },
+                    SizedBox(height: 20.h),
+                    TripStepper(title: _titles[step], stepperIndex: step),
+                    SizedBox(height: 20.h),
+                    pages[step],
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50.h,
+                        child: BlocBuilder<TripCreationBloc, TripCreationState>(
+                          builder: (context, state) {
+                            return HsButton(
+                              onTap: state.isSaving
+                                  ? null
+                                  : () {
+                                      if (step >= 4) {
+                                        _save(
+                                          context.read<TripDraftBloc>().state,
+                                        );
+                                      } else {
+                                        context.read<TripStepperBloc>().add(
+                                          const TripStepperNextRequested(),
+                                        );
+                                      }
+                                    },
+                              child: state.isSaving
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : txt(
+                                      step == 4
+                                          ? (widget.isEditing
+                                                ? 'ذخیره تغییرات'
+                                                : 'ایجاد سفر')
+                                          : 'ادامه',
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800,
+                                      size: 14.sp,
+                                    ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

@@ -5,7 +5,7 @@ import 'package:hamsafar/core/enums/hs_note_type.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/date_time_option.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
@@ -45,14 +45,14 @@ class TripScheduleSetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: BlocBuilder<TripDraftCubit, TripDraft>(
+      child: BlocBuilder<TripDraftBloc, TripDraft>(
         builder: (context, draft) {
-          final cubit = context.read<TripDraftCubit>();
+          final cubit = context.read<TripDraftBloc>();
           return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              ScheduleOption(title: 'زمان قطعی', selected: draft.scheduleType == 'fixed', onTap: () => cubit.setScheduleType('fixed')),
+              ScheduleOption(title: 'زمان قطعی', selected: draft.scheduleType == 'fixed', onTap: () => cubit.add(const TripScheduleTypeChanged('fixed'))),
               SizedBox(width: 10.w),
-              ScheduleOption(title: 'رأی‌گیری اعضا', selected: draft.scheduleType == 'voting', onTap: () => cubit.setScheduleType('voting')),
+              ScheduleOption(title: 'رأی‌گیری اعضا', selected: draft.scheduleType == 'voting', onTap: () => cubit.add(const TripScheduleTypeChanged('voting'))),
             ]),
             SizedBox(height: 16.h),
             if (draft.scheduleType == 'fixed') ...[
@@ -61,12 +61,12 @@ class TripScheduleSetupPage extends StatelessWidget {
               Row(children: [
                 _dateField(context, 'شروع سفر', draft.departureAt, () async {
                   final value = await _pickDateTime(context, draft.departureAt);
-                  if (value != null) cubit.setDepartureAt(value);
+                  if (value != null) cubit.add(TripDepartureAtChanged(value));
                 }),
                 SizedBox(width: 10.w),
                 _dateField(context, 'پایان سفر', draft.returnAt, () async {
                   final value = await _pickDateTime(context, draft.returnAt);
-                  if (value != null) cubit.setReturnAt(value);
+                  if (value != null) cubit.add(TripReturnAtChanged(value));
                 }),
               ]),
             ] else ...[
@@ -84,17 +84,17 @@ class TripScheduleSetupPage extends StatelessWidget {
                         txt('پیشنهاد ${index + 1}', fontWeight: FontWeight.w800, size: 13.sp),
                         const Spacer(),
                         if (draft.departureOptions.length > 2)
-                          IconButton(onPressed: () => cubit.removeDepartureOption(index), icon: const Icon(Icons.delete_outline), visualDensity: VisualDensity.compact),
+                          IconButton(onPressed: () => cubit.add(TripDepartureOptionRemoved(index)), icon: const Icon(Icons.delete_outline), visualDensity: VisualDensity.compact),
                       ]),
                       Row(children: [
                         _dateField(context, 'از', option.startsAt, () async {
                           final value = await _pickDateTime(context, option.startsAt);
-                          if (value != null) cubit.updateDepartureOption(index, option.copyWith(startsAt: value));
+                          if (value != null) cubit.add(TripDepartureOptionUpdated(index, option.copyWith(startsAt: value)));
                         }),
                         SizedBox(width: 8.w),
                         _dateField(context, 'تا', option.endsAt, () async {
                           final value = await _pickDateTime(context, option.endsAt);
-                          if (value != null) cubit.updateDepartureOption(index, option.copyWith(endsAt: value));
+                          if (value != null) cubit.add(TripDepartureOptionUpdated(index, option.copyWith(endsAt: value)));
                         }),
                       ]),
                       if (!option.endsAt.isAfter(option.startsAt))
@@ -106,7 +106,7 @@ class TripScheduleSetupPage extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: draft.departureOptions.length >= 10 ? null : () {
                   final start = draft.departureOptions.isEmpty ? DateTime.now().add(const Duration(days: 1)) : draft.departureOptions.last.startsAt.add(const Duration(hours: 2));
-                  cubit.addDepartureOption(start, start.add(const Duration(hours: 2)));
+                  cubit.add(TripDepartureOptionAdded(start, start.add(const Duration(hours: 2))));
                 },
                 icon: const Icon(Icons.add), label: const txt('افزودن بازهٔ پیشنهادی'),
               ),

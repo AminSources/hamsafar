@@ -1,12 +1,11 @@
 import 'package:hamsafar/core/params/no_params.dart';
-import 'package:hamsafar/features/auth/domain/params/sign_in_params.dart';
-import 'package:hamsafar/features/auth/domain/params/sign_up_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/auth/data/data_source/remote/supabase_auth_datasource.dart';
 import 'package:hamsafar/features/auth/data/models/user_model.dart';
 import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
+import 'package:hamsafar/features/auth/domain/params/sign_in_params.dart';
+import 'package:hamsafar/features/auth/domain/params/sign_up_params.dart';
 import 'package:hamsafar/features/auth/domain/repositories/auth_repository.dart';
-import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -14,85 +13,111 @@ class AuthRepositoryImpl extends AuthRepository {
 
   AuthRepositoryImpl({required this.supabaseAuthDatasource});
 
-  Logger log = Logger();
-
   @override
-  Future<DataState<UserEntity>> signIn(SignInParams signInParams) async {
+  Future<DataState<UserEntity>> signIn(SignInParams params) async {
     try {
       final response = await supabaseAuthDatasource.signIn(
-        email: signInParams.email,
-        password: signInParams.password,
+        email: params.email,
+        password: params.password,
       );
-
-      if (response.user == null) {
-        log.e("user data is null");
-        return DataFailed("Login failed");
+      final user = response.user;
+      if (user == null) {
+        return const DataFailed(
+          'ورود ناموفق بود. اطلاعات حساب را بررسی کنید.',
+        );
       }
-
-      final UserEntity data = UserModel.fromJson(response.user!);
-      return DataSuccess(data);
-    } on AuthException catch (e) {
-      log.e(e.message);
-      return DataFailed(e.message);
-    } catch (e) {
-      log.e(e.toString());
-      return DataFailed("خطای ناشناخته‌ای رخ داد: ${e.toString()}");
+      return DataSuccess(UserModel.fromJson(user));
+    } on AuthException catch (error) {
+      return DataFailed(_authErrorMessage(error, isSignUp: false));
+    } catch (_) {
+      return const DataFailed('ورود انجام نشد. اتصال اینترنت را بررسی کنید.');
     }
   }
 
   @override
-  Future<DataState<UserEntity>> signUp(SignUpParams signUpParams) async {
+  Future<DataState<UserEntity>> signUp(SignUpParams params) async {
     try {
       final response = await supabaseAuthDatasource.signUp(
-        email: signUpParams.email,
-        password: signUpParams.password,
+        email: params.email,
+        password: params.password,
         metadata: {
-          if (signUpParams.displayName != null)
-            'displayName': signUpParams.displayName,
-          'userName': signUpParams.userName,
+          if (params.displayName != null) 'displayName': params.displayName,
+          'userName': params.userName,
         },
       );
-
-      if (response.user == null) {
-        return DataFailed("SignUp failed");
+      final user = response.user;
+      if (user == null) {
+        return const DataFailed(
+          'ساخت حساب کاربری انجام نشد. دوباره تلاش کنید.',
+        );
       }
-
-      final UserEntity data = UserModel.fromJson(response.user!);
-      return DataSuccess(data);
-    } on AuthException catch (e) {
-      log.e(e.message);
-      return DataFailed(e.message);
-    } catch (e) {
-      log.e(e.toString());
-      return DataFailed("خطای ناشناخته‌ای رخ داد: ${e.toString()}");
+      return DataSuccess(UserModel.fromJson(user));
+    } on AuthException catch (error) {
+      return DataFailed(_authErrorMessage(error, isSignUp: true));
+    } catch (_) {
+      return const DataFailed(
+        'ساخت حساب کاربری انجام نشد. اتصال اینترنت را بررسی کنید.',
+      );
     }
   }
 
   @override
-  Future<void> signOut(NoParams noParams) {
-    return supabaseAuthDatasource.signOut();
-  }
+  Future<void> signOut(NoParams noParams) =>
+      supabaseAuthDatasource.signOut();
 
   @override
   Future<DataState<UserEntity?>> getCurrentUser(NoParams noParams) async {
     final user = supabaseAuthDatasource.currentUser;
+    if (user == null) return const DataSuccess<UserEntity?>(null);
 
-    if (user == null) {
-      return DataFailed("User not found");
+    try {
+      return DataSuccess<UserEntity?>(UserModel.fromJson(user));
+    } catch (_) {
+      return const DataFailed(
+        'وضعیت حساب کاربری قابل بررسی نیست. دوباره تلاش کنید.',
+      );
     }
-
-    return DataSuccess(UserModel.fromJson(user));
   }
 
   @override
   Stream<DataState<UserEntity?>> get authStateChanges {
     return supabaseAuthDatasource.authStateChanges.map((event) {
-      if (event.session?.user == null) {
-        return DataFailed("Error on state chages");
-      }
+      final user = event.session?.user;
+      if (user == null) return const DataSuccess<UserEntity?>(null);
 
-      final data = UserModel.fromJson(event.session!.user);
-      return DataSuccess(data);
+      try {
+        return DataSuccess<UserEntity?>(UserModel.fromJson(user));
+      } catch (_) {
+        return const DataFailed(
+          'وضعیت حساب کاربری قابل بررسی نیست. دوباره تلاش کنید.',
+        );
+      }
     });
+  }
+
+  String _authErrorMessage(
+    AuthException error, {
+    required bool isSignUp,
+  }) {
+    final message = error.message.toLowerCase();
+
+    if (message.contains('invalid login credentials') ||
+        message.contains('invalid_credentials')) {
+      return 'ایمیل یا رمز عبور نادرست است.';
+    }
+    if (message.contains('already registered') ||
+        message.contains('user already exists')) {
+      return 'این ایمیل قبلاً ثبت‌نام شده است.';
+    }
+    if (message.contains('email not confirmed')) {
+      return 'ابتدا ایمیل خود را تأیید کنید.';
+    }
+    if (message.contains('rate limit')) {
+      return 'تعداد درخواست‌ها زیاد است. کمی بعد دوباره تلاش کنید.';
+    }
+
+    return isSignUp
+        ? 'ساخت حساب کاربری انجام نشد. اطلاعات واردشده را بررسی کنید.'
+        : 'ورود انجام نشد. اطلاعات حساب را بررسی کنید.';
   }
 }

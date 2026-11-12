@@ -9,15 +9,25 @@ class AuthRouterNotifier extends ChangeNotifier {
     required Stream<DataState<UserEntity?>> authStateChanges,
   }) {
     _subscription = authStateChanges.listen((_) {
+      _onboardingCompletedByUser.clear();
       notifyListeners();
     });
   }
 
   late final StreamSubscription<DataState<UserEntity?>> _subscription;
+  final Map<String, bool> _onboardingCompletedByUser = {};
+
+  bool isOnboardingCompleted(String userId) =>
+      _onboardingCompletedByUser[userId] == true;
+
+  void markOnboardingCompleted(String userId) {
+    _onboardingCompletedByUser[userId] = true;
+  }
 
   @override
   void dispose() {
-    _subscription.cancel();
+    unawaited(_subscription.cancel());
+    _onboardingCompletedByUser.clear();
     super.dispose();
   }
 }

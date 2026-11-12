@@ -8,8 +8,8 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_state.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_state.dart';
 import 'package:hamsafar/features/trips/presentation/widgets/trip_tile.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -28,13 +28,13 @@ class _TripSearchPageState extends State<TripSearchPage> {
   @override
   void initState() {
     super.initState();
-    context.read<TripsCubit>().searchTrips('');
+    context.read<TripsBloc>().add(const TripsSearchRequested(''));
   }
 
   void _onChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), () {
-      if (mounted) context.read<TripsCubit>().searchTrips(value);
+      if (mounted) context.read<TripsBloc>().add(TripsSearchRequested(value));
     });
   }
 
@@ -84,7 +84,7 @@ class _TripSearchPageState extends State<TripSearchPage> {
                 ),
               ),
               SizedBox(height: 16.h),
-              BlocBuilder<TripsCubit, TripsState>(
+              BlocBuilder<TripsBloc, TripsState>(
                 builder: (context, state) {
                   if (state.isSearching) {
                     return const Center(

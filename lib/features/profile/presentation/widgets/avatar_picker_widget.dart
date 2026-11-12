@@ -8,7 +8,7 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 
 class AvatarPickerWidget extends StatelessWidget {
   const AvatarPickerWidget({super.key});
@@ -19,7 +19,7 @@ class AvatarPickerWidget extends StatelessWidget {
       height: 350.h,
       child: Padding(
         padding: EdgeInsets.all(20.w),
-        child: BlocBuilder<ProfileAvatarCubit, IconData>(
+        child: BlocBuilder<ProfileAvatarBloc, IconData>(
           builder: (context, state) {
             return Column(
               spacing: 12.h,
@@ -41,8 +41,8 @@ class AvatarPickerWidget extends StatelessWidget {
                           : context.colorScheme.surfaceContainerHigh,
                       borderColor: context.colorScheme.outline,
                       onTap: () {
-                        context.read<ProfileAvatarCubit>().changeAvatar(
-                          avatarIcons[index],
+                        context.read<ProfileAvatarBloc>().add(
+                          ProfileAvatarChanged(avatarIcons[index]),
                         );
                       },
                       child: Center(child: Icon(avatarIcons[index])),

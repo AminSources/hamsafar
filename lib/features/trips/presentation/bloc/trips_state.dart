@@ -1,6 +1,32 @@
 import 'package:equatable/equatable.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 
+enum TripActionType {
+  joined,
+  invitationResponded,
+  left,
+  invited,
+  memberRemoved,
+  membershipChanged,
+  started,
+  deleted,
+}
+
+class TripActionResult extends Equatable {
+  final TripActionType type;
+  final int tripId;
+  final bool succeeded;
+
+  const TripActionResult({
+    required this.type,
+    required this.tripId,
+    required this.succeeded,
+  });
+
+  @override
+  List<Object?> get props => [type, tripId, succeeded];
+}
+
 class TripsState extends Equatable {
   final List<TripEntity> myTrips;
   final List<TripEntity> searchResults;
@@ -12,6 +38,7 @@ class TripsState extends Equatable {
   final bool isUpdatingStatus;
   final bool isUpdatingMembership;
   final String? errorMessage;
+  final TripActionResult? lastActionResult;
 
   const TripsState({
     this.myTrips = const [],
@@ -24,6 +51,7 @@ class TripsState extends Equatable {
     this.isUpdatingStatus = false,
     this.isUpdatingMembership = false,
     this.errorMessage,
+    this.lastActionResult,
   });
 
   TripsState copyWith({
@@ -39,6 +67,8 @@ class TripsState extends Equatable {
     bool? isUpdatingMembership,
     String? errorMessage,
     bool clearError = false,
+    TripActionResult? lastActionResult,
+    bool clearActionResult = false,
   }) {
     return TripsState(
       myTrips: myTrips ?? this.myTrips,
@@ -52,7 +82,10 @@ class TripsState extends Equatable {
       isDeleting: isDeleting ?? this.isDeleting,
       isUpdatingStatus: isUpdatingStatus ?? this.isUpdatingStatus,
       isUpdatingMembership: isUpdatingMembership ?? this.isUpdatingMembership,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      lastActionResult: clearActionResult
+          ? null
+          : lastActionResult ?? this.lastActionResult,
     );
   }
 
@@ -68,5 +101,6 @@ class TripsState extends Equatable {
     isUpdatingStatus,
     isUpdatingMembership,
     errorMessage,
+    lastActionResult,
   ];
 }

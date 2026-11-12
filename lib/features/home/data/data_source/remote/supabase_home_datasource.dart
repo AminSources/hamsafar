@@ -1,13 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseHomeDatasource {
-  final SupabaseClient _supabaseClient;
+  final SupabaseClient supabaseClient;
 
-  SupabaseHomeDatasource({required this._supabaseClient});
+  SupabaseHomeDatasource({required this.supabaseClient});
 
   String get _userId {
-    final userId = _supabaseClient.auth.currentUser?.id;
+    final userId = supabaseClient.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('User is not logged in.');
     }
@@ -15,7 +14,7 @@ class SupabaseHomeDatasource {
   }
 
   Future<List<Map<String, dynamic>>> getMyTrips() async {
-    final response = await _supabaseClient.rpc(
+    final response = await supabaseClient.rpc(
       'get_trips',
       params: {'p_mode': 'mine', 'p_query': null, 'p_trip_id': null},
     );
@@ -24,7 +23,7 @@ class SupabaseHomeDatasource {
   }
 
   Future<Map<String, dynamic>> getProfile({required String userId}) async {
-    final profile = await _supabaseClient
+    final profile = await supabaseClient
         .from('profiles')
         .select('id, first_name, avatar_icon')
         .eq('id', userId)
@@ -60,19 +59,25 @@ class SupabaseHomeDatasource {
   }
 
   Future<List<Map<String, dynamic>>> getRecentActivities(int tripId) async {
-    try {
-      final response = await _supabaseClient.rpc(
-        'get_recent_trip_activities',
-        params: {'p_trip_id': tripId},
+    final response = await supabaseClient.rpc(
+      'get_recent_trip_activities',
+      params: {'p_trip_id': tripId},
+    );
+
+    if (response is! List) {
+      throw const FormatException(
+        'Invalid response from get_recent_trip_activities.',
       );
-      if (response is! List) return [];
-      return response
-          .map((row) => Map<String, dynamic>.from(row as Map))
-          .toList();
-    } catch (error) {
-      debugPrint('Error on getting recent trip activities: $error');
-      return [];
     }
+
+    return response.map((row) {
+      if (row is! Map) {
+        throw const FormatException(
+          'Invalid activity row in get_recent_trip_activities.',
+        );
+      }
+      return Map<String, dynamic>.from(row);
+    }).toList(growable: false);
   }
 
   Future<Map<String, dynamic>> getHomeData() async {

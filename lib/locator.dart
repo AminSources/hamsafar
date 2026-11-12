@@ -18,8 +18,8 @@ import 'package:hamsafar/features/home/data/repositories/home_repository_impl.da
 import 'package:hamsafar/features/home/domain/repositories/home_repository.dart';
 import 'package:hamsafar/features/home/domain/usecases/get_home_usecase.dart';
 import 'package:hamsafar/features/home/presentation/bloc/home_bloc.dart';
-import 'package:hamsafar/features/main_wrapper/presentation/cubit/bottom_nav_cubit.dart';
-import 'package:hamsafar/features/friends/presentation/cubit/friends_tab_bar_cubit.dart';
+import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friends_tab_bar_bloc.dart';
 import 'package:hamsafar/features/profile/data/data_source/remote/supabase_profile_datasource.dart';
 import 'package:hamsafar/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
@@ -30,15 +30,13 @@ import 'package:hamsafar/features/profile/domain/usecases/get_profile_preference
 import 'package:hamsafar/features/profile/domain/usecases/save_availability_usecase.dart';
 import 'package:hamsafar/features/profile/domain/usecases/save_tools_usecase.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_preferences_cubit.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_date_coordination_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_bloc.dart';
 import 'package:hamsafar/features/trips/data/data_source/remote/supabase_trips_datasource.dart';
 import 'package:hamsafar/features/trips/data/repositories/trips_repository_impl.dart';
 import 'package:hamsafar/features/trips/domain/repositories/trips_repository.dart';
 import 'package:hamsafar/features/trips/domain/usecases/trips_usecases.dart';
-import 'package:hamsafar/features/trips/presentation/cubit/trips_cubit.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_stepper_cubit.dart';
+import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/trip_creation/data/data_source/remote/supabase_trip_creation_datasource.dart';
 import 'package:hamsafar/features/trip_creation/data/repositories/trip_creation_repository_impl.dart';
 import 'package:hamsafar/features/trip_creation/domain/repositories/trip_creation_repository.dart';
@@ -47,12 +45,15 @@ import 'package:hamsafar/features/trip_coordination/data/data_source/remote/supa
 import 'package:hamsafar/features/trip_coordination/data/repositories/trip_coordination_repository_impl.dart';
 import 'package:hamsafar/features/trip_coordination/domain/repositories/trip_coordination_repository.dart';
 import 'package:hamsafar/features/trip_coordination/domain/usecases/trip_coordination_usecases.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_tasks_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_budget_bloc.dart';
+import 'package:hamsafar/features/trip_coordination/presentation/bloc/trip_vote_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hamsafar/features/settings/data/data_source/local/get_storage_app_settings_datasource.dart';
 import 'package:hamsafar/features/settings/data/repositories/app_settings_repository_impl.dart';
 import 'package:hamsafar/features/settings/domain/repositories/app_settings_repository.dart';
 import 'package:hamsafar/features/settings/domain/usecases/app_settings_usecases.dart';
-import 'package:hamsafar/features/settings/presentation/cubit/app_settings_cubit.dart';
+import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 GetIt sl = GetIt.instance;
@@ -203,8 +204,8 @@ void setupLocator() {
   sl.registerLazySingleton<SaveToolsUsecase>(
     () => SaveToolsUsecase(profileRepository: sl<ProfileRepository>()),
   );
-  sl.registerFactory<ProfilePreferencesCubit>(
-    () => ProfilePreferencesCubit(
+  sl.registerFactory<ProfilePreferencesBloc>(
+    () => ProfilePreferencesBloc(
       getProfilePreferencesUsecase: sl<GetProfilePreferencesUsecase>(),
       saveAvailabilityUsecase: sl<SaveAvailabilityUsecase>(),
       saveToolsUsecase: sl<SaveToolsUsecase>(),
@@ -272,18 +273,39 @@ void setupLocator() {
     () => CastDepartureVoteUseCase(sl<TripCoordinationRepository>()),
   );
 
-  // Blocs and cubits
-  sl.registerFactory<AppSettingsCubit>(
-    () => AppSettingsCubit(
+  // Feature Blocs
+  sl.registerFactory<TripTasksBloc>(
+    () => TripTasksBloc(
+      getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
+      getTripTaskContextUseCase: sl<GetTripTaskContextUseCase>(),
+      saveTripTaskUseCase: sl<SaveTripTaskUseCase>(),
+      deleteTripTaskUseCase: sl<DeleteTripTaskUseCase>(),
+      completeTripTaskUseCase: sl<CompleteTripTaskUseCase>(),
+    ),
+  );
+  sl.registerFactory<TripBudgetBloc>(
+    () => TripBudgetBloc(
+      getMyTripBudgetUseCase: sl<GetMyTripBudgetUseCase>(),
+      submitTripPaymentUseCase: sl<SubmitTripPaymentUseCase>(),
+      confirmTripPaymentUseCase: sl<ConfirmTripPaymentUseCase>(),
+    ),
+  );
+  sl.registerFactory<TripVoteBloc>(
+    () => TripVoteBloc(
+      getMyDeparturePollsUseCase: sl<GetMyDeparturePollsUseCase>(),
+      castDepartureVoteUseCase: sl<CastDepartureVoteUseCase>(),
+    ),
+  );
+  sl.registerFactory<AppSettingsBloc>(
+    () => AppSettingsBloc(
       loadSettingsUseCase: sl<LoadAppSettingsUseCase>(),
       saveLanguageUseCase: sl<SaveAppLanguageUseCase>(),
       saveThemeModeUseCase: sl<SaveAppThemeModeUseCase>(),
     ),
   );
-  sl.registerLazySingleton<BottomNavCubit>(() => BottomNavCubit());
-  sl.registerLazySingleton<TripStepperCubit>(() => TripStepperCubit());
-  sl.registerLazySingleton<TripsCubit>(
-    () => TripsCubit(
+  sl.registerFactory<BottomNavBloc>(() => BottomNavBloc());
+  sl.registerFactory<TripsBloc>(
+    () => TripsBloc(
       getMyTripsUseCase: sl<GetMyTripsUseCase>(),
       searchTripsUseCase: sl<SearchTripsUseCase>(),
       getTripDetailsUseCase: sl<GetTripDetailsUseCase>(),
@@ -297,10 +319,7 @@ void setupLocator() {
       removeTripMemberUseCase: sl<RemoveTripMemberUseCase>(),
     ),
   );
-  sl.registerLazySingleton<FriendsTabBarCubit>(() => FriendsTabBarCubit());
-  sl.registerLazySingleton<TripDateCoordinationCubit>(
-    () => TripDateCoordinationCubit(),
-  );
+  sl.registerFactory<FriendsTabBarBloc>(() => FriendsTabBarBloc());
   sl.registerLazySingleton<AuthBloc>(
     () => AuthBloc(
       loginUsecase: sl<LoginUsecase>(),
@@ -318,7 +337,7 @@ void setupLocator() {
   sl.registerLazySingleton<HomeBloc>(
     () => HomeBloc(getHomeUsecase: sl<GetHomeUsecase>()),
   );
-  sl.registerLazySingleton<ProfileAvatarCubit>(() => ProfileAvatarCubit());
+  sl.registerFactory<ProfileAvatarBloc>(() => ProfileAvatarBloc());
   sl.registerLazySingleton<FriendsBloc>(
     () => FriendsBloc(
       getFriendsUsecase: sl<GetFriendsUsecase>(),

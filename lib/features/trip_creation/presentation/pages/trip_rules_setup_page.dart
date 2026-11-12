@@ -5,7 +5,7 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/features/trip_creation/presentation/cubit/trip_draft_cubit.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -26,7 +26,7 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
   }
 
   void _addRule() {
-    context.read<TripDraftCubit>().addRule(_ruleController.text);
+    context.read<TripDraftBloc>().add(TripRuleAdded(_ruleController.text));
     _ruleController.clear();
   }
 
@@ -34,9 +34,9 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: BlocBuilder<TripDraftCubit, TripDraft>(
+      child: BlocBuilder<TripDraftBloc, TripDraft>(
         builder: (context, draft) {
-          final cubit = context.read<TripDraftCubit>();
+          final cubit = context.read<TripDraftBloc>();
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -81,7 +81,7 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                     title: txt(rule),
                     trailing: IconButton(
                       tooltip: AppTranslations.translate(context, 'حذف قانون'),
-                      onPressed: () => cubit.removeRule(rule),
+                      onPressed: () => cubit.add(TripRuleRemoved(rule)),
                       icon: const Icon(Icons.close),
                     ),
                   ),

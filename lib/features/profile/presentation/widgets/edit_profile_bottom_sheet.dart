@@ -15,7 +15,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/profile/domain/entities/profile_entity.dart';
 import 'package:hamsafar/features/profile/domain/params/edit_profile_params.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:hamsafar/features/profile/presentation/cubit/profile_avatar_cubit.dart';
+import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
@@ -76,7 +76,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
     _submitted = true;
 
     final currentProfile = widget.profile;
-    final selectedAvatar = context.read<ProfileAvatarCubit>().state;
+    final selectedAvatar = context.read<ProfileAvatarBloc>().state;
 
     context.read<ProfileBloc>().add(
       EditProfileEvent(
@@ -165,7 +165,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                 Center(
                   child: Column(
                     children: [
-                      BlocBuilder<ProfileAvatarCubit, IconData>(
+                      BlocBuilder<ProfileAvatarBloc, IconData>(
                         builder: (context, selectedAvatar) {
                           return HsAvatar(
                             size: 76.w,
@@ -188,7 +188,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                 ),
                 SizedBox(height: 14.h),
 
-                BlocBuilder<ProfileAvatarCubit, IconData>(
+                BlocBuilder<ProfileAvatarBloc, IconData>(
                   builder: (context, selectedAvatar) {
                     return Wrap(
                       alignment: WrapAlignment.center,
@@ -210,8 +210,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                           onTap: isSaving
                               ? null
                               : () => context
-                                    .read<ProfileAvatarCubit>()
-                                    .changeAvatar(avatarIcon),
+                                    .read<ProfileAvatarBloc>()
+                                    .add(ProfileAvatarChanged(avatarIcon)),
                           child: Icon(
                             avatarIcon,
                             color: isSelected
