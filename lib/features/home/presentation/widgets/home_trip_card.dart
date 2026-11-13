@@ -81,13 +81,13 @@ class HomeTripCard extends StatelessWidget {
             values: [
               _formatDate(trip.departureDate),
               _formatTime(isInTrip ? trip.returnTime : trip.departureTime),
-              '${trip.memberCount} نفر',
+              '${trip.members.length} نفر',
             ],
           ),
           SizedBox(height: 16.h),
           Divider(color: Colors.white24, height: 1),
           SizedBox(height: 14.h),
-          HomeAvatarStack(membersNames: trip.membersNames),
+          HomeAvatarStack(members: trip.members),
         ],
       ),
     );

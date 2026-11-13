@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:hamsafar/features/home/domain/entities/home_trip_member_entity.dart';
 import 'package:hamsafar/features/home/enums/home_trip_enum.dart';
 
 class HomeTripEntity extends Equatable {
@@ -10,8 +11,7 @@ class HomeTripEntity extends Equatable {
   final String? departureTime;
   final String? returnTime;
   final HomeTripStatus status;
-  final int memberCount;
-  final List<String> membersNames;
+  final List<HomeTripMemberEntity> members;
 
   const HomeTripEntity({
     required this.id,
@@ -22,8 +22,7 @@ class HomeTripEntity extends Equatable {
     this.departureTime,
     this.returnTime,
     required this.status,
-    required this.memberCount,
-    required this.membersNames,
+    required this.members,
   });
 
   bool get isInTrip => status == HomeTripStatus.inTrip;
@@ -38,7 +37,6 @@ class HomeTripEntity extends Equatable {
     departureTime,
     returnTime,
     status,
-    memberCount,
-    membersNames,
+    members,
   ];
 }

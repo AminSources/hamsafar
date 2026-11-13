@@ -134,6 +134,8 @@ class AppTranslations {
     'موضوع': 'Subject',
     'توضیحات مشکل را با جزئیات بنویسید...': 'Describe the issue in detail...',
     'ارسال گزارش': 'Submit report',
+    "شما باید با قوانین و شرایط موافقت کنید.":
+        "You must agree to the terms and conditions.",
     'بازخورد شما به بهتر شدن همسفر کمک می‌کند 💚':
         'Your feedback helps make Hamsafar better 💚',
   };

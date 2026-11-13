@@ -25,7 +25,7 @@ class SupabaseHomeDatasource {
   Future<Map<String, dynamic>> getProfile({required String userId}) async {
     final profile = await supabaseClient
         .from('profiles')
-        .select('id, first_name, avatar_icon')
+        .select('id, first_name, last_name, avatar_icon')
         .eq('id', userId)
         .maybeSingle();
 
@@ -70,14 +70,16 @@ class SupabaseHomeDatasource {
       );
     }
 
-    return response.map((row) {
-      if (row is! Map) {
-        throw const FormatException(
-          'Invalid activity row in get_recent_trip_activities.',
-        );
-      }
-      return Map<String, dynamic>.from(row);
-    }).toList(growable: false);
+    return response
+        .map((row) {
+          if (row is! Map) {
+            throw const FormatException(
+              'Invalid activity row in get_recent_trip_activities.',
+            );
+          }
+          return Map<String, dynamic>.from(row);
+        })
+        .toList(growable: false);
   }
 
   Future<Map<String, dynamic>> getHomeData() async {

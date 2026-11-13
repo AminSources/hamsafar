@@ -22,9 +22,7 @@ class AuthRepositoryImpl extends AuthRepository {
       );
       final user = response.user;
       if (user == null) {
-        return const DataFailed(
-          'ورود ناموفق بود. اطلاعات حساب را بررسی کنید.',
-        );
+        return const DataFailed('ورود ناموفق بود. اطلاعات حساب را بررسی کنید.');
       }
       return DataSuccess(UserModel.fromJson(user));
     } on AuthException catch (error) {
@@ -62,8 +60,7 @@ class AuthRepositoryImpl extends AuthRepository {
   }
 
   @override
-  Future<void> signOut(NoParams noParams) =>
-      supabaseAuthDatasource.signOut();
+  Future<void> signOut(NoParams noParams) => supabaseAuthDatasource.signOut();
 
   @override
   Future<DataState<UserEntity?>> getCurrentUser(NoParams noParams) async {
@@ -95,10 +92,7 @@ class AuthRepositoryImpl extends AuthRepository {
     });
   }
 
-  String _authErrorMessage(
-    AuthException error, {
-    required bool isSignUp,
-  }) {
+  String _authErrorMessage(AuthException error, {required bool isSignUp}) {
     final message = error.message.toLowerCase();
 
     if (message.contains('invalid login credentials') ||

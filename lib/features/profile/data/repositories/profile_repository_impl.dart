@@ -8,6 +8,7 @@ import 'package:hamsafar/features/profile/domain/entities/profile_preferences_en
 import 'package:hamsafar/features/profile/domain/params/edit_profile_params.dart';
 import 'package:hamsafar/features/profile/domain/params/save_availability_params.dart';
 import 'package:hamsafar/features/profile/domain/repositories/profile_repository.dart';
+import 'package:logger/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileRepositoryImpl extends ProfileRepository {
@@ -25,6 +26,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
     } on PostgrestException catch (error) {
       if (error.code == '23505' &&
           error.message.contains('profiles_username_key')) {
+        Logger().e(error);
         return const DataFailed('این نام کاربری قبلاً انتخاب شده است');
       }
       return const DataFailed(
@@ -52,8 +54,8 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<DataState<bool>> getOnboardingCompleted(NoParams noParams) async {
     try {
-      final completed =
-          await supabaseProfileDatasource.getOnboardingCompleted();
+      final completed = await supabaseProfileDatasource
+          .getOnboardingCompleted();
       return DataSuccess(completed);
     } catch (_) {
       return const DataFailed(
@@ -94,9 +96,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
       await supabaseProfileDatasource.saveTools(tools);
       return const DataSuccess<void>(null);
     } catch (_) {
-      return const DataFailed(
-        'ذخیره وسایل ناموفق بود. دوباره تلاش کنید.',
-      );
+      return const DataFailed('ذخیره وسایل ناموفق بود. دوباره تلاش کنید.');
     }
   }
 }

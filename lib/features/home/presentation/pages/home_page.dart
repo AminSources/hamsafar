@@ -6,7 +6,7 @@ import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:hamsafar/core/utils/avatar_color_util.dart';
 import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
@@ -66,117 +66,117 @@ class _HomePageState extends State<HomePage> {
                 }
                 if (state is HomeInitial) {
                   return const Center(
-                    child: txt(
-                      'اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.',
-                    ),
-                );
-              }
-              if (state is! HomeSuccess) return const SizedBox.shrink();
+                    child: txt('اطلاعات صفحهٔ خانه هنوز بارگذاری نشده است.'),
+                  );
+                }
+                if (state is! HomeSuccess) return const SizedBox.shrink();
 
-              final homeData = state.homeEntity;
-              final currentTrip = homeData.currentTrip.isEmpty
-                  ? null
-                  : homeData.currentTrip.first;
-              final isInTrip = currentTrip?.isInTrip ?? false;
-              final tripId = int.tryParse(currentTrip?.id ?? '');
+                final homeData = state.homeEntity;
+                final currentTrip = homeData.currentTrip.isEmpty
+                    ? null
+                    : homeData.currentTrip.first;
+                final isInTrip = currentTrip?.isInTrip ?? false;
+                final tripId = int.tryParse(currentTrip?.id ?? '');
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HsAppBar(
-                    title: isInTrip
-                        ? 'سفر خوبی داشته باشی!'
-                        : 'سلام، ${homeData.profile.firstName}! 👋',
-                    subtitle: isInTrip
-                        ? 'سفر شما در حال اجراست'
-                        : 'آماده‌ی سفر بعدی هستی؟',
-                    leading: Row(
-                      children: [
-                        HsContainer(
-                          width: 42.w,
-                          height: 42.w,
-                          onTap: () {},
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: Icon(
-                                  Icons.notifications_none_rounded,
-                                  size: 22.sp,
-                                  color: context.colorScheme.onSurfaceVariant,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    HsAppBar(
+                      title: isInTrip
+                          ? 'سفر خوبی داشته باشی!'
+                          : 'سلام، ${homeData.profile.firstName}! 👋',
+                      subtitle: isInTrip
+                          ? 'سفر شما در حال اجراست'
+                          : 'آماده‌ی سفر بعدی هستی؟',
+                      leading: Row(
+                        children: [
+                          HsContainer(
+                            width: 42.w,
+                            height: 42.w,
+                            onTap: () {},
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    Icons.notifications_none_rounded,
+                                    size: 22.sp,
+                                    color: context.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
-                              ),
-                              Positioned(
-                                top: 9.h,
-                                right: 11.w,
-                                child: Container(
-                                  width: 8.w,
-                                  height: 8.w,
-                                  decoration: BoxDecoration(
-                                    color: context.colorScheme.error,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: context.colorScheme.surface,
-                                      width: 1.5,
+                                Positioned(
+                                  top: 9.h,
+                                  right: 11.w,
+                                  child: Container(
+                                    width: 8.w,
+                                    height: 8.w,
+                                    decoration: BoxDecoration(
+                                      color: context.colorScheme.error,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: context.colorScheme.surface,
+                                        width: 1.5,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        HsAvatar(
-                          label: Icon(
-                            AvatarConverter.stringToIconData(
-                              avatarName: homeData.profile.avatarIcon,
+                              ],
                             ),
                           ),
-                          size: 42.w,
-                          color: AppColors.avatars[0],
-                          type: HsAvatarType.profile,
-                        ),
-                      ],
+                          SizedBox(width: 12.w),
+                          HsAvatar(
+                            label: Icon(
+                              AvatarConverter.stringToIconData(
+                                avatarName: homeData.profile.avatarIcon,
+                              ),
+                            ),
+                            size: 42.w,
+                            color: getAvatarColor(
+                              '${homeData.profile.firstName} ${homeData.profile.lastName}',
+                            ),
+                            type: HsAvatarType.profile,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 24.h),
-                  if (currentTrip != null)
-                    Column(
-                      children: [
-                        HsHeader(
-                          title: 'سفر فعلی',
-                          actionLabel: 'جزئیات کامل',
-                          onTap: tripId == null
-                              ? null
-                              : () => context.push(
+                    SizedBox(height: 24.h),
+                    if (currentTrip != null)
+                      Column(
+                        children: [
+                          HsHeader(
+                            title: 'سفر فعلی',
+                            actionLabel: 'جزئیات کامل',
+                            onTap: tripId == null
+                                ? null
+                                : () => context.push(
                                     '/trip-detail',
                                     extra: tripId,
                                   ),
-                        ),
-                        SizedBox(height: 12.h),
-                        HomeTripCard(
-                          trip: currentTrip,
-                          isInTrip: isInTrip,
-                        ),
-                        SizedBox(height: 16.h),
-                        HomeActionCardsRow(isInTrip: isInTrip, tripId: tripId),
-                        SizedBox(height: 24.h),
-                        HsHeader(title: 'فعالیت‌های اخیر'),
-                        SizedBox(height: 12.h),
-                        HomeActivities(activities: homeData.activities),
-                        SizedBox(height: 65.h),
-                      ],
-                    )
-                  else
-                    const HsError(
-                      illustrationPath: 'lib/assets/images/empty_trip.svg',
-                      title: 'شما هنوز عضو سفری نشده اید',
-                      subtitle:
-                          'برای عضویت یا ساخت سفر جدید به بخش سفرها مراجعه کنید',
-                    ),
-                ],
-              );
-            },
-          ),
+                          ),
+                          SizedBox(height: 12.h),
+                          HomeTripCard(trip: currentTrip, isInTrip: isInTrip),
+                          SizedBox(height: 16.h),
+                          HomeActionCardsRow(
+                            isInTrip: isInTrip,
+                            tripId: tripId,
+                          ),
+                          SizedBox(height: 24.h),
+                          HsHeader(title: 'فعالیت‌های اخیر'),
+                          SizedBox(height: 12.h),
+                          HomeActivities(activities: homeData.activities),
+                          SizedBox(height: 65.h),
+                        ],
+                      )
+                    else
+                      const HsError(
+                        illustrationPath: 'lib/assets/images/empty_trip.svg',
+                        title: 'شما هنوز عضو سفری نشده اید',
+                        subtitle:
+                            'برای عضویت یا ساخت سفر جدید به بخش سفرها مراجعه کنید',
+                      ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),

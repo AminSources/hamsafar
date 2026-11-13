@@ -38,7 +38,9 @@ class ProfileCard extends StatelessWidget {
               ),
               size: 30.sp,
             ),
-            color: getAvatarColor(profileInfo.firstName + profileInfo.lastName),
+            color: getAvatarColor(
+              '${profileInfo.firstName} ${profileInfo.lastName}',
+            ),
             type: HsAvatarType.profile,
           ),
           SizedBox(height: 16.h),

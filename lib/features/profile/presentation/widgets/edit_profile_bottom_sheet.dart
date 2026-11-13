@@ -19,6 +19,7 @@ import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class EditProfileBottomSheet extends StatefulWidget {
   final ProfileEntity profile;
   final VoidCallback onSaved;
@@ -35,30 +36,37 @@ class EditProfileBottomSheet extends StatefulWidget {
 
 class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _usernameController;
+  final FocusNode _firstNameFocusNode = FocusNode();
+  final FocusNode _lastNameFocusNode = FocusNode();
+  final FocusNode _userNameFocusNode = FocusNode();
+  final FocusNode _bioFocusNode = FocusNode();
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
+  late final TextEditingController _userNameController;
+  late final TextEditingController _bioController;
   bool _submitted = false;
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController(
-      text: widget.profile.userName,
-    );
+    _userNameController = TextEditingController(text: widget.profile.userName);
     _firstNameController = TextEditingController(
       text: widget.profile.firstName,
     );
-    _lastNameController = TextEditingController(
-      text: widget.profile.lastName,
-    );
+    _lastNameController = TextEditingController(text: widget.profile.lastName);
+    _bioController = TextEditingController(text: widget.profile.bio);
   }
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _userNameController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _bioController.dispose();
+    _firstNameFocusNode.dispose();
+    _lastNameFocusNode.dispose();
+    _userNameFocusNode.dispose();
+    _bioFocusNode.dispose();
     super.dispose();
   }
 
@@ -81,10 +89,10 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
     context.read<ProfileBloc>().add(
       EditProfileEvent(
         EditProfileParams(
-          userName: _usernameController.text.trim(),
+          userName: _userNameController.text.trim(),
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
-          bio: currentProfile.bio,
+          bio: _bioController.text.trim(),
           rate: currentProfile.rate,
           tripCount: currentProfile.tripCount,
           avatarIcon: AvatarConverter.iconDataToString(
@@ -105,7 +113,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
         if (state is ProfileSuccess) {
           _submitted = false;
           widget.onSaved();
-        } else if (state is ProfileUpdateFailed) {
+        }
+        if (state is ProfileUpdateFailed) {
           _submitted = false;
           context.showHsSnackBar(
             text: state.message,
@@ -171,18 +180,14 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                             size: 76.w,
                             type: HsAvatarType.profile,
                             color: getAvatarColor(
-                              widget.profile.firstName +
-                                  widget.profile.lastName,
+                              '${widget.profile.firstName} ${widget.profile.lastName}',
                             ),
                             label: Icon(selectedAvatar, size: 34.sp),
                           );
                         },
                       ),
                       SizedBox(height: 8.h),
-                      txt(
-                        'انتخاب آواتار',
-                        style: context.textTheme.titleSmall,
-                      ),
+                      txt('انتخاب آواتار', style: context.textTheme.titleSmall),
                     ],
                   ),
                 ),
@@ -209,9 +214,9 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                               : context.colorScheme.outline,
                           onTap: isSaving
                               ? null
-                              : () => context
-                                    .read<ProfileAvatarBloc>()
-                                    .add(ProfileAvatarChanged(avatarIcon)),
+                              : () => context.read<ProfileAvatarBloc>().add(
+                                  ProfileAvatarChanged(avatarIcon),
+                                ),
                           child: Icon(
                             avatarIcon,
                             color: isSelected
@@ -228,7 +233,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
 
                 //* username
                 TextFormField(
-                  controller: _usernameController,
+                  controller: _userNameController,
+                  focusNode: _userNameFocusNode,
                   textDirection: TextDirection.ltr,
                   textAlign: TextAlign.left,
                   textInputAction: TextInputAction.next,
@@ -244,7 +250,10 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                     if (requiredError != null) return requiredError;
 
                     if (value!.trim().contains(RegExp(r'\s'))) {
-                      return AppTranslations.translate(context, 'نام کاربری نباید فاصله داشته باشد');
+                      return AppTranslations.translate(
+                        context,
+                        'نام کاربری نباید فاصله داشته باشد',
+                      );
                     }
                     return null;
                   },
@@ -254,28 +263,55 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                 //* first name
                 TextFormField(
                   controller: _firstNameController,
+                  focusNode: _firstNameFocusNode,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     hintText: AppTranslations.translate(context, 'نام'),
                     prefixIcon: Icon(LucideIcons.userRound),
                   ),
-                  validator: (value) =>
-                      _requiredFieldValidator(value, 'نام'),
+                  validator: (value) => _requiredFieldValidator(value, 'نام'),
                 ),
                 SizedBox(height: 14.h),
 
                 //* last name
                 TextFormField(
                   controller: _lastNameController,
+                  focusNode: _lastNameFocusNode,
                   textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
-                    hintText: AppTranslations.translate(context, 'نام خانوادگی'),
+                    hintText: AppTranslations.translate(
+                      context,
+                      'نام خانوادگی',
+                    ),
                     prefixIcon: Icon(LucideIcons.userRound),
                   ),
                   validator: (value) =>
                       _requiredFieldValidator(value, 'نام خانوادگی'),
                   onFieldSubmitted: (_) {
                     if (!isSaving) _submit();
+                  },
+                ),
+                SizedBox(height: 14.h),
+
+                TextFormField(
+                  controller: _bioController,
+                  focusNode: _bioFocusNode,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: AppTranslations.translate(
+                      context,
+                      'چند خط درباره خودت و سبک سفر کردنت بنویس...',
+                    ),
+                    alignLabelWithHint: true,
+                  ),
+                  validator: (value) {
+                    if (value!.length > 50) {
+                      return AppTranslations.translate(
+                        context,
+                        "کارکتر های بیش از حد مجاز",
+                      );
+                    }
+                    return null;
                   },
                 ),
                 SizedBox(height: 22.h),

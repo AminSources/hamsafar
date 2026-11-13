@@ -52,10 +52,7 @@ class TripSuccessPage extends StatelessWidget {
               ),
               SizedBox(height: 32.h),
               HsButton(
-                onTap: () => context.go(
-                  '/trip-detail',
-                  extra: tripId,
-                ),
+                onTap: () => context.push('/trip-detail', extra: tripId),
                 child: txt(
                   'مشاهده جزئیات سفر',
                   color: Colors.white,
@@ -78,7 +75,8 @@ class TripSuccessPage extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               const HsNote(
-                note: 'دوستانی که انتخاب کرده‌اید، پس از ایجاد سفر دعوت‌نامه دریافت می‌کنند.',
+                note:
+                    'دوستانی که انتخاب کرده‌اید، پس از ایجاد سفر دعوت‌نامه دریافت می‌کنند.',
               ),
               const Spacer(),
             ],

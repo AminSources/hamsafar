@@ -62,17 +62,22 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (sheetContext) {
         return BlocProvider.value(
           value: context.read<ProfileAvatarBloc>(),
-          child: EditProfileBottomSheet(
-            profile: profile,
-            onSaved: () {
-              Navigator.of(sheetContext).pop();
-              if (!mounted) return;
+          child: ScaffoldMessenger(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: EditProfileBottomSheet(
+                profile: profile,
+                onSaved: () {
+                  Navigator.of(sheetContext).pop();
+                  if (!mounted) return;
 
-              context.showHsSnackBar(
-                text: 'پروفایل با موفقیت به‌روزرسانی شد',
-                hsSnackBarType: HsSnackBarType.success,
-              );
-            },
+                  context.showHsSnackBar(
+                    text: 'پروفایل با موفقیت به‌روزرسانی شد',
+                    hsSnackBarType: HsSnackBarType.success,
+                  );
+                },
+              ),
+            ),
           ),
         );
       },
@@ -140,8 +145,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         subtitle: profileEntity.freeDays.isEmpty
                             ? 'انتخاب نشده'
                             : profileEntity.freeDays
-                                .map((day) => _dayLabels[day] ?? day)
-                                .join('، '),
+                                  .map((day) => _dayLabels[day] ?? day)
+                                  .join('، '),
                         icon: LucideIcons.calendarCheck,
                         onTap: () => _openPreferencesPage('/available-days'),
                       ),

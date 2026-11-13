@@ -18,6 +18,7 @@ import 'package:hamsafar/features/friends/presentation/widgets/friends_tile_info
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class FriendsTile extends StatelessWidget {
   final FriendEntity friendEntity;
   final FriendType friendType;

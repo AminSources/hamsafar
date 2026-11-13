@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
 import 'package:hamsafar/core/enums/hs_snack_bar_type.dart';
+import 'package:hamsafar/core/utils/avatar_color_util.dart';
+import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
@@ -201,453 +203,485 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
           text: result.succeeded
               ? successMessage
               : state.errorMessage ?? 'عملیات سفر انجام نشد.',
-          hsSnackBarType:
-              result.succeeded ? HsSnackBarType.success : HsSnackBarType.error,
+          hsSnackBarType: result.succeeded
+              ? HsSnackBarType.success
+              : HsSnackBarType.error,
         );
       },
       child: Scaffold(
         body: SafeArea(
           child: BlocBuilder<TripsBloc, TripsState>(
-          builder: (context, state) {
-            final trip = state.selectedTrip;
-            if (state.isLoadingDetails && trip == null) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (trip == null) {
-              return Padding(
-                padding: EdgeInsets.all(20.w),
+            builder: (context, state) {
+              final trip = state.selectedTrip;
+              if (state.isLoadingDetails && trip == null) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (trip == null) {
+                return Padding(
+                  padding: EdgeInsets.all(20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const HsAppBar(title: 'جزئیات سفر', hasBack: true),
+                      const Spacer(),
+                      Center(
+                        child: txt(
+                          state.errorMessage ?? 'اطلاعات سفر در دسترس نیست.',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Center(
+                        child: TextButton(
+                          onPressed: _loadCurrentTrip,
+                          child: const txt('تلاش دوباره'),
+                        ),
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                );
+              }
+
+              return SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HsAppBar(title: 'جزئیات سفر', hasBack: true),
-                    const Spacer(),
-                    Center(
-                      child: txt(
-                        state.errorMessage ?? 'اطلاعات سفر در دسترس نیست.',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Center(
-                      child: TextButton(
-                        onPressed: _loadCurrentTrip,
-                        child: const txt('تلاش دوباره'),
-                      ),
-                    ),
-                    const Spacer(),
-                  ],
-                ),
-              );
-            }
-
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HsAppBar(
-                    title: 'جزئیات سفر',
-                    hasBack: true,
-                    leading: trip.isCreator
-                        ? IconButton(
-                            tooltip: AppTranslations.translate(
-                              context,
-                              'ویرایش سفر',
-                            ),
-                            onPressed: () => _edit(trip),
-                            icon: const Icon(Icons.edit_outlined),
-                          )
-                        : null,
-                  ),
-                  SizedBox(height: 20.h),
-                  txt(trip.name, style: context.textTheme.headlineMedium),
-                  SizedBox(height: 8.h),
-                  HsIconLabel(label: trip.location, icon: LucideIcons.mapPin),
-                  if (!trip.canJoin && !trip.isCreator) ...[
-                    SizedBox(height: 12.h),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(12.w),
-                      decoration: BoxDecoration(
-                        color: context.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 20.sp,
-                            color: context.colorScheme.onSurfaceVariant,
-                          ),
-                          SizedBox(width: 8.w),
-                          Expanded(
-                            child: txt(
-                              'شما در حال حاضر عضو سفر دیگری هستید. برای عضویت در این سفر، ابتدا باید از سفر فعلی خود خارج شوید.',
-                              color: context.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  if ((trip.description ?? '').isNotEmpty) ...[
-                    SizedBox(height: 12.h),
-                    txt(trip.description!),
-                  ],
-                  SizedBox(height: 20.h),
-                  _InfoRow(
-                    label: 'وضعیت',
-                    value: switch (trip.status) {
-                      'active' => 'درحال سفر',
-                      'completed' => 'پایان‌یافته',
-                      'cancelled' => 'لغوشده',
-                      _ => 'درحال آماده‌سازی',
-                    },
-                  ),
-                  if (trip.isCreator && trip.isPreparing) ...[
-                    SizedBox(height: 10.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: state.isUpdatingMembership
-                            ? null
-                            : () => _toggleMembership(trip),
-                        icon: state.isUpdatingMembership
-                            ? SizedBox(
-                                width: 18.w,
-                                height: 18.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Icon(
-                                trip.membershipClosed
-                                    ? Icons.lock_open_rounded
-                                    : Icons.lock_outline_rounded,
+                    HsAppBar(
+                      title: 'جزئیات سفر',
+                      hasBack: true,
+                      leading: trip.isCreator
+                          ? IconButton(
+                              tooltip: AppTranslations.translate(
+                                context,
+                                'ویرایش سفر',
                               ),
-                        label: txt(
-                          state.isUpdatingMembership
-                              ? 'در حال تغییر وضعیت...'
-                              : trip.membershipClosed
-                              ? 'باز کردن عضوگیری'
-                              : 'بستن عضوگیری',
-                        ),
-                      ),
-                    ),
-                  ],
-                  if (trip.isCreator && trip.status == 'preparing') ...[
-                    SizedBox(height: 8.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: state.isUpdatingStatus
-                            ? null
-                            : () => _startTrip(trip),
-                        icon: state.isUpdatingStatus
-                            ? SizedBox(
-                                width: 18.w,
-                                height: 18.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.play_arrow_rounded),
-                        label: txt(
-                          state.isUpdatingStatus
-                              ? 'در حال شروع سفر...'
-                              : 'شروع سفر',
-                        ),
-                      ),
-                    ),
-                  ],
-                  _InfoRow(label: 'لیدر سفر', value: trip.leaderName),
-                  _InfoRow(
-                    label: 'تاریخ رفت',
-                    value:
-                        '${_date(trip.departureAt)} - ${_time(trip.departureAt)}',
-                  ),
-                  _InfoRow(
-                    label: 'تاریخ برگشت',
-                    value: '${_date(trip.returnAt)} - ${_time(trip.returnAt)}',
-                  ),
-                  _InfoRow(label: 'بودجه', value: '${trip.budget} تومان'),
-                  if ((trip.meetingPoint ?? '').isNotEmpty)
-                    _InfoRow(label: 'محل تجمع', value: trip.meetingPoint!),
-                  _InfoRow(
-                    label: 'زمان‌بندی',
-                    value: trip.scheduleType == 'fixed'
-                        ? 'قطعی'
-                        : 'رأی‌گیری اعضا',
-                  ),
-                  SizedBox(height: 20.h),
-                  if (trip.costItems.isNotEmpty) ...[
-                    txt('آیتم‌های هزینه', style: context.textTheme.titleMedium),
-                    SizedBox(height: 10.h),
-                    Wrap(
-                      spacing: 8.w,
-                      runSpacing: 8.h,
-                      children: trip.costItems
-                          .map((item) => Chip(label: txt(item)))
-                          .toList(),
+                              onPressed: () => _edit(trip),
+                              icon: const Icon(Icons.edit_outlined),
+                            )
+                          : null,
                     ),
                     SizedBox(height: 20.h),
-                  ],
-                  txt('قوانین سفر', style: context.textTheme.titleMedium),
-                  SizedBox(height: 10.h),
-                  if (trip.rules.isEmpty)
-                    txt(
-                      'قانونی برای این سفر ثبت نشده است.',
-                      color: context.colorScheme.onSurfaceVariant,
-                    )
-                  else
-                    ...trip.rules.map(
-                      (rule) => Padding(
-                        padding: EdgeInsets.only(bottom: 8.h),
+                    txt(trip.name, style: context.textTheme.headlineMedium),
+                    SizedBox(height: 8.h),
+                    HsIconLabel(label: trip.location, icon: LucideIcons.mapPin),
+                    if (!trip.canJoin && !trip.isCreator) ...[
+                      SizedBox(height: 12.h),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(
-                              LucideIcons.shieldCheck,
-                              size: 18.sp,
-                              color: context.colorScheme.primary,
+                              Icons.info_outline,
+                              size: 20.sp,
+                              color: context.colorScheme.onSurfaceVariant,
                             ),
                             SizedBox(width: 8.w),
-                            Expanded(child: txt(rule)),
+                            Expanded(
+                              child: txt(
+                                'شما در حال حاضر عضو سفر دیگری هستید. برای عضویت در این سفر، ابتدا باید از سفر فعلی خود خارج شوید.',
+                                color: context.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                       ),
+                    ],
+                    if ((trip.description ?? '').isNotEmpty) ...[
+                      SizedBox(height: 12.h),
+                      txt(trip.description!),
+                    ],
+                    SizedBox(height: 20.h),
+                    _InfoRow(
+                      label: 'وضعیت',
+                      value: switch (trip.status) {
+                        'active' => 'درحال سفر',
+                        'completed' => 'پایان‌یافته',
+                        'cancelled' => 'لغوشده',
+                        _ => 'درحال آماده‌سازی',
+                      },
                     ),
-                  SizedBox(height: 20.h),
-                  txt(
-                    'اعضا (${trip.memberCount})',
-                    style: context.textTheme.titleMedium,
-                  ),
-                  SizedBox(height: 10.h),
-                  ...trip.members
-                      .where((member) => member.memberStatus == 'accepted')
-                      .map((member) {
-                        final username = member.username;
-                        final userId = member.id;
-                        final displayName = member.displayName;
-                        final isLeader = member.isLeader;
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            child: txt(
-                              displayName.isEmpty ? '؟' : displayName[0],
-                            ),
-                          ),
-                          title: txt(
-                            displayName.isEmpty ? username : displayName,
-                          ),
-                          subtitle: txt(
-                            isLeader ? 'لیدر سفر' : 'عضو پذیرفته‌شده',
-                          ),
-                          trailing:
-                              trip.isCreator &&
-                                  !trip.membershipClosed &&
-                                  !isLeader
-                              ? IconButton(
-                                  tooltip: AppTranslations.translate(
-                                    context,
-                                    'اخراج عضو',
+                    if (trip.isCreator && trip.isPreparing) ...[
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: state.isUpdatingMembership
+                              ? null
+                              : () => _toggleMembership(trip),
+                          icon: state.isUpdatingMembership
+                              ? SizedBox(
+                                  width: 18.w,
+                                  height: 18.w,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
                                   ),
-                                  icon: const Icon(
-                                    Icons.person_remove_alt_1_outlined,
-                                  ),
-                                  onPressed: () async {
-                                    final tripsBloc = context
-                                        .read<TripsBloc>();
-                                    final yes = await showDialog<bool>(
-                                      context: context,
-                                      builder: (d) => AlertDialog(
-                                        title: const txt('اخراج عضو'),
-                                        content: txt(
-                                          'آیا ${displayName.isEmpty ? username : displayName} از سفر اخراج شود؟',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(d, false),
-                                            child: const txt('انصراف'),
-                                          ),
-                                          FilledButton(
-                                            onPressed: () =>
-                                                Navigator.pop(d, true),
-                                            child: const txt('اخراج'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (!mounted || yes != true) return;
-                                    tripsBloc.add(TripMemberRemovalRequested(trip.id, userId));
-                                  },
                                 )
-                              : null,
-                        );
-                      }),
-                  if (trip.isCreator) ...[
-                    SizedBox(height: 8.h),
-                    txt(
-                      'دعوت‌های در انتظار',
-                      style: context.textTheme.titleSmall,
-                    ),
-                    ...trip.members
-                        .where((member) => member.memberStatus == 'pending')
-                        .map((member) {
-                          final userId = member.id;
-                          final name = member.displayName;
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: txt(name),
-                            subtitle: const txt('در انتظار پاسخ'),
-                            trailing: trip.membershipClosed
-                                ? null
-                                : IconButton(
-                                    tooltip: AppTranslations.translate(
-                                      context,
-                                      'لغو دعوت',
-                                    ),
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () => context
-                                        .read<TripsBloc>()
-                                        .add(TripMemberRemovalRequested(trip.id, userId)),
+                              : Icon(
+                                  trip.membershipClosed
+                                      ? Icons.lock_open_rounded
+                                      : Icons.lock_outline_rounded,
+                                ),
+                          label: txt(
+                            state.isUpdatingMembership
+                                ? 'در حال تغییر وضعیت...'
+                                : trip.membershipClosed
+                                ? 'باز کردن عضوگیری'
+                                : 'بستن عضوگیری',
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (trip.isCreator && trip.status == 'preparing') ...[
+                      SizedBox(height: 8.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: state.isUpdatingStatus
+                              ? null
+                              : () => _startTrip(trip),
+                          icon: state.isUpdatingStatus
+                              ? SizedBox(
+                                  width: 18.w,
+                                  height: 18.w,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
                                   ),
-                          );
-                        }),
-                    OutlinedButton.icon(
-                      onPressed: trip.membershipClosed
-                          ? null
-                          : () => _invite(trip),
-                      icon: const Icon(Icons.person_add_alt_1),
-                      label: const txt('دعوت دوستان'),
-                    ),
-                  ] else if (trip.currentMemberStatus == 'pending') ...[
-                    SizedBox(height: 12.h),
-                    const txt('برای پیوستن به این سفر دعوت شده‌اید.'),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: trip.membershipClosed
-                                ? null
-                                : () => context
-                                      .read<TripsBloc>()
-                                      .add(TripInvitationResponseRequested(trip.id, accept: true)),
-                            child: const txt('پذیرفتن دعوت'),
+                                )
+                              : const Icon(Icons.play_arrow_rounded),
+                          label: txt(
+                            state.isUpdatingStatus
+                                ? 'در حال شروع سفر...'
+                                : 'شروع سفر',
                           ),
                         ),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => context
-                                .read<TripsBloc>()
-                                .add(TripInvitationResponseRequested(trip.id, accept: false)),
-                            child: const txt('رد دعوت'),
-                          ),
-                        ),
-                      ],
+                      ),
+                    ],
+                    _InfoRow(label: 'لیدر سفر', value: trip.leaderName),
+                    _InfoRow(
+                      label: 'تاریخ رفت',
+                      value:
+                          '${_date(trip.departureAt)} - ${_time(trip.departureAt)}',
                     ),
-                  ] else if (trip.currentMemberStatus == 'accepted' &&
-                      !trip.isCreator &&
-                      !trip.membershipClosed) ...[
-                    SizedBox(height: 12.h),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final tripsBloc = context.read<TripsBloc>();
-                        final yes = await showDialog<bool>(
-                          context: context,
-                          builder: (d) => AlertDialog(
-                            title: const txt('خروج از سفر'),
-                            content: const txt(
-                              'از عضویت در این سفر خارج می‌شوید؟',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(d, false),
-                                child: const txt('انصراف'),
+                    _InfoRow(
+                      label: 'تاریخ برگشت',
+                      value:
+                          '${_date(trip.returnAt)} - ${_time(trip.returnAt)}',
+                    ),
+                    _InfoRow(label: 'بودجه', value: '${trip.budget} تومان'),
+                    if ((trip.meetingPoint ?? '').isNotEmpty)
+                      _InfoRow(label: 'محل تجمع', value: trip.meetingPoint!),
+                    _InfoRow(
+                      label: 'زمان‌بندی',
+                      value: trip.scheduleType == 'fixed'
+                          ? 'قطعی'
+                          : 'رأی‌گیری اعضا',
+                    ),
+                    SizedBox(height: 20.h),
+                    if (trip.costItems.isNotEmpty) ...[
+                      txt(
+                        'آیتم‌های هزینه',
+                        style: context.textTheme.titleMedium,
+                      ),
+                      SizedBox(height: 10.h),
+                      Wrap(
+                        spacing: 8.w,
+                        runSpacing: 8.h,
+                        children: trip.costItems
+                            .map((item) => Chip(label: txt(item)))
+                            .toList(),
+                      ),
+                      SizedBox(height: 20.h),
+                    ],
+                    txt('قوانین سفر', style: context.textTheme.titleMedium),
+                    SizedBox(height: 10.h),
+                    if (trip.rules.isEmpty)
+                      txt(
+                        'قانونی برای این سفر ثبت نشده است.',
+                        color: context.colorScheme.onSurfaceVariant,
+                      )
+                    else
+                      ...trip.rules.map(
+                        (rule) => Padding(
+                          padding: EdgeInsets.only(bottom: 8.h),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                LucideIcons.shieldCheck,
+                                size: 18.sp,
+                                color: context.colorScheme.primary,
                               ),
-                              FilledButton(
-                                onPressed: () => Navigator.pop(d, true),
-                                child: const txt('خروج'),
-                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(child: txt(rule)),
                             ],
                           ),
-                        );
-                        if (!mounted || yes != true) return;
-                        tripsBloc.add(TripLeaveRequested(trip.id));
-                      },
-                      icon: const Icon(Icons.logout),
-                      label: const txt('خروج از سفر'),
-                    ),
-                  ] else if (!trip.isCreator &&
-                      !trip.membershipClosed &&
-                      trip.isPreparing &&
-                      (trip.currentMemberStatus == null ||
-                          [
-                            'left',
-                            'rejected',
-                          ].contains(trip.currentMemberStatus))) ...[
-                    SizedBox(height: 12.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: () =>
-                            context.read<TripsBloc>().add(TripJoinRequested(trip.id)),
-                        icon: const Icon(Icons.group_add_outlined),
-                        label: const txt('پیوستن به سفر'),
+                        ),
                       ),
-                    ),
-                  ],
-                  if (trip.isCreator ||
-                      trip.currentMemberStatus == 'accepted') ...[
-                    SizedBox(height: 16.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () =>
-                            context.push('/trip-tasks', extra: trip.id),
-                        icon: const Icon(Icons.checklist_rounded),
-                        label: const txt('مشاهده وظایف سفر'),
-                      ),
-                    ),
-                  ],
-                  if (trip.isCreator) ...[
                     SizedBox(height: 20.h),
-                    HsButton(
-                      onTap: () => _edit(trip),
-                      child: txt(
-                        'ویرایش سفر',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    txt(
+                      'اعضا (${trip.memberCount})',
+                      style: context.textTheme.titleMedium,
                     ),
                     SizedBox(height: 10.h),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: state.isDeleting
+                    ...trip.members
+                        .where((member) => member.memberStatus == 'accepted')
+                        .map((member) {
+                          final username = member.username;
+                          final userId = member.id;
+                          final avatar = member.avatarIcon;
+                          final displayName = member.displayName;
+                          final isLeader = member.isLeader;
+                          return ListTile(
+                            onTap: () {
+                              context.push('/friend-profile', extra: member);
+                            },
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              backgroundColor: getAvatarColor(displayName),
+                              child: Icon(
+                                AvatarConverter.stringToIconData(
+                                  avatarName: avatar,
+                                ),
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: txt(
+                              displayName.isEmpty ? username : displayName,
+                            ),
+                            subtitle: txt(
+                              isLeader ? 'لیدر سفر' : 'عضو پذیرفته‌شده',
+                            ),
+                            trailing:
+                                trip.isCreator &&
+                                    !trip.membershipClosed &&
+                                    !isLeader
+                                ? IconButton(
+                                    tooltip: AppTranslations.translate(
+                                      context,
+                                      'اخراج عضو',
+                                    ),
+                                    icon: const Icon(
+                                      Icons.person_remove_alt_1_outlined,
+                                    ),
+                                    onPressed: () async {
+                                      final tripsBloc = context
+                                          .read<TripsBloc>();
+                                      final yes = await showDialog<bool>(
+                                        context: context,
+                                        builder: (d) => AlertDialog(
+                                          title: const txt('اخراج عضو'),
+                                          content: txt(
+                                            'آیا ${displayName.isEmpty ? username : displayName} از سفر اخراج شود؟',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(d, false),
+                                              child: const txt('انصراف'),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(d, true),
+                                              child: const txt('اخراج'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                      if (!mounted || yes != true) return;
+                                      tripsBloc.add(
+                                        TripMemberRemovalRequested(
+                                          trip.id,
+                                          userId,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : null,
+                          );
+                        }),
+                    if (trip.isCreator) ...[
+                      SizedBox(height: 8.h),
+                      txt(
+                        'دعوت‌های در انتظار',
+                        style: context.textTheme.titleSmall,
+                      ),
+                      ...trip.members
+                          .where((member) => member.memberStatus == 'pending')
+                          .map((member) {
+                            final userId = member.id;
+                            final name = member.displayName;
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: txt(name),
+                              subtitle: const txt('در انتظار پاسخ'),
+                              trailing: trip.membershipClosed
+                                  ? null
+                                  : IconButton(
+                                      tooltip: AppTranslations.translate(
+                                        context,
+                                        'لغو دعوت',
+                                      ),
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () =>
+                                          context.read<TripsBloc>().add(
+                                            TripMemberRemovalRequested(
+                                              trip.id,
+                                              userId,
+                                            ),
+                                          ),
+                                    ),
+                            );
+                          }),
+                      OutlinedButton.icon(
+                        onPressed: trip.membershipClosed
                             ? null
-                            : () => _delete(trip),
-                        icon: const Icon(Icons.delete_outline),
-                        label: txt(
-                          state.isDeleting ? 'در حال حذف...' : 'حذف سفر',
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: context.colorScheme.error,
+                            : () => _invite(trip),
+                        icon: const Icon(Icons.person_add_alt_1),
+                        label: const txt('دعوت دوستان'),
+                      ),
+                    ] else if (trip.currentMemberStatus == 'pending') ...[
+                      SizedBox(height: 12.h),
+                      const txt('برای پیوستن به این سفر دعوت شده‌اید.'),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: trip.membershipClosed
+                                  ? null
+                                  : () => context.read<TripsBloc>().add(
+                                      TripInvitationResponseRequested(
+                                        trip.id,
+                                        accept: true,
+                                      ),
+                                    ),
+                              child: const txt('پذیرفتن دعوت'),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => context.read<TripsBloc>().add(
+                                TripInvitationResponseRequested(
+                                  trip.id,
+                                  accept: false,
+                                ),
+                              ),
+                              child: const txt('رد دعوت'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else if (trip.currentMemberStatus == 'accepted' &&
+                        !trip.isCreator &&
+                        !trip.membershipClosed) ...[
+                      SizedBox(height: 12.h),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final tripsBloc = context.read<TripsBloc>();
+                          final yes = await showDialog<bool>(
+                            context: context,
+                            builder: (d) => AlertDialog(
+                              title: const txt('خروج از سفر'),
+                              content: const txt(
+                                'از عضویت در این سفر خارج می‌شوید؟',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(d, false),
+                                  child: const txt('انصراف'),
+                                ),
+                                FilledButton(
+                                  onPressed: () => Navigator.pop(d, true),
+                                  child: const txt('خروج'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (!mounted || yes != true) return;
+                          tripsBloc.add(TripLeaveRequested(trip.id));
+                        },
+                        icon: const Icon(Icons.logout),
+                        label: const txt('خروج از سفر'),
+                      ),
+                    ] else if (!trip.isCreator &&
+                        !trip.membershipClosed &&
+                        trip.isPreparing &&
+                        (trip.currentMemberStatus == null ||
+                            [
+                              'left',
+                              'rejected',
+                            ].contains(trip.currentMemberStatus))) ...[
+                      SizedBox(height: 12.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () => context.read<TripsBloc>().add(
+                            TripJoinRequested(trip.id),
+                          ),
+                          icon: const Icon(Icons.group_add_outlined),
+                          label: const txt('پیوستن به سفر'),
                         ),
                       ),
-                    ),
+                    ],
+                    if (trip.isCreator ||
+                        trip.currentMemberStatus == 'accepted') ...[
+                      SizedBox(height: 16.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () =>
+                              context.push('/trip-tasks', extra: trip.id),
+                          icon: const Icon(Icons.checklist_rounded),
+                          label: const txt('مشاهده وظایف سفر'),
+                        ),
+                      ),
+                    ],
+                    if (trip.isCreator) ...[
+                      SizedBox(height: 20.h),
+                      HsButton(
+                        onTap: () => _edit(trip),
+                        child: txt(
+                          'ویرایش سفر',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: state.isDeleting
+                              ? null
+                              : () => _delete(trip),
+                          icon: const Icon(Icons.delete_outline),
+                          label: txt(
+                            state.isDeleting ? 'در حال حذف...' : 'حذف سفر',
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: context.colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (state.errorMessage != null) ...[
+                      SizedBox(height: 10.h),
+                      txt(
+                        state.errorMessage!,
+                        color: context.colorScheme.error,
+                      ),
+                    ],
+                    SizedBox(height: 32.h),
                   ],
-                  if (state.errorMessage != null) ...[
-                    SizedBox(height: 10.h),
-                    txt(state.errorMessage!, color: context.colorScheme.error),
-                  ],
-                  SizedBox(height: 32.h),
-                ],
-              ),
-            );
-          },
+                ),
+              );
+            },
           ),
         ),
       ),

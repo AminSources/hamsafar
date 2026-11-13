@@ -11,6 +11,7 @@ import 'package:hamsafar/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -86,10 +87,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, 'لطفا ایمیل خود را وارد کنید');
+                            return AppTranslations.translate(
+                              context,
+                              'لطفا ایمیل خود را وارد کنید',
+                            );
                           }
                           if (!value.contains("@")) {
-                            return AppTranslations.translate(context, "ایمیل نامعتبر است");
+                            return AppTranslations.translate(
+                              context,
+                              "ایمیل نامعتبر است",
+                            );
                           }
                           return null;
                         },
@@ -100,15 +107,24 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: _passwordFocusNode,
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: AppTranslations.translate(context, 'رمز عبور'),
+                          hintText: AppTranslations.translate(
+                            context,
+                            'رمز عبور',
+                          ),
                           prefixIcon: Icon(LucideIcons.lock),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, "لطفا گذرواژه خود را وارد کنید");
+                            return AppTranslations.translate(
+                              context,
+                              "لطفا گذرواژه خود را وارد کنید",
+                            );
                           }
                           if (value.length < 8) {
-                            return AppTranslations.translate(context, "ارقام گذرواژه نمیتواند کمتر از 8 باشد");
+                            return AppTranslations.translate(
+                              context,
+                              "ارقام گذرواژه نمیتواند کمتر از 8 باشد",
+                            );
                           }
                           return null;
                         },
@@ -119,18 +135,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: _confirmPasswordFocusNode,
                         obscureText: true,
                         decoration: InputDecoration(
-                          hintText: AppTranslations.translate(context, 'تأیید رمز عبور'),
+                          hintText: AppTranslations.translate(
+                            context,
+                            'تأیید رمز عبور',
+                          ),
                           prefixIcon: Icon(LucideIcons.lock),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, "لطفا گذرواژه خود را وارد کنید");
+                            return AppTranslations.translate(
+                              context,
+                              "لطفا گذرواژه خود را وارد کنید",
+                            );
                           }
                           if (value != _passwordController.text) {
-                            return AppTranslations.translate(context, "گذرواژه صحیح نیست");
+                            return AppTranslations.translate(
+                              context,
+                              "گذرواژه صحیح نیست",
+                            );
                           }
                           if (value.length < 8) {
-                            return AppTranslations.translate(context, "ارقام گذرواژه نمیتواند کمتر از 8 باشد");
+                            return AppTranslations.translate(
+                              context,
+                              "ارقام گذرواژه نمیتواند کمتر از 8 باشد",
+                            );
                           }
                           return null;
                         },
@@ -159,16 +187,32 @@ class _RegisterPageState extends State<RegisterPage> {
                                   color: context.colorScheme.onSurfaceVariant,
                                 ),
                                 children: [
-                                  TextSpan(text: AppTranslations.translate(context, 'شرایط استفاده')),
                                   TextSpan(
-                                    text: AppTranslations.translate(context, ' و '),
+                                    text: AppTranslations.translate(
+                                      context,
+                                      'شرایط استفاده',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: AppTranslations.translate(
+                                      context,
+                                      ' و ',
+                                    ),
                                     style: TextStyle(
                                       color: context.colorScheme.onSurface,
                                     ),
                                   ),
-                                  TextSpan(text: AppTranslations.translate(context, 'حریم خصوصی')),
                                   TextSpan(
-                                    text: AppTranslations.translate(context, ' همسفر را مطالعه کرده و می‌پذیرم.'),
+                                    text: AppTranslations.translate(
+                                      context,
+                                      'حریم خصوصی',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: AppTranslations.translate(
+                                      context,
+                                      ' همسفر را مطالعه کرده و می‌پذیرم.',
+                                    ),
                                     style: TextStyle(
                                       color: context.colorScheme.onSurface,
                                     ),
@@ -186,61 +230,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         height: 50.h,
                         onTap: () {
                           if (_formKey.currentState!.validate()) {
-                            context.read<AuthBloc>().add(
-                              SignUpEvent(
-                                SignUpParams(
-                                  email: _emailController.text.trim(),
-                                  password: _passwordController.text,
+                            if (_agreedToTerms == true) {
+                              context.read<AuthBloc>().add(
+                                SignUpEvent(
+                                  SignUpParams(
+                                    email: _emailController.text.trim(),
+                                    password: _passwordController.text,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              context.showHsSnackBar(
+                                text: "شما باید با قوانین و شرایط موافقت کنید.",
+                              );
+                            }
                           }
                         },
                         child: state is AuthLoading
                             ? CircularProgressIndicator()
-                            : const txt("ایجاد حساب کاربری"),
+                            : const txt(
+                                "ایجاد حساب کاربری",
+                                color: Colors.white,
+                              ),
                       ),
                       SizedBox(height: 24.h),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: context.colorScheme.outlineVariant,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w),
-                            child: txt(
-                              'یا',
-                              style: context.textTheme.bodySmall,
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: context.colorScheme.outlineVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 24.h),
-
-                      OutlinedButton(
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.g_mobiledata,
-                              size: 24.sp,
-                              color: context.colorScheme.onSurface,
-                            ),
-                            SizedBox(width: 8.w),
-                            const txt('ایجاد حساب با گوگل'),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 32.h),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

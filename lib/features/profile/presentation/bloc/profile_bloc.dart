@@ -66,7 +66,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       } else {
         emit(
           ProfileFailed(
-            profileResult.message ?? 'پروفایل ذخیره شد اما دریافت آن ناموفق بود',
+            profileResult.message ??
+                'پروفایل ذخیره شد اما دریافت آن ناموفق بود',
           ),
         );
       }
