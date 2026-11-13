@@ -7,6 +7,7 @@ import 'package:hamsafar/features/settings/domain/entities/app_settings_entity.d
 import 'package:hamsafar/features/settings/domain/repositories/app_settings_repository.dart';
 import 'package:hamsafar/features/settings/domain/usecases/app_settings_usecases.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:hamsafar/features/settings/presentation/bloc/app_settings_event.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trip_creation/domain/repositories/trip_creation_repository.dart';
 import 'package:hamsafar/features/trip_creation/domain/usecases/save_trip_usecase.dart';
@@ -23,10 +24,8 @@ class _FakeSettingsRepository implements AppSettingsRepository {
   String? savedTheme;
 
   @override
-  AppSettingsEntity loadSettings() => const AppSettingsEntity(
-        localeCode: 'en',
-        themeMode: 'dark',
-      );
+  AppSettingsEntity loadSettings() =>
+      const AppSettingsEntity(localeCode: 'en', themeMode: 'dark');
 
   @override
   Future<void> saveLanguage(String localeCode) async {
@@ -162,13 +161,15 @@ void main() {
       expect(bloc.state.localeCode, 'en');
       expect(bloc.state.themeMode, ThemeMode.dark);
 
-      final languageChanged =
-          bloc.stream.firstWhere((state) => state.localeCode == 'fa');
+      final languageChanged = bloc.stream.firstWhere(
+        (state) => state.localeCode == 'fa',
+      );
       bloc.add(const AppLanguageChanged('fa'));
       await languageChanged;
 
-      final themeChanged =
-          bloc.stream.firstWhere((state) => state.themeMode == ThemeMode.light);
+      final themeChanged = bloc.stream.firstWhere(
+        (state) => state.themeMode == ThemeMode.light,
+      );
       bloc.add(const AppThemeChanged(ThemeMode.light));
       await themeChanged;
 
@@ -185,7 +186,9 @@ void main() {
       );
       addTearDown(bloc.close);
 
-      final saved = bloc.stream.firstWhere((state) => state.savedTripId != null);
+      final saved = bloc.stream.firstWhere(
+        (state) => state.savedTripId != null,
+      );
       bloc.add(TripCreationSaveRequested(TripDraft.empty()));
       final state = await saved;
 
@@ -203,21 +206,19 @@ void main() {
         searchTripsUseCase: SearchTripsUseCase(repository),
         getTripDetailsUseCase: GetTripDetailsUseCase(repository),
         startTripUseCase: StartTripUseCase(repository),
-        setMembershipClosedUseCase:
-            SetTripMembershipClosedUseCase(repository),
+        setMembershipClosedUseCase: SetTripMembershipClosedUseCase(repository),
         deleteTripUseCase: DeleteTripUseCase(repository),
         joinTripUseCase: JoinTripUseCase(repository),
-        respondToTripInvitationUseCase:
-            RespondToTripInvitationUseCase(repository),
+        respondToTripInvitationUseCase: RespondToTripInvitationUseCase(
+          repository,
+        ),
         leaveTripUseCase: LeaveTripUseCase(repository),
         inviteUsersToTripUseCase: InviteUsersToTripUseCase(repository),
         removeTripMemberUseCase: RemoveTripMemberUseCase(repository),
       );
       addTearDown(bloc.close);
 
-      final loaded = bloc.stream.firstWhere(
-        (state) => !state.isLoadingMyTrips,
-      );
+      final loaded = bloc.stream.firstWhere((state) => !state.isLoadingMyTrips);
       bloc.add(const TripsLoadRequested());
       expect((await loaded).myTrips.single.id, 12);
 

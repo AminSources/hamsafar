@@ -7,6 +7,8 @@ import 'package:hamsafar/core/widgets/hs_app_bar.dart';
 import 'package:hamsafar/core/widgets/hs_header.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
+import 'package:hamsafar/features/settings/presentation/bloc/app_settings_event.dart';
+import 'package:hamsafar/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:hamsafar/features/settings/presentation/widgets/settings_footer.dart';
 import 'package:hamsafar/features/settings/presentation/widgets/settings_tile.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';

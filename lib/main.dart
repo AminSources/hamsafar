@@ -10,6 +10,7 @@ import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/theme/app_themes.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hamsafar/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:hamsafar/features/settings/presentation/bloc/app_settings_state.dart';
 import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:hamsafar/locator.dart';
@@ -59,11 +60,23 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return BlocBuilder<AppSettingsBloc, AppSettingsState>(
           builder: (context, settings) {
+            final fontFamily = settings.localeCode == 'fa'
+                ? "vazirmatn"
+                : "poppins";
+
             return MaterialApp.router(
               title: "Hamsafar Travel App",
               debugShowCheckedModeBanner: false,
-              theme: AppTheme.light,
-              darkTheme: AppTheme.dark,
+              theme: AppTheme.light.copyWith(
+                textTheme: AppTheme.light.textTheme.apply(
+                  fontFamily: fontFamily,
+                ),
+              ),
+              darkTheme: AppTheme.dark.copyWith(
+                textTheme: AppTheme.dark.textTheme.apply(
+                  fontFamily: fontFamily,
+                ),
+              ),
               themeMode: settings.themeMode,
               routerConfig: AppRoutes.router,
               supportedLocales: const [Locale("fa"), Locale("en")],
