@@ -12,7 +12,9 @@ import 'package:hamsafar/features/friends/data/repositories/friends_repository_i
 import 'package:hamsafar/features/friends/domain/repositories/friends_repository.dart';
 import 'package:hamsafar/features/friends/domain/usecases/friend_request_usecases.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
+import 'package:hamsafar/features/friends/domain/usecases/get_friend_profile_usecase.dart';
 import 'package:hamsafar/features/friends/presentation/bloc/friends_bloc.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friend_profile_bloc.dart';
 import 'package:hamsafar/features/home/data/data_source/remote/supabase_home_datasource.dart';
 import 'package:hamsafar/features/home/data/repositories/home_repository_impl.dart';
 import 'package:hamsafar/features/home/domain/repositories/home_repository.dart';
@@ -217,6 +219,9 @@ void setupLocator() {
   sl.registerLazySingleton<GetFriendsUsecase>(
     () => GetFriendsUsecase(friendsRepository: sl<FriendsRepository>()),
   );
+  sl.registerLazySingleton<GetFriendProfileUsecase>(
+    () => GetFriendProfileUsecase(friendsRepository: sl<FriendsRepository>()),
+  );
   sl.registerLazySingleton<SearchFriendsUsecase>(
     () => SearchFriendsUsecase(friendsRepository: sl<FriendsRepository>()),
   );
@@ -347,6 +352,15 @@ void setupLocator() {
       sendFriendRequestUsecase: sl<SendFriendRequestUsecase>(),
       respondToFriendRequestUsecase: sl<RespondToFriendRequestUsecase>(),
       cancelFriendRequestUsecase: sl<CancelFriendRequestUsecase>(),
+      removeFriendUsecase: sl<RemoveFriendUsecase>(),
+    ),
+  );
+  sl.registerFactory<FriendProfileBloc>(
+    () => FriendProfileBloc(
+      getFriendProfileUsecase: sl<GetFriendProfileUsecase>(),
+      sendFriendRequestUsecase: sl<SendFriendRequestUsecase>(),
+      cancelFriendRequestUsecase: sl<CancelFriendRequestUsecase>(),
+      respondToFriendRequestUsecase: sl<RespondToFriendRequestUsecase>(),
       removeFriendUsecase: sl<RemoveFriendUsecase>(),
     ),
   );
