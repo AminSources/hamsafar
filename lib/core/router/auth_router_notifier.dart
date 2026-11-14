@@ -10,17 +10,19 @@ import 'package:hamsafar/features/profile/domain/usecases/get_onboarding_complet
 class AuthRouterNotifier extends ChangeNotifier {
   AuthRouterNotifier({
     required Stream<DataState<UserEntity?>> authStateChanges,
-    required GetCurrentUserUsecase getCurrentUser,
-    required GetOnboardingCompletedUseCase getOnboardingCompleted,
+    GetCurrentUserUsecase? getCurrentUser,
+    GetOnboardingCompletedUseCase? getOnboardingCompleted,
   }) : _getCurrentUser = getCurrentUser,
        _getOnboardingCompleted = getOnboardingCompleted {
     _subscription = authStateChanges.listen((_) {
-      unawaited(initialize(force: true));
+      if (_getCurrentUser != null && _getOnboardingCompleted != null) {
+        unawaited(initialize(force: true));
+      }
     });
   }
 
-  final GetCurrentUserUsecase _getCurrentUser;
-  final GetOnboardingCompletedUseCase _getOnboardingCompleted;
+  final GetCurrentUserUsecase? _getCurrentUser;
+  final GetOnboardingCompletedUseCase? _getOnboardingCompleted;
   late final StreamSubscription<DataState<UserEntity?>> _subscription;
 
   bool isInitialized = false;
@@ -43,7 +45,13 @@ class AuthRouterNotifier extends ChangeNotifier {
     hasError = false;
     notifyListeners();
     try {
-      final authState = await _getCurrentUser(NoParams());
+      final getCurrentUser = _getCurrentUser;
+      final getOnboardingCompleted = _getOnboardingCompleted;
+      if (getCurrentUser == null || getOnboardingCompleted == null) {
+        _setError();
+        return;
+      }
+      final authState = await getCurrentUser(NoParams());
       if (generation != _generation) return;
       if (authState is DataFailed<UserEntity?>) {
         _setError();
@@ -55,7 +63,7 @@ class AuthRouterNotifier extends ChangeNotifier {
       onboardingCompleted = false;
 
       if (user != null) {
-        final onboardingState = await _getOnboardingCompleted(NoParams());
+        final onboardingState = await getOnboardingCompleted(NoParams());
         if (generation != _generation) return;
         if (onboardingState is! DataSuccess<bool>) {
           _setError();
