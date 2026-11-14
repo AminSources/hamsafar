@@ -11,6 +11,16 @@ class FriendsRepositoryImpl extends FriendsRepository {
   FriendsRepositoryImpl({required this.supabaseFriendsDatasource});
 
   @override
+  Future<DataState<FriendEntity>> getFriendProfile(String userId) async {
+    try {
+      final response = await supabaseFriendsDatasource.getFriendProfile(userId);
+      return DataSuccess(FriendModel.fromJson(response));
+    } catch (error) {
+      return DataFailed(error.toString());
+    }
+  }
+
+  @override
   Future<DataState<List<FriendEntity>>> getFriends(NoParams noParams) async {
     try {
       final response = await supabaseFriendsDatasource.getFriends();
