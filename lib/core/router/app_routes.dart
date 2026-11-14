@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
+import 'package:hamsafar/features/profile/presentation/pages/profile_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page.dart';
@@ -31,6 +32,7 @@ import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
+import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
@@ -110,6 +112,7 @@ class AppRoutes {
           return TripDetailsPage(
             tripId: tripId,
             getFriendsUsecase: sl<GetFriendsUsecase>(),
+            getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
           );
         },
       ),
@@ -200,6 +203,13 @@ class AppRoutes {
             child: TripTasksPage(tripId: tripId),
           );
         },
+      ),
+      GoRoute(
+        path: "/my-profile",
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfileAvatarBloc>(),
+          child: const ProfilePage(),
+        ),
       ),
       GoRoute(
         path: "/friend-profile/:userId",
