@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/auth_router_notifier.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
+import 'package:hamsafar/features/trips/domain/entities/trip_member_entity.dart';
+import 'package:hamsafar/core/entities/user_profile_entity.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
@@ -42,10 +44,10 @@ import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
 
-int _redirectGeneration = 0;
-
 final authRouterNotifier = AuthRouterNotifier(
   authStateChanges: sl<AuthRepository>().authStateChanges,
+  getCurrentUser: sl<GetCurrentUserUsecase>(),
+  getOnboardingCompleted: sl<GetOnboardingCompletedUseCase>(),
 );
 
 class AppRoutes {
@@ -54,8 +56,7 @@ class AppRoutes {
   static final GoRouter router = GoRouter(
     initialLocation: "/splash",
     refreshListenable: authRouterNotifier,
-    redirect: (context, state) async {
-      final generation = ++_redirectGeneration;
+    redirect: (context, state) {
       final location = state.matchedLocation;
       final isSplash = location == '/splash';
       final isSessionError = location == '/session-error';
@@ -64,49 +65,21 @@ class AppRoutes {
           location == '/recovery';
       final isOnboarding = location == '/onboarding';
 
-      final authState = await sl<GetCurrentUserUsecase>()(NoParams());
-      if (generation != _redirectGeneration) return null;
-
-      if (authState is DataFailed<UserEntity?>) {
+      if (!authRouterNotifier.isInitialized) {
+        return isSplash ? null : '/splash';
+      }
+      if (authRouterNotifier.hasError) {
         return isSessionError ? null : '/session-error';
       }
-
-      final user = authState is DataSuccess<UserEntity?>
-          ? authState.data
-          : null;
-
-      if (user == null) {
-        if (isAuthRoute) return null;
-        return '/login';
+      if (!authRouterNotifier.isAuthenticated) {
+        return isAuthRoute ? null : '/login';
       }
-
-      var onboardingCompleted =
-          authRouterNotifier.isOnboardingCompleted(user.id);
-
-      if (!onboardingCompleted) {
-        final onboardingState =
-            await sl<GetOnboardingCompletedUseCase>()(NoParams());
-        if (generation != _redirectGeneration) return null;
-
-        if (onboardingState is DataFailed<bool>) {
-          return isSessionError ? null : '/session-error';
-        }
-        if (onboardingState is! DataSuccess<bool>) {
-          return isSessionError ? null : '/session-error';
-        }
-
-        onboardingCompleted = onboardingState.data == true;
-        if (!onboardingCompleted) {
-          return isOnboarding ? null : '/onboarding';
-        }
-
-        authRouterNotifier.markOnboardingCompleted(user.id);
+      if (!authRouterNotifier.onboardingCompleted) {
+        return isOnboarding ? null : '/onboarding';
       }
-
       if (isSplash || isAuthRoute || isOnboarding || isSessionError) {
         return '/main-wrapper';
       }
-
       return null;
     },
 
@@ -246,10 +219,39 @@ class AppRoutes {
         path: "/friend-profile",
         builder: (context, state) {
           final extra = state.extra;
-          if (extra is! FriendEntity) {
-            return const _InvalidRouteArgumentsPage();
+          final UserProfileEntity? profile;
+          if (extra is FriendEntity) {
+            profile = UserProfileEntity(
+              id: extra.id,
+              username: extra.userName,
+              firstName: extra.firstName,
+              lastName: extra.lastName,
+              avatarIcon: extra.avatarIcon,
+              bio: extra.bio,
+              rate: extra.rate,
+              tripCount: extra.tripCount,
+              freeDays: extra.freeDays,
+              relationStatus: extra.relationStatus,
+              tools: extra.tools.map((tool) => UserProfileToolEntity(
+                id: tool.id,
+                toolName: tool.toolName,
+                toolIcon: tool.toolIcon,
+                isAvailable: tool.isAvailable,
+              )).toList(),
+            );
+          } else if (extra is TripMemberEntity) {
+            profile = UserProfileEntity(
+              id: extra.id,
+              username: extra.username,
+              firstName: extra.firstName,
+              lastName: extra.lastName,
+              avatarIcon: extra.avatarIcon,
+            );
+          } else {
+            profile = null;
           }
-          return FriendProfilePage(friendEntity: extra);
+          if (profile == null) return const _InvalidRouteArgumentsPage();
+          return FriendProfilePage(profile: profile);
         },
       ),
       GoRoute(
