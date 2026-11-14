@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/hs_snack_bar_extension.dart';
+import 'package:hamsafar/core/router/app_routes.dart';
 import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
@@ -65,6 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   context.showHsSnackBar(text: state.message);
                 }
                 if (state is ProfileSuccess) {
+                  authRouterNotifier.markOnboardingCompleted();
                   context.go("/main-wrapper");
                 }
               },
