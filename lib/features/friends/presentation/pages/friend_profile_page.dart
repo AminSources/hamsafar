@@ -99,18 +99,16 @@ class FriendProfilePage extends StatelessWidget {
                     tripCount: friend.tripCount,
                     rate: friend.rate,
                   ),
-                  if (friend.bio.trim().isNotEmpty) ...[
-                    SizedBox(height: 20.h),
-                    FriendsProfileAboutCard(bio: friend.bio),
-                  ],
-                  if (friend.freeDays.isNotEmpty) ...[
-                    SizedBox(height: 16.h),
-                    FriendsAvailableDaysCard(freeDays: friend.freeDays),
-                  ],
-                  if (friend.tools.isNotEmpty) ...[
-                    SizedBox(height: 16.h),
-                    FriendsToolsCard(tools: friend.tools),
-                  ],
+
+                  SizedBox(height: 20.h),
+                  FriendsProfileAboutCard(bio: friend.bio),
+
+                  SizedBox(height: 16.h),
+                  FriendsAvailableDaysCard(freeDays: friend.freeDays),
+
+                  SizedBox(height: 16.h),
+                  FriendsToolsCard(tools: friend.tools),
+
                   SizedBox(height: 24.h),
                   _RelationshipActions(
                     relationStatus: friend.relationStatus,
@@ -157,11 +155,13 @@ class _RelationshipActions extends StatelessWidget {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.of(dialogContext).pop(false),
+                          onPressed: () =>
+                              Navigator.of(dialogContext).pop(false),
                           child: const txt('انصراف'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.of(dialogContext).pop(true),
+                          onPressed: () =>
+                              Navigator.of(dialogContext).pop(true),
                           child: const txt('حذف'),
                         ),
                       ],
