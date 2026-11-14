@@ -82,6 +82,7 @@ class FriendProfilePage extends StatelessWidget {
         }
 
         final friend = state.friend;
+        final displayName = '${friend.firstName} ${friend.lastName}'.trim();
         return Scaffold(
           body: SafeArea(
             child: SingleChildScrollView(
@@ -92,7 +93,7 @@ class FriendProfilePage extends StatelessWidget {
                   HsAppBar(title: 'پروفایل دوست', hasBack: true),
                   SizedBox(height: 24.h),
                   FriendsProfileCard(
-                    name: "${friend.firstName} ${friend.lastName}".trim(),
+                    name: displayName.isEmpty ? friend.userName : displayName,
                     userName: friend.userName,
                     avatar: friend.avatarIcon,
                     tripCount: friend.tripCount,
