@@ -7,29 +7,30 @@ import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
 
 void main() {
   group('AuthRouterNotifier', () {
-    test('stores a successful onboarding result for the current user',
-        () async {
+    test('marks onboarding as completed and notifies listeners', () {
       final events = StreamController<DataState<UserEntity?>>.broadcast();
       final notifier = AuthRouterNotifier(authStateChanges: events.stream);
       addTearDown(notifier.dispose);
       addTearDown(events.close);
 
-      expect(notifier.isOnboardingCompleted('user-1'), isFalse);
-      notifier.markOnboardingCompleted('user-1');
-      expect(notifier.isOnboardingCompleted('user-1'), isTrue);
+      var notified = false;
+      notifier.addListener(() => notified = true);
+      notifier.markOnboardingCompleted();
+
+      expect(notifier.onboardingCompleted, isTrue);
+      expect(notified, isTrue);
     });
 
-    test('invalidates onboarding cache when auth state changes', () async {
+    test('does not run auth refresh without configured use cases', () async {
       final events = StreamController<DataState<UserEntity?>>.broadcast();
       final notifier = AuthRouterNotifier(authStateChanges: events.stream);
       addTearDown(notifier.dispose);
       addTearDown(events.close);
 
-      notifier.markOnboardingCompleted('user-1');
       events.add(const DataSuccess<UserEntity?>(null));
       await Future<void>.delayed(Duration.zero);
 
-      expect(notifier.isOnboardingCompleted('user-1'), isFalse);
+      expect(notifier.isInitialized, isFalse);
     });
   });
 }
