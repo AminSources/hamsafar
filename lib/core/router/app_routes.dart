@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/router/auth_router_notifier.dart';
 import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
