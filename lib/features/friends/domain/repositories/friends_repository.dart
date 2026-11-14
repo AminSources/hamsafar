@@ -3,6 +3,8 @@ import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 
 abstract class FriendsRepository {
+  Future<DataState<FriendEntity>> getFriendProfile(String userId);
+
   Future<DataState<List<FriendEntity>>> getFriends(NoParams noParams);
 
   Future<DataState<List<FriendEntity>>> searchUsers(String query);

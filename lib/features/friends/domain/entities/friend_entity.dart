@@ -30,6 +30,22 @@ class FriendEntity extends Equatable {
     this.relationStatus = 'none',
   });
 
+  FriendEntity copyWith({String? relationStatus}) {
+    return FriendEntity(
+      id: id,
+      userName: userName,
+      firstName: firstName,
+      lastName: lastName,
+      avatarIcon: avatarIcon,
+      bio: bio,
+      rate: rate,
+      tripCount: tripCount,
+      freeDays: freeDays,
+      tools: tools,
+      relationStatus: relationStatus ?? this.relationStatus,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

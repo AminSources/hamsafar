@@ -12,6 +12,8 @@ import 'package:hamsafar/core/widgets/hs_button.dart';
 import 'package:hamsafar/core/widgets/hs_icon_label.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
+import 'package:hamsafar/features/trips/domain/entities/trip_member_entity.dart';
+import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/core/params/no_params.dart';
 import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
@@ -25,11 +27,13 @@ import 'package:hamsafar/core/localization/app_translations.dart';
 class TripDetailsPage extends StatefulWidget {
   final int? tripId;
   final GetFriendsUsecase getFriendsUsecase;
+  final GetCurrentUserUsecase getCurrentUserUsecase;
 
   const TripDetailsPage({
     super.key,
     this.tripId,
     required this.getFriendsUsecase,
+    required this.getCurrentUserUsecase,
   });
 
   @override
@@ -49,6 +53,26 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
 
   void _loadCurrentTrip() {
     context.read<TripsBloc>().add(const CurrentTripDetailsLoadRequested());
+  }
+
+  Future<void> _openMemberProfile(TripMemberEntity member) async {
+    final currentUserResult = await widget.getCurrentUserUsecase(NoParams());
+    if (!mounted) return;
+
+    if (currentUserResult is! DataSuccess || currentUserResult.data == null) {
+      context.showHsSnackBar(
+        text: 'تشخیص حساب کاربری فعلی امکان‌پذیر نیست.',
+        hsSnackBarType: HsSnackBarType.error,
+      );
+      return;
+    }
+
+    final currentUserId = currentUserResult.data!.id;
+    final location = member.id == currentUserId
+        ? '/my-profile'
+        : '/friend-profile/${member.id}';
+
+    context.push(location);
   }
 
   String _date(DateTime value) =>
@@ -439,9 +463,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final displayName = member.displayName;
                           final isLeader = member.isLeader;
                           return ListTile(
-                            onTap: () {
-                              context.push('/friend-profile', extra: member);
-                            },
+                            onTap: () => _openMemberProfile(member),
                             contentPadding: EdgeInsets.zero,
                             leading: CircleAvatar(
                               backgroundColor: getAvatarColor(displayName),

@@ -14,29 +14,117 @@ import 'package:hamsafar/features/settings/presentation/bloc/app_settings_state.
 import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:hamsafar/locator.dart';
+import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(const AppBootstrap());
+}
 
-  //? initialize local settings storage
-  await GetStorage.init();
+class AppBootstrap extends StatefulWidget {
+  const AppBootstrap({super.key});
 
-  //? load .env
-  await dotenv.load(fileName: ".env");
+  @override
+  State<AppBootstrap> createState() => _AppBootstrapState();
+}
 
-  //? init supabase
-  await Supabase.initialize(
-    url: dotenv.env["SUPABASE_URL"]!,
-    publishableKey: dotenv.env["SUPABASE_ANON_KEY"]!,
-  );
+class _AppBootstrapState extends State<AppBootstrap> {
+  bool _initialized = false;
+  bool _loading = true;
+  String? _error;
 
-  //? init locator
-  setupLocator();
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
 
-  //? on run app
-  runApp(
-    MultiBlocProvider(
+  Future<void> _initialize() async {
+    if (_loading == false && _initialized) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await GetStorage.init();
+      await dotenv.load(fileName: '.env');
+      final url = dotenv.env['SUPABASE_URL'];
+      final publishableKey = dotenv.env['SUPABASE_ANON_KEY'];
+      if (url == null || url.isEmpty ||
+          publishableKey == null || publishableKey.isEmpty) {
+        throw StateError('Supabase environment variables are missing.');
+      }
+      await Supabase.initialize(url: url, publishableKey: publishableKey);
+      setupLocator();
+      if (!mounted) return;
+      setState(() {
+        _initialized = true;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(gradient: AppColors.splashGradient),
+            child: Center(
+              child: _loading
+                  ? const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.backpack_outlined, color: Colors.white, size: 72),
+                        SizedBox(height: 24),
+                        Text('همسفر', style: TextStyle(color: Colors.white, fontSize: 28)),
+                        SizedBox(height: 28),
+                        CircularProgressIndicator(color: Colors.white),
+                      ],
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.cloud_off_outlined, color: Colors.white, size: 48),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'راه‌اندازی برنامه ناموفق بود.',
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _error ?? '',
+                            style: const TextStyle(color: Colors.white70),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            onPressed: _initialize,
+                            child: const Text('تلاش مجدد'),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => sl<TripsBloc>()),
         BlocProvider(create: (context) => sl<AuthBloc>()),
@@ -46,8 +134,8 @@ void main() async {
         BlocProvider(create: (context) => sl<AppSettingsBloc>()),
       ],
       child: const MyApp(),
-    ),
-  );
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -61,25 +149,21 @@ class MyApp extends StatelessWidget {
         return BlocBuilder<AppSettingsBloc, AppSettingsState>(
           builder: (context, settings) {
             final fontFamily = settings.localeCode == 'fa'
-                ? "vazirmatn"
-                : "poppins";
+                ? 'vazirmatn'
+                : 'poppins';
 
             return MaterialApp.router(
-              title: "Hamsafar Travel App",
+              title: 'Hamsafar Travel App',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light.copyWith(
-                textTheme: AppTheme.light.textTheme.apply(
-                  fontFamily: fontFamily,
-                ),
+                textTheme: AppTheme.light.textTheme.apply(fontFamily: fontFamily),
               ),
               darkTheme: AppTheme.dark.copyWith(
-                textTheme: AppTheme.dark.textTheme.apply(
-                  fontFamily: fontFamily,
-                ),
+                textTheme: AppTheme.dark.textTheme.apply(fontFamily: fontFamily),
               ),
               themeMode: settings.themeMode,
               routerConfig: AppRoutes.router,
-              supportedLocales: const [Locale("fa"), Locale("en")],
+              supportedLocales: const [Locale('fa'), Locale('en')],
               locale: Locale(settings.localeCode),
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,

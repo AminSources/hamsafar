@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hamsafar/core/router/auth_router_notifier.dart';
+import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
-import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
+import 'package:hamsafar/features/profile/presentation/pages/profile_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friend_profile_bloc.dart';
 import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
@@ -15,12 +16,6 @@ import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_
 import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/locator.dart';
-import 'package:hamsafar/core/params/no_params.dart';
-import 'package:hamsafar/core/resources/data_state.dart';
-import 'package:hamsafar/features/profile/domain/usecases/get_onboarding_completed_usecase.dart';
-import 'package:hamsafar/features/auth/domain/repositories/auth_repository.dart';
-import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
-import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
@@ -37,16 +32,11 @@ import 'package:hamsafar/features/trips/domain/entities/trip_entity.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_creation_initial_data.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
+import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.dart';
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
-
-int _redirectGeneration = 0;
-
-final authRouterNotifier = AuthRouterNotifier(
-  authStateChanges: sl<AuthRepository>().authStateChanges,
-);
 
 class AppRoutes {
   AppRoutes._();
@@ -54,8 +44,7 @@ class AppRoutes {
   static final GoRouter router = GoRouter(
     initialLocation: "/splash",
     refreshListenable: authRouterNotifier,
-    redirect: (context, state) async {
-      final generation = ++_redirectGeneration;
+    redirect: (context, state) {
       final location = state.matchedLocation;
       final isSplash = location == '/splash';
       final isSessionError = location == '/session-error';
@@ -64,49 +53,21 @@ class AppRoutes {
           location == '/recovery';
       final isOnboarding = location == '/onboarding';
 
-      final authState = await sl<GetCurrentUserUsecase>()(NoParams());
-      if (generation != _redirectGeneration) return null;
-
-      if (authState is DataFailed<UserEntity?>) {
+      if (!authRouterNotifier.isInitialized) {
+        return isSplash ? null : '/splash';
+      }
+      if (authRouterNotifier.hasError) {
         return isSessionError ? null : '/session-error';
       }
-
-      final user = authState is DataSuccess<UserEntity?>
-          ? authState.data
-          : null;
-
-      if (user == null) {
-        if (isAuthRoute) return null;
-        return '/login';
+      if (!authRouterNotifier.isAuthenticated) {
+        return isAuthRoute ? null : '/login';
       }
-
-      var onboardingCompleted =
-          authRouterNotifier.isOnboardingCompleted(user.id);
-
-      if (!onboardingCompleted) {
-        final onboardingState =
-            await sl<GetOnboardingCompletedUseCase>()(NoParams());
-        if (generation != _redirectGeneration) return null;
-
-        if (onboardingState is DataFailed<bool>) {
-          return isSessionError ? null : '/session-error';
-        }
-        if (onboardingState is! DataSuccess<bool>) {
-          return isSessionError ? null : '/session-error';
-        }
-
-        onboardingCompleted = onboardingState.data == true;
-        if (!onboardingCompleted) {
-          return isOnboarding ? null : '/onboarding';
-        }
-
-        authRouterNotifier.markOnboardingCompleted(user.id);
+      if (!authRouterNotifier.onboardingCompleted) {
+        return isOnboarding ? null : '/onboarding';
       }
-
       if (isSplash || isAuthRoute || isOnboarding || isSessionError) {
         return '/main-wrapper';
       }
-
       return null;
     },
 
@@ -151,6 +112,7 @@ class AppRoutes {
           return TripDetailsPage(
             tripId: tripId,
             getFriendsUsecase: sl<GetFriendsUsecase>(),
+            getCurrentUserUsecase: sl<GetCurrentUserUsecase>(),
           );
         },
       ),
@@ -243,13 +205,24 @@ class AppRoutes {
         },
       ),
       GoRoute(
-        path: "/friend-profile",
+        path: "/my-profile",
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfileAvatarBloc>(),
+          child: const ProfilePage(),
+        ),
+      ),
+      GoRoute(
+        path: "/friend-profile/:userId",
         builder: (context, state) {
-          final extra = state.extra;
-          if (extra is! FriendEntity) {
+          final userId = state.pathParameters['userId'];
+          if (userId == null || userId.trim().isEmpty) {
             return const _InvalidRouteArgumentsPage();
           }
-          return FriendProfilePage(friendEntity: extra);
+          return BlocProvider(
+            create: (_) => sl<FriendProfileBloc>()
+              ..add(FriendProfileLoadRequested(userId)),
+            child: FriendProfilePage(userId: userId),
+          );
         },
       ),
       GoRoute(
@@ -309,7 +282,7 @@ class _SessionCheckFailedPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
-                  onPressed: () => context.go('/splash'),
+                  onPressed: () => authRouterNotifier.initialize(force: true),
                   child: const Text('تلاش مجدد'),
                 ),
               ],

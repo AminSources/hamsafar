@@ -13,6 +13,17 @@ class SupabaseFriendsDatasource {
     return userId;
   }
 
+  Future<Map<String, dynamic>> getFriendProfile(String userId) async {
+    final response = await supabaseClient.rpc(
+      'get_friend_profile',
+      params: {'p_user_id': userId},
+    );
+    if (response is! Map) {
+      throw const FormatException('Invalid friend profile response.');
+    }
+    return Map<String, dynamic>.from(response);
+  }
+
   Future<List<Map<String, dynamic>>> getFriends() async {
     final response = await supabaseClient
         .from('friendships')
