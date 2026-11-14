@@ -52,7 +52,7 @@ class FriendProfileBloc extends Bloc<FriendProfileEvent, FriendProfileState> {
   ) {
     return _performRelationshipAction(
       emit,
-      action: sendFriendRequestUsecase,
+      action: (userId) => sendFriendRequestUsecase(userId),
       nextRelationStatus: 'outgoing_pending',
       successMessage: 'درخواست دوستی ارسال شد.',
     );
@@ -64,7 +64,7 @@ class FriendProfileBloc extends Bloc<FriendProfileEvent, FriendProfileState> {
   ) {
     return _performRelationshipAction(
       emit,
-      action: cancelFriendRequestUsecase,
+      action: (userId) => cancelFriendRequestUsecase(userId),
       nextRelationStatus: 'none',
       successMessage: 'درخواست دوستی لغو شد.',
     );
@@ -95,7 +95,7 @@ class FriendProfileBloc extends Bloc<FriendProfileEvent, FriendProfileState> {
   ) {
     return _performRelationshipAction(
       emit,
-      action: removeFriendUsecase,
+      action: (userId) => removeFriendUsecase(userId),
       nextRelationStatus: 'none',
       successMessage: 'دوست از فهرست شما حذف شد.',
     );
