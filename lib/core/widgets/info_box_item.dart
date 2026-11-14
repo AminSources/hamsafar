@@ -5,7 +5,7 @@ import 'package:hamsafar/core/widgets/txt.dart';
 
 class InfoBoxItem extends StatelessWidget {
   final String label;
-  final String value;
+  final List<String> value;
   final Color? labelColor;
   final Color? valueColor;
 
@@ -21,6 +21,7 @@ class InfoBoxItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: .center,
+      crossAxisAlignment: .start,
       children: [
         txt(
           label,
@@ -28,10 +29,16 @@ class InfoBoxItem extends StatelessWidget {
           color: labelColor ?? context.colorScheme.onSurfaceVariant,
         ),
         SizedBox(height: 3.h),
-        txt(
-          value,
-          style: context.textTheme.labelLarge,
-          color: valueColor ?? context.colorScheme.inverseSurface,
+        Column(
+          crossAxisAlignment: .start,
+          children: List.generate(
+            value.length,
+            (index) => txt(
+              value[index],
+              style: context.textTheme.labelLarge,
+              color: valueColor ?? context.colorScheme.inverseSurface,
+            ),
+          ),
         ),
       ],
     );

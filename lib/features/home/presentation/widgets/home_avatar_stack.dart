@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
+import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/localization/app_translations.dart';
 import 'package:hamsafar/core/utils/avatar_color_util.dart';
 import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
@@ -28,19 +30,27 @@ class HomeAvatarStack extends StatelessWidget {
 
                 return Positioned(
                   right: lastIndex ? lastItemSpace : (index * 22.w),
-                  child: HsAvatar(
-                    label: lastIndex
-                        ? txt("+۲")
-                        : Icon(
-                            AvatarConverter.stringToIconData(
-                              avatarName: members[index].avatarIcon,
+                  child: CircleAvatar(
+                    backgroundColor: context.theme.scaffoldBackgroundColor,
+                    radius: 18.r,
+                    child: HsAvatar(
+                      label: lastIndex
+                          ? txt(
+                              AppTranslations.toPersianDigits(
+                                "+${members.length - 5}",
+                              ),
+                            )
+                          : Icon(
+                              AvatarConverter.stringToIconData(
+                                avatarName: members[index].avatarIcon,
+                              ),
                             ),
-                          ),
-                    size: 30.w,
-                    color: getAvatarColor(
-                      '${members[index].firstName} ${members[index].lastName}',
+                      size: 30.w,
+                      color: getAvatarColor(
+                        '${members[index].firstName} ${members[index].lastName}',
+                      ),
+                      type: HsAvatarType.profile,
                     ),
-                    type: HsAvatarType.profile,
                   ),
                 );
               },

@@ -56,7 +56,7 @@ class HomeActionCard extends StatelessWidget {
                 size: 10.5.sp,
                 fontWeight: FontWeight.w700,
                 color: fg,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ],

@@ -50,7 +50,7 @@ class HomeActionCardsRow extends StatelessWidget {
           child: HomeActionCard(
             icon: Icons.checklist_outlined,
             title: 'وظایف سفر',
-            subtitle: 'وظایف و مسئولیت‌های اعضا',
+            subtitle: 'مسئولیت‌های اعضا',
             bg: context.colorScheme.primaryContainer,
             fg: context.colorScheme.onPrimaryContainer,
             onTap: tripId == null

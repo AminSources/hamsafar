@@ -173,7 +173,7 @@ class AppTranslations {
     'تسویه پرداخت شد ✓': 'Payment settled ✓',
     'رأی‌گیری زمان حرکت': 'Departure time poll',
     'وظایف و مسئولیت‌های اعضا': 'Members’ tasks and responsibilities',
-    'پرداخت سهم': 'Pay your share',
+    'پرداخت سهم': 'Pay share',
 
     // Friends
     'پروفایل دوست': "Friend's profile",
@@ -839,5 +839,25 @@ class AppTranslations {
           (match) => digits[match.group(0)]!,
         )
         .replaceAll('٬', ',');
+  }
+
+  static String toPersianDigits(String value) {
+    const digits = {
+      '0': '۰',
+      '1': '۱',
+      '2': '۲',
+      '3': '۳',
+      '4': '۴',
+      '5': '۵',
+      '6': '۶',
+      '7': '۷',
+      '8': '۸',
+      '9': '۹',
+    };
+
+    return value.replaceAllMapped(
+      RegExp(r'[0-9]'),
+      (match) => digits[match.group(0)]!,
+    );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hamsafar/core/extensions/date_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
+import 'package:hamsafar/core/localization/app_translations.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/hs_info_box.dart';
@@ -15,14 +17,6 @@ class HomeTripCard extends StatelessWidget {
   final bool isInTrip;
 
   const HomeTripCard({super.key, required this.trip, required this.isInTrip});
-
-  String _formatDate(DateTime date) {
-    return '${date.year}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
-  }
-
-  String _formatTime(String? time) {
-    return time?.isNotEmpty == true ? time! : '—';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +42,8 @@ class HomeTripCard extends StatelessWidget {
                 foregroundColor: context.colorScheme.onSurface,
               ),
               HsBadge(
-                label: 'شروع ${_formatDate(trip.departureDate)}',
+                label:
+                    '${isInTrip ? "شروع" : "برگشت"} ${AppTranslations.toPersianDigits(isInTrip ? trip.departureDate.toJalaliString() : trip.returnDate!.toJalaliString())}',
                 backgroundColor: context.colorScheme.secondary,
                 foregroundColor: context.colorScheme.onSecondary,
               ),
@@ -75,13 +70,23 @@ class HomeTripCard extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           HsInfoBox(
-            labels: isInTrip
-                ? const ['تاریخ رفت', 'زمان برگشت', 'اعضا']
-                : const ['تاریخ رفت', 'زمان حرکت', 'اعضا'],
+            labels: ["حرکت", "برگشت", "اعضا"],
             values: [
-              _formatDate(trip.departureDate),
-              _formatTime(isInTrip ? trip.returnTime : trip.departureTime),
-              '${trip.members.length} نفر',
+              [
+                AppTranslations.toPersianDigits(
+                  trip.departureDate.toJalaliString(),
+                ),
+                AppTranslations.toPersianDigits(trip.departureTime!),
+              ],
+              [
+                AppTranslations.toPersianDigits(
+                  trip.returnDate!.toJalaliString(),
+                ),
+                AppTranslations.toPersianDigits(trip.returnTime!),
+              ],
+              [
+                '${AppTranslations.toPersianDigits(trip.members.length.toString())} نفر',
+              ],
             ],
           ),
           SizedBox(height: 16.h),

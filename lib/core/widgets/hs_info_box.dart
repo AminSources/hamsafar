@@ -6,7 +6,7 @@ import 'package:hamsafar/core/widgets/info_box_item.dart';
 
 class HsInfoBox extends StatelessWidget {
   final List<String> labels;
-  final List<String> values;
+  final List<List<String>> values;
   final Color? borderColor;
   final Color? valueColor;
   final Color? labelColor;
