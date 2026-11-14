@@ -43,7 +43,6 @@ class AuthRouterNotifier extends ChangeNotifier {
   Future<void> _load(int generation) async {
     isInitialized = false;
     hasError = false;
-    notifyListeners();
     try {
       final getCurrentUser = _getCurrentUser;
       final getOnboardingCompleted = _getOnboardingCompleted;
