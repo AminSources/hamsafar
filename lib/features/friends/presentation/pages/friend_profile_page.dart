@@ -53,11 +53,18 @@ class FriendProfilePage extends StatelessWidget {
                   rate: profile.rate,
                 ),
                 SizedBox(height: 20.h),
-                FriendsProfileAboutCard(bio: profile.bio),
-                SizedBox(height: 16.h),
-                FriendsAvailableDaysCard(freeDays: profile.freeDays),
-                SizedBox(height: 16.h),
-                FriendsToolsCard(tools: profile.tools),
+                if (profile.bio.trim().isNotEmpty) ...[
+                  FriendsProfileAboutCard(bio: profile.bio),
+                  SizedBox(height: 16.h),
+                ],
+                if (profile.freeDays.isNotEmpty) ...[
+                  FriendsAvailableDaysCard(freeDays: profile.freeDays),
+                  SizedBox(height: 16.h),
+                ],
+                if (profile.tools.isNotEmpty) ...[
+                  FriendsToolsCard(tools: profile.tools),
+                  SizedBox(height: 16.h),
+                ],
                 SizedBox(height: 24.h),
                 if (profile.relationStatus == 'friends') ...[
                   BlocBuilder<FriendsBloc, FriendsState>(
