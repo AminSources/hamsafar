@@ -17,11 +17,8 @@ import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_
 import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/locator.dart';
-import 'package:hamsafar/core/params/no_params.dart';
-import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/profile/domain/usecases/get_onboarding_completed_usecase.dart';
 import 'package:hamsafar/features/auth/domain/repositories/auth_repository.dart';
-import 'package:hamsafar/features/auth/domain/entities/user_entity.dart';
 import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
@@ -311,7 +308,7 @@ class _SessionCheckFailedPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 FilledButton(
-                  onPressed: () => context.go('/splash'),
+                  onPressed: () => authRouterNotifier.initialize(force: true),
                   child: const Text('تلاش مجدد'),
                 ),
               ],
