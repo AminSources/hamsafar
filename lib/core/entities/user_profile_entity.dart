@@ -36,17 +36,17 @@ class UserProfileEntity extends Equatable {
 
 class UserProfileToolEntity extends Equatable {
   final String id;
-  final String name;
-  final String icon;
+  final String toolName;
+  final String toolIcon;
   final bool isAvailable;
 
   const UserProfileToolEntity({
     required this.id,
-    required this.name,
-    required this.icon,
+    required this.toolName,
+    required this.toolIcon,
     required this.isAvailable,
   });
 
   @override
-  List<Object?> get props => [id, name, icon, isAvailable];
+  List<Object?> get props => [id, toolName, toolIcon, isAvailable];
 }
