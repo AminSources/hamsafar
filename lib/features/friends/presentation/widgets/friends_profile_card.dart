@@ -10,16 +10,16 @@ class FriendsProfileCard extends StatelessWidget {
   final String name;
   final String userName;
   final String avatar;
-  final int tripCount;
-  final double rate;
+  final int? tripCount;
+  final double? rate;
 
   const FriendsProfileCard({
     super.key,
     required this.name,
     required this.userName,
     required this.avatar,
-    required this.tripCount,
-    required this.rate,
+    this.tripCount,
+    this.rate,
   });
 
   @override
@@ -54,7 +54,8 @@ class FriendsProfileCard extends StatelessWidget {
           SizedBox(height: 16.h),
 
           //* stats row
-          Row(
+          if (rate != null && tripCount != null)
+            Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               //* rating stat
