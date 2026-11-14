@@ -48,7 +48,7 @@ class _FakeFriendsRepository implements FriendsRepository {
 
   @override
   Future<DataState<List<FriendEntity>>> getFriends(NoParams noParams) async =>
-      const DataSuccess([]);
+      const DataSuccess<List<FriendEntity>>([]);
 
   @override
   Future<DataState<List<FriendEntity>>> searchUsers(String query) async =>
