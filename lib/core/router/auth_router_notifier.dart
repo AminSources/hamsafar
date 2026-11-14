@@ -39,6 +39,9 @@ class AuthRouterNotifier extends ChangeNotifier {
   }
 
   Future<void> _load(int generation) async {
+    isInitialized = false;
+    hasError = false;
+    notifyListeners();
     try {
       final authState = await _getCurrentUser(NoParams());
       if (generation != _generation) return;
