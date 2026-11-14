@@ -62,7 +62,7 @@ class FriendsProfileCard extends StatelessWidget {
               Column(
                 children: [
                   txt(
-                    rate.toString(),
+                    rate!.toString(),
                     fontWeight: FontWeight.w900,
                     size: 18.sp,
                   ),
@@ -86,7 +86,7 @@ class FriendsProfileCard extends StatelessWidget {
               Column(
                 children: [
                   txt(
-                    tripCount.toString(),
+                    tripCount!.toString(),
                     fontWeight: FontWeight.w900,
                     size: 18.sp,
                   ),
