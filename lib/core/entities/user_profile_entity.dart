@@ -7,8 +7,8 @@ class UserProfileEntity extends Equatable {
   final String lastName;
   final String avatarIcon;
   final String bio;
-  final double rate;
-  final int tripCount;
+  final double? rate;
+  final int? tripCount;
   final List<String> freeDays;
   final List<UserProfileToolEntity> tools;
   final String relationStatus;
@@ -20,8 +20,8 @@ class UserProfileEntity extends Equatable {
     required this.lastName,
     required this.avatarIcon,
     this.bio = '',
-    this.rate = 0,
-    this.tripCount = 0,
+    this.rate,
+    this.tripCount,
     this.freeDays = const [],
     this.tools = const [],
     this.relationStatus = 'none',
