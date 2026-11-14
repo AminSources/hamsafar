@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/auth_router_notifier.dart';
+import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_member_entity.dart';
@@ -17,9 +18,6 @@ import 'package:hamsafar/features/profile/presentation/bloc/profile_preferences_
 import 'package:hamsafar/features/profile/presentation/bloc/profile_avatar_bloc.dart';
 import 'package:hamsafar/features/main_wrapper/presentation/bloc/bottom_nav_bloc.dart';
 import 'package:hamsafar/locator.dart';
-import 'package:hamsafar/features/profile/domain/usecases/get_onboarding_completed_usecase.dart';
-import 'package:hamsafar/features/auth/domain/repositories/auth_repository.dart';
-import 'package:hamsafar/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:hamsafar/features/settings/presentation/pages/bug_report_page.dart';
 import 'package:hamsafar/features/settings/presentation/pages/settings_page.dart';
 import 'package:hamsafar/features/trip_coordination/presentation/pages/trip_budget_page.dart';
@@ -40,12 +38,6 @@ import 'package:hamsafar/features/main_wrapper/presentation/pages/main_wrapper.d
 import 'package:hamsafar/features/splash/presentation/pages/splash_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trip_search_page.dart';
 import 'package:hamsafar/features/trips/presentation/pages/trips_page.dart';
-
-final authRouterNotifier = AuthRouterNotifier(
-  authStateChanges: sl<AuthRepository>().authStateChanges,
-  getCurrentUser: sl<GetCurrentUserUsecase>(),
-  getOnboardingCompleted: sl<GetOnboardingCompletedUseCase>(),
-);
 
 class AppRoutes {
   AppRoutes._();
