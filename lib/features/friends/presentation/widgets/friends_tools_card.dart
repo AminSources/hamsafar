@@ -4,11 +4,11 @@ import 'package:hamsafar/core/extensions/theme_extension.dart';
 import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
-import 'package:hamsafar/core/entities/user_profile_entity.dart';
+import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/presentation/widgets/friends_tools_tile.dart';
 
 class FriendsToolsCard extends StatelessWidget {
-  final List<UserProfileToolEntity> tools;
+  final List<FriendToolEntity> tools;
 
   const FriendsToolsCard({super.key, required this.tools});
 
