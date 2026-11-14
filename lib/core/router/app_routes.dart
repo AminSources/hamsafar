@@ -3,13 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/features/auth/presentation/pages/login_page.dart';
-import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
-import 'package:hamsafar/features/trips/domain/entities/trip_member_entity.dart';
-import 'package:hamsafar/core/entities/user_profile_entity.dart';
 import 'package:hamsafar/features/profile/presentation/pages/onboarding_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/recovery_password_page.dart';
 import 'package:hamsafar/features/auth/presentation/pages/register_page.dart';
 import 'package:hamsafar/features/friends/presentation/pages/friend_profile_page.dart';
+import 'package:hamsafar/features/friends/presentation/bloc/friend_profile_bloc.dart';
 import 'package:hamsafar/features/home/presentation/pages/home_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/available_days_page.dart';
 import 'package:hamsafar/features/profile/presentation/pages/my_tools_page.dart';
@@ -204,42 +202,17 @@ class AppRoutes {
         },
       ),
       GoRoute(
-        path: "/friend-profile",
+        path: "/friend-profile/:userId",
         builder: (context, state) {
-          final extra = state.extra;
-          final UserProfileEntity? profile;
-          if (extra is FriendEntity) {
-            profile = UserProfileEntity(
-              id: extra.id,
-              username: extra.userName,
-              firstName: extra.firstName,
-              lastName: extra.lastName,
-              avatarIcon: extra.avatarIcon,
-              bio: extra.bio,
-              rate: extra.rate,
-              tripCount: extra.tripCount,
-              freeDays: extra.freeDays,
-              relationStatus: extra.relationStatus,
-              tools: extra.tools.map((tool) => UserProfileToolEntity(
-                id: tool.id,
-                toolName: tool.toolName,
-                toolIcon: tool.toolIcon,
-                isAvailable: tool.isAvailable,
-              )).toList(),
-            );
-          } else if (extra is TripMemberEntity) {
-            profile = UserProfileEntity(
-              id: extra.id,
-              username: extra.username,
-              firstName: extra.firstName,
-              lastName: extra.lastName,
-              avatarIcon: extra.avatarIcon,
-            );
-          } else {
-            profile = null;
+          final userId = state.pathParameters['userId'];
+          if (userId == null || userId.trim().isEmpty) {
+            return const _InvalidRouteArgumentsPage();
           }
-          if (profile == null) return const _InvalidRouteArgumentsPage();
-          return FriendProfilePage(profile: profile);
+          return BlocProvider(
+            create: (_) => sl<FriendProfileBloc>()
+              ..add(FriendProfileLoadRequested(userId)),
+            child: FriendProfilePage(userId: userId),
+          );
         },
       ),
       GoRoute(
