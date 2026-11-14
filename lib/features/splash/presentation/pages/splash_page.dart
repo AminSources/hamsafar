@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/router/app_routes.dart';
+import 'package:hamsafar/core/router/app_router_state.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
