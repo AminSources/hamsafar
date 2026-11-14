@@ -10,10 +10,9 @@ import 'package:hamsafar/features/profile/domain/usecases/get_onboarding_complet
 class AuthRouterNotifier extends ChangeNotifier {
   AuthRouterNotifier({
     required Stream<DataState<UserEntity?>> authStateChanges,
-    GetCurrentUserUsecase? getCurrentUser,
-    GetOnboardingCompletedUseCase? getOnboardingCompleted,
-  }) : _getCurrentUser = getCurrentUser,
-       _getOnboardingCompleted = getOnboardingCompleted {
+    this._getCurrentUser,
+    this._getOnboardingCompleted,
+  }) {
     _subscription = authStateChanges.listen((_) {
       if (_getCurrentUser != null && _getOnboardingCompleted != null) {
         unawaited(initialize(force: true));
@@ -57,7 +56,9 @@ class AuthRouterNotifier extends ChangeNotifier {
         return;
       }
 
-      final user = authState is DataSuccess<UserEntity?> ? authState.data : null;
+      final user = authState is DataSuccess<UserEntity?>
+          ? authState.data
+          : null;
       isAuthenticated = user != null;
       onboardingCompleted = false;
 
