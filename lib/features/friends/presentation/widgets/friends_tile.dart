@@ -48,9 +48,10 @@ class FriendsTile extends StatelessWidget {
     final name = "${friendEntity.firstName} ${friendEntity.lastName}";
 
     return HsTile(
-      onTap: () {
-        context.push('/friend-profile/${friendEntity.id}');
-      },
+      onTap: friendType == FriendType.searched &&
+              friendEntity.relationStatus == 'none'
+          ? null
+          : () => context.push('/friend-profile/${friendEntity.id}'),
       child: Column(
         children: [
           Row(
