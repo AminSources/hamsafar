@@ -49,7 +49,7 @@ class FriendsTile extends StatelessWidget {
 
     return HsTile(
       onTap: () {
-        context.push('/friend-profile', extra: friendEntity);
+        context.push('/friend-profile/${friendEntity.id}');
       },
       child: Column(
         children: [
