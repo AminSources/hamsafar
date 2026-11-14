@@ -96,7 +96,7 @@ void main() {
 
     bloc.add(const FriendProfileLoadRequested('friend-id'));
 
-    final result = await resultFuture as FriendProfileSuccess;
+    final result = (await resultFuture) as FriendProfileSuccess;
     expect(result.friend.userName, 'traveler');
     expect(result.friend.freeDays, ['sat', 'sun']);
     expect(result.friend.tools, isEmpty);
@@ -116,7 +116,7 @@ void main() {
     );
     bloc.add(const FriendProfileSendRequestRequested());
 
-    final updated = await updatedFuture as FriendProfileSuccess;
+    final updated = (await updatedFuture) as FriendProfileSuccess;
     expect(updated.isActionLoading, isFalse);
     expect(updated.actionError, isFalse);
     expect(updated.friend.relationStatus, 'outgoing_pending');
