@@ -440,7 +440,7 @@ class _TripDetailsPageState extends State<TripDetailsPage> {
                           final isLeader = member.isLeader;
                           return ListTile(
                             onTap: () {
-                              context.push('/friend-profile', extra: member);
+                              context.push('/friend-profile/${member.id}');
                             },
                             contentPadding: EdgeInsets.zero,
                             leading: CircleAvatar(
