@@ -14,9 +14,14 @@ class OnboardingAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        final avatarBloc = context.read<ProfileAvatarBloc>();
+
         showDialog(
           context: context,
-          builder: (context) => Dialog(child: AvatarPickerWidget()),
+          builder: (dialogContext) => BlocProvider.value(
+            value: avatarBloc,
+            child: const Dialog(child: AvatarPickerWidget()),
+          ),
         );
       },
       child: Center(

@@ -198,7 +198,9 @@ void setupLocator() {
     () => GetProfileUsecase(profileRepository: sl<ProfileRepository>()),
   );
   sl.registerLazySingleton<GetProfilePreferencesUsecase>(
-    () => GetProfilePreferencesUsecase(profileRepository: sl<ProfileRepository>()),
+    () => GetProfilePreferencesUsecase(
+      profileRepository: sl<ProfileRepository>(),
+    ),
   );
   sl.registerLazySingleton<SaveAvailabilityUsecase>(
     () => SaveAvailabilityUsecase(profileRepository: sl<ProfileRepository>()),
@@ -239,9 +241,8 @@ void setupLocator() {
     ),
   );
   sl.registerLazySingleton<CancelFriendRequestUsecase>(
-    () => CancelFriendRequestUsecase(
-      friendsRepository: sl<FriendsRepository>(),
-    ),
+    () =>
+        CancelFriendRequestUsecase(friendsRepository: sl<FriendsRepository>()),
   );
   sl.registerLazySingleton<RemoveFriendUsecase>(
     () => RemoveFriendUsecase(friendsRepository: sl<FriendsRepository>()),
@@ -347,8 +348,7 @@ void setupLocator() {
     () => FriendsBloc(
       getFriendsUsecase: sl<GetFriendsUsecase>(),
       searchFriendsUsecase: sl<SearchFriendsUsecase>(),
-      getPendingFriendRequestsUsecase:
-          sl<GetPendingFriendRequestsUsecase>(),
+      getPendingFriendRequestsUsecase: sl<GetPendingFriendRequestsUsecase>(),
       sendFriendRequestUsecase: sl<SendFriendRequestUsecase>(),
       respondToFriendRequestUsecase: sl<RespondToFriendRequestUsecase>(),
       cancelFriendRequestUsecase: sl<CancelFriendRequestUsecase>(),

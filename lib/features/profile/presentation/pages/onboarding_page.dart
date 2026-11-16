@@ -15,6 +15,7 @@ import 'package:hamsafar/features/profile/presentation/widgets/onboarding_avatar
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -94,10 +95,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, "نام الزامی است");
+                            return AppTranslations.translate(
+                              context,
+                              "نام الزامی است",
+                            );
                           }
                           if (value.length >= 10) {
-                            return AppTranslations.translate(context, "نام طولانی است");
+                            return AppTranslations.translate(
+                              context,
+                              "نام طولانی است",
+                            );
                           }
                           return null;
                         },
@@ -110,15 +117,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         controller: _lastNameController,
                         focusNode: _lastNameFocusNode,
                         decoration: InputDecoration(
-                          hintText: AppTranslations.translate(context, 'نام خانوادگی'),
+                          hintText: AppTranslations.translate(
+                            context,
+                            'نام خانوادگی',
+                          ),
                           prefixIcon: Icon(LucideIcons.userRound),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, "نام خانوادگی الزامی است");
+                            return AppTranslations.translate(
+                              context,
+                              "نام خانوادگی الزامی است",
+                            );
                           }
                           if (value.length >= 10) {
-                            return AppTranslations.translate(context, "نام خانوادگی طولانی است");
+                            return AppTranslations.translate(
+                              context,
+                              "نام خانوادگی طولانی است",
+                            );
                           }
                           return null;
                         },
@@ -131,12 +147,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         controller: _userNameController,
                         focusNode: _userNameFocusNode,
                         decoration: InputDecoration(
-                          hintText: AppTranslations.translate(context, 'نام کاربری'),
+                          hintText: AppTranslations.translate(
+                            context,
+                            'نام کاربری',
+                          ),
                           prefixIcon: Icon(LucideIcons.atSign),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return AppTranslations.translate(context, "نام کاربری الزامی است");
+                            return AppTranslations.translate(
+                              context,
+                              "نام کاربری الزامی است",
+                            );
                           }
                           return null;
                         },
@@ -148,13 +170,34 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         controller: _bioController,
                         focusNode: _bioFocusNode,
                         maxLines: 3,
+                        maxLength: 75,
+                        buildCounter:
+                            (
+                              context, {
+                              required currentLength,
+                              required isFocused,
+                              required maxLength,
+                            }) => txt(
+                              AppTranslations.toPersianDigits(
+                                '$currentLength/$maxLength',
+                              ),
+                              color: currentLength > maxLength!
+                                  ? Colors.red
+                                  : Colors.grey,
+                            ),
                         decoration: InputDecoration(
-                          hintText: AppTranslations.translate(context, 'چند خط درباره خودت و سبک سفر کردنت بنویس...'),
+                          hintText: AppTranslations.translate(
+                            context,
+                            'چند خط درباره خودت و سبک سفر کردنت بنویس...',
+                          ),
                           alignLabelWithHint: true,
                         ),
                         validator: (value) {
-                          if (value!.length > 50) {
-                            return AppTranslations.translate(context, "کارکتر های بیش از حد مجاز");
+                          if (value!.length > 75) {
+                            return AppTranslations.translate(
+                              context,
+                              "کارکتر های بیش از حد مجاز",
+                            );
                           }
                           return null;
                         },
