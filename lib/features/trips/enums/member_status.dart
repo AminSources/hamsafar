@@ -8,7 +8,7 @@ enum MemberStatus {
     icon: LucideIcons.circleAlert,
     badgeType: HsBadgeType.none,
   ),
-  confirmed(
+  accepted(
     label: "تایید شده",
     icon: LucideIcons.circleCheck,
     badgeType: HsBadgeType.success,

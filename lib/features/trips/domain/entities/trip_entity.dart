@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_departure_option_entity.dart';
 import 'package:hamsafar/features/trips/domain/entities/trip_member_entity.dart';
 
+// trip status: preparing, active, completed, canceled
+
 class TripEntity extends Equatable {
   final int id;
   final String name;
@@ -61,29 +63,29 @@ class TripEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        location,
-        departureAt,
-        returnAt,
-        status,
-        budget,
-        createdBy,
-        description,
-        meetingPoint,
-        bankCardNumber,
-        bankAccountName,
-        scheduleType,
-        costItems,
-        rules,
-        memberCount,
-        leaderName,
-        isCreator,
-        isMember,
-        canJoin,
-        membershipClosed,
-        currentMemberStatus,
-        members,
-        departureOptions,
-      ];
+    id,
+    name,
+    location,
+    departureAt,
+    returnAt,
+    status,
+    budget,
+    createdBy,
+    description,
+    meetingPoint,
+    bankCardNumber,
+    bankAccountName,
+    scheduleType,
+    costItems,
+    rules,
+    memberCount,
+    leaderName,
+    isCreator,
+    isMember,
+    canJoin,
+    membershipClosed,
+    currentMemberStatus,
+    members,
+    departureOptions,
+  ];
 }
