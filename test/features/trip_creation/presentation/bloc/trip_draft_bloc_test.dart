@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_event.dart';
 
 void main() {
   group('TripDraftBloc', () {
@@ -41,9 +42,7 @@ void main() {
       addTearDown(bloc.close);
 
       final before = bloc.state.departureOptions;
-      bloc.add(
-        TripDepartureOptionRemoved(before.length + 1),
-      );
+      bloc.add(TripDepartureOptionRemoved(before.length + 1));
       await Future<void>.delayed(Duration.zero);
 
       expect(bloc.state.departureOptions, before);

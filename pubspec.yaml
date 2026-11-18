@@ -48,6 +48,7 @@ dependencies:
   lucide_icons_flutter: ^3.1.20
   supabase_flutter: ^2.17.2
   shamsi_date: ^1.1.1
+  persian_datetime_picker: ^3.2.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0

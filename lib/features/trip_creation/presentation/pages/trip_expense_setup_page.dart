@@ -6,9 +6,11 @@ import 'package:hamsafar/core/widgets/hs_note.dart';
 import 'package:hamsafar/core/widgets/txt.dart';
 import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_event.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+
 class TripExpenseSetupPage extends StatefulWidget {
   const TripExpenseSetupPage({super.key});
 
@@ -26,7 +28,9 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
   }
 
   void _addItem() {
-    context.read<TripDraftBloc>().add(TripCostItemAdded(_costItemController.text));
+    context.read<TripDraftBloc>().add(
+      TripCostItemAdded(_costItemController.text),
+    );
     _costItemController.clear();
   }
 
@@ -78,24 +82,49 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                     'هزینه تخمینی پس از مشخص شدن تعداد اعضا قابل تقسیم خواهد بود.',
               ),
               SizedBox(height: 20.h),
-              txt('اطلاعات کارت برای دریافت سهم', size: 13.sp, fontWeight: FontWeight.w800, color: context.colorScheme.onSurface),
+              txt(
+                'اطلاعات کارت برای دریافت سهم',
+                size: 13.sp,
+                fontWeight: FontWeight.w800,
+                color: context.colorScheme.onSurface,
+              ),
               SizedBox(height: 8.h),
               TextFormField(
                 key: const ValueKey('trip-bank-card'),
                 initialValue: draft.bankCardNumber,
                 keyboardType: TextInputType.number,
-                onChanged: (value) => cubit.add(TripBankCardNumberChanged(value)),
-                decoration: InputDecoration(labelText: AppTranslations.translate(context, 'شماره کارت'), hintText: AppTranslations.translate(context, 'شماره کارت ۱۶ رقمی')),
+                onChanged: (value) =>
+                    cubit.add(TripBankCardNumberChanged(value)),
+                decoration: InputDecoration(
+                  labelText: AppTranslations.translate(context, 'شماره کارت'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'شماره کارت ۱۶ رقمی',
+                  ),
+                ),
               ),
               SizedBox(height: 10.h),
               TextFormField(
                 key: const ValueKey('trip-bank-account'),
                 initialValue: draft.bankAccountName,
-                onChanged: (value) => cubit.add(TripBankAccountNameChanged(value)),
-                decoration: InputDecoration(labelText: AppTranslations.translate(context, 'نام صاحب حساب'), hintText: AppTranslations.translate(context, 'نام و نام خانوادگی')),
+                onChanged: (value) =>
+                    cubit.add(TripBankAccountNameChanged(value)),
+                decoration: InputDecoration(
+                  labelText: AppTranslations.translate(
+                    context,
+                    'نام صاحب حساب',
+                  ),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'نام و نام خانوادگی',
+                  ),
+                ),
               ),
               SizedBox(height: 16.h),
-              const HsNote(note: 'اعضای سفر برای کارت‌به‌کارت از این اطلاعات استفاده می‌کنند. پرداخت نقدی به لیدر هم امکان‌پذیر است.'),
+              const HsNote(
+                note:
+                    'اعضای سفر برای کارت‌به‌کارت از این اطلاعات استفاده می‌کنند. پرداخت نقدی به لیدر هم امکان‌پذیر است.',
+              ),
               SizedBox(height: 20.h),
               txt(
                 'آیتم‌های هزینه',
@@ -111,7 +140,10 @@ class _TripExpenseSetupPageState extends State<TripExpenseSetupPage> {
                       controller: _costItemController,
                       onSubmitted: (_) => _addItem(),
                       decoration: InputDecoration(
-                        hintText: AppTranslations.translate(context, 'مثلاً اقامت، سوخت، خوراک'),
+                        hintText: AppTranslations.translate(
+                          context,
+                          'مثلاً اقامت، سوخت، خوراک',
+                        ),
                       ),
                     ),
                   ),

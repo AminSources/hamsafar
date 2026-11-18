@@ -7,6 +7,8 @@ import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_blo
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_event.dart';
+
 class TripCommonPage extends StatelessWidget {
   const TripCommonPage({super.key});
 
@@ -27,7 +29,10 @@ class TripCommonPage extends StatelessWidget {
                 textInputAction: TextInputAction.next,
                 onChanged: (value) => cubit.add(TripNameChanged(value)),
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'مثلاً سفر جنگل‌گردی شمال'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'مثلاً سفر جنگل‌گردی شمال',
+                  ),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -38,7 +43,10 @@ class TripCommonPage extends StatelessWidget {
                 maxLines: 3,
                 onChanged: (value) => cubit.add(TripDescriptionChanged(value)),
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'درباره برنامه و فعالیت‌های سفر بنویسید...'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'درباره برنامه و فعالیت‌های سفر بنویسید...',
+                  ),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -49,7 +57,10 @@ class TripCommonPage extends StatelessWidget {
                 textInputAction: TextInputAction.next,
                 onChanged: (value) => cubit.add(TripLocationChanged(value)),
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'شهر یا مقصد سفر'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'شهر یا مقصد سفر',
+                  ),
                   prefixIcon: Icon(
                     Icons.location_on_outlined,
                     size: 20.sp,
@@ -64,7 +75,10 @@ class TripCommonPage extends StatelessWidget {
                 initialValue: draft.meetingPoint,
                 onChanged: (value) => cubit.add(TripMeetingPointChanged(value)),
                 decoration: InputDecoration(
-                  hintText: AppTranslations.translate(context, 'آدرس یا محل قرار اعضا'),
+                  hintText: AppTranslations.translate(
+                    context,
+                    'آدرس یا محل قرار اعضا',
+                  ),
                   prefixIcon: Icon(
                     Icons.place_outlined,
                     size: 20.sp,

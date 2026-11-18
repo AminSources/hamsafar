@@ -9,6 +9,8 @@ import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_blo
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 
 import 'package:hamsafar/core/localization/app_translations.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_event.dart';
+
 class TripRulesSetupPage extends StatefulWidget {
   const TripRulesSetupPage({super.key});
 
@@ -47,7 +49,10 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                       controller: _ruleController,
                       onSubmitted: (_) => _addRule(),
                       decoration: InputDecoration(
-                        hintText: AppTranslations.translate(context, 'قانون جدید را بنویسید...'),
+                        hintText: AppTranslations.translate(
+                          context,
+                          'قانون جدید را بنویسید...',
+                        ),
                       ),
                     ),
                   ),

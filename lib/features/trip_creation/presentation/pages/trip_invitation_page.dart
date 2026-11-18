@@ -12,6 +12,7 @@ import 'package:hamsafar/core/resources/data_state.dart';
 import 'package:hamsafar/features/friends/domain/entities/friend_entity.dart';
 import 'package:hamsafar/features/friends/domain/usecases/get_friends_usecase.dart';
 import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_bloc.dart';
+import 'package:hamsafar/features/trip_creation/presentation/bloc/trip_draft_event.dart';
 import 'package:hamsafar/features/trip_creation/presentation/widgets/trip_friend_tile.dart';
 import 'package:hamsafar/features/trip_creation/domain/entities/trip_draft.dart';
 import 'package:hamsafar/core/localization/app_translations.dart';
