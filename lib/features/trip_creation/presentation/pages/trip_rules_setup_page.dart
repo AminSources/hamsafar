@@ -58,7 +58,8 @@ class _TripRulesSetupPageState extends State<TripRulesSetupPage> {
                   ),
                   SizedBox(width: 10.w),
                   SizedBox(
-                    height: 50.h,
+                    height: 55.h,
+                    width: 55.w,
                     child: HsButton(
                       onTap: _addRule,
                       child: const Icon(Icons.add_rounded),

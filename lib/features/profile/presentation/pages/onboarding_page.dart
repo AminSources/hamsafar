@@ -178,9 +178,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               required isFocused,
                               required maxLength,
                             }) => txt(
-                              AppTranslations.toPersianDigits(
-                                '$currentLength/$maxLength',
-                              ),
+                              '$currentLength/$maxLength',
+
                               color: currentLength > maxLength!
                                   ? Colors.red
                                   : Colors.grey,

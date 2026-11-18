@@ -15,6 +15,7 @@ import 'package:hamsafar/features/trips/presentation/bloc/trips_bloc.dart';
 import 'package:hamsafar/features/settings/presentation/bloc/app_settings_bloc.dart';
 import 'package:hamsafar/locator.dart';
 import 'package:hamsafar/core/theme/app_colors.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
@@ -51,8 +52,10 @@ class _AppBootstrapState extends State<AppBootstrap> {
       await dotenv.load(fileName: '.env');
       final url = dotenv.env['SUPABASE_URL'];
       final publishableKey = dotenv.env['SUPABASE_ANON_KEY'];
-      if (url == null || url.isEmpty ||
-          publishableKey == null || publishableKey.isEmpty) {
+      if (url == null ||
+          url.isEmpty ||
+          publishableKey == null ||
+          publishableKey.isEmpty) {
         throw StateError('Supabase environment variables are missing.');
       }
       await Supabase.initialize(url: url, publishableKey: publishableKey);
@@ -85,9 +88,16 @@ class _AppBootstrapState extends State<AppBootstrap> {
                   ? const Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.backpack_outlined, color: Colors.white, size: 72),
+                        Icon(
+                          Icons.backpack_outlined,
+                          color: Colors.white,
+                          size: 72,
+                        ),
                         SizedBox(height: 24),
-                        Text('همسفر', style: TextStyle(color: Colors.white, fontSize: 28)),
+                        Text(
+                          'همسفر',
+                          style: TextStyle(color: Colors.white, fontSize: 28),
+                        ),
                         SizedBox(height: 28),
                         CircularProgressIndicator(color: Colors.white),
                       ],
@@ -97,7 +107,11 @@ class _AppBootstrapState extends State<AppBootstrap> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.cloud_off_outlined, color: Colors.white, size: 48),
+                          const Icon(
+                            Icons.cloud_off_outlined,
+                            color: Colors.white,
+                            size: 48,
+                          ),
                           const SizedBox(height: 16),
                           const Text(
                             'راه‌اندازی برنامه ناموفق بود.',
@@ -156,16 +170,21 @@ class MyApp extends StatelessWidget {
               title: 'Hamsafar Travel App',
               debugShowCheckedModeBanner: false,
               theme: AppTheme.light.copyWith(
-                textTheme: AppTheme.light.textTheme.apply(fontFamily: fontFamily),
+                textTheme: AppTheme.light.textTheme.apply(
+                  fontFamily: fontFamily,
+                ),
               ),
               darkTheme: AppTheme.dark.copyWith(
-                textTheme: AppTheme.dark.textTheme.apply(fontFamily: fontFamily),
+                textTheme: AppTheme.dark.textTheme.apply(
+                  fontFamily: fontFamily,
+                ),
               ),
               themeMode: settings.themeMode,
               routerConfig: AppRoutes.router,
-              supportedLocales: const [Locale('fa'), Locale('en')],
+              supportedLocales: const [Locale('fa', "IR"), Locale('en', "US")],
               locale: Locale(settings.localeCode),
               localizationsDelegates: const [
+                PersianMaterialLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,

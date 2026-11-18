@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hamsafar/core/extensions/date_extension.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/localization/app_translations.dart';
 import 'package:hamsafar/core/widgets/hs_badge.dart';
 import 'package:hamsafar/core/widgets/hs_container.dart';
 import 'package:hamsafar/core/widgets/hs_info_box.dart';
@@ -43,7 +42,7 @@ class HomeTripCard extends StatelessWidget {
               ),
               HsBadge(
                 label:
-                    '${isInTrip ? "شروع" : "برگشت"} ${AppTranslations.toPersianDigits(isInTrip ? trip.departureDate.toJalaliString() : trip.returnDate!.toJalaliString())}',
+                    '${isInTrip ? "شروع" : "برگشت"} ${isInTrip ? trip.departureDate.toJalaliString() : trip.returnDate!.toJalaliString()}',
                 backgroundColor: context.colorScheme.secondary,
                 foregroundColor: context.colorScheme.onSecondary,
               ),
@@ -72,21 +71,9 @@ class HomeTripCard extends StatelessWidget {
           HsInfoBox(
             labels: ["حرکت", "برگشت", "اعضا"],
             values: [
-              [
-                AppTranslations.toPersianDigits(
-                  trip.departureDate.toJalaliString(),
-                ),
-                AppTranslations.toPersianDigits(trip.departureTime!),
-              ],
-              [
-                AppTranslations.toPersianDigits(
-                  trip.returnDate!.toJalaliString(),
-                ),
-                AppTranslations.toPersianDigits(trip.returnTime!),
-              ],
-              [
-                '${AppTranslations.toPersianDigits(trip.members.length.toString())} نفر',
-              ],
+              [trip.departureDate.toJalaliString(), trip.departureTime!],
+              [trip.returnDate!.toJalaliString(), trip.returnTime!],
+              ['${trip.members.length.toString()} نفر'],
             ],
           ),
           SizedBox(height: 16.h),

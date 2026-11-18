@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hamsafar/core/enums/hs_avatar_type.dart';
 import 'package:hamsafar/core/extensions/theme_extension.dart';
-import 'package:hamsafar/core/localization/app_translations.dart';
 import 'package:hamsafar/core/utils/avatar_color_util.dart';
 import 'package:hamsafar/core/utils/avatar_converter.dart';
 import 'package:hamsafar/core/widgets/hs_avatar.dart';
@@ -35,11 +34,7 @@ class HomeAvatarStack extends StatelessWidget {
                     radius: 18.r,
                     child: HsAvatar(
                       label: lastIndex
-                          ? txt(
-                              AppTranslations.toPersianDigits(
-                                "+${members.length - 5}",
-                              ),
-                            )
+                          ? txt("+${members.length - 5}")
                           : Icon(
                               AvatarConverter.stringToIconData(
                                 avatarName: members[index].avatarIcon,

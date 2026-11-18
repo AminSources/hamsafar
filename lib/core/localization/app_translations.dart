@@ -640,7 +640,7 @@ class AppTranslations {
 
   static String translate(BuildContext context, String value) {
     if (Localizations.localeOf(context).languageCode != 'en') {
-      return value;
+      return toPersianDigits(value);
     }
 
     final exact = _english[value] ?? _additionalEnglish[value];

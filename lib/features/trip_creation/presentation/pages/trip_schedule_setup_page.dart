@@ -14,23 +14,42 @@ import "package:persian_datetime_picker/persian_datetime_picker.dart";
 class TripScheduleSetupPage extends StatelessWidget {
   const TripScheduleSetupPage({super.key});
 
-  Future _pickDateTime(BuildContext context, Jalali initial) async {
+  Future<DateTime?> _pickDateTime(
+    BuildContext context,
+    DateTime initial,
+  ) async {
+    final today = Jalali.now();
+
+    final initialJalali = Jalali.fromDateTime(initial);
+
     final date = await showPersianDatePicker(
       context: context,
-      initialDate: initial.isBefore(Jalali(1405)) ? Jalali.now() : initial,
-      firstDate: Jalali(1400),
-      lastDate: Jalali.now().add(years: 1),
+      initialDate: initialJalali.isBefore(today) ? today : initialJalali,
+      firstDate: today,
+      lastDate: today.add(years: 1),
     );
+
     if (date == null || !context.mounted) return null;
+
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(initial.toDateTime()),
+      initialTime: TimeOfDay.fromDateTime(initial),
     );
+
     if (time == null || !context.mounted) return null;
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+
+    final gregorianDate = date.toDateTime();
+
+    return DateTime(
+      gregorianDate.year,
+      gregorianDate.month,
+      gregorianDate.day,
+      time.hour,
+      time.minute,
+    );
   }
 
-  String _dateTime(DateTime value) =>
+  String _dateTime(Jalali value) =>
       '${value.year}/${value.month.toString().padLeft(2, '0')}/${value.day.toString().padLeft(2, '0')}  ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
   Widget _dateField(
@@ -57,7 +76,11 @@ class TripScheduleSetupPage extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             SizedBox(height: 5.h),
-            txt(_dateTime(value), size: 12.sp, fontWeight: FontWeight.w700),
+            txt(
+              _dateTime(Jalali.fromDateTime(value)),
+              size: 12.sp,
+              fontWeight: FontWeight.w700,
+            ),
           ],
         ),
       ),
@@ -108,7 +131,7 @@ class TripScheduleSetupPage extends StatelessWidget {
                       () async {
                         final value = await _pickDateTime(
                           context,
-                          Jalali.fromDateTime(draft.departureAt),
+                          draft.departureAt,
                         );
                         if (value != null) {
                           cubit.add(TripDepartureAtChanged(value));
@@ -119,7 +142,7 @@ class TripScheduleSetupPage extends StatelessWidget {
                     _dateField(context, 'پایان سفر', draft.returnAt, () async {
                       final value = await _pickDateTime(
                         context,
-                        Jalali.fromDateTime(draft.returnAt),
+                        draft.returnAt,
                       );
                       if (value != null) cubit.add(TripReturnAtChanged(value));
                     }),
@@ -170,7 +193,7 @@ class TripScheduleSetupPage extends StatelessWidget {
                                 () async {
                                   final value = await _pickDateTime(
                                     context,
-                                    Jalali.fromDateTime(option.startsAt),
+                                    option.startsAt,
                                   );
                                   if (value != null) {
                                     cubit.add(
@@ -190,7 +213,7 @@ class TripScheduleSetupPage extends StatelessWidget {
                                 () async {
                                   final value = await _pickDateTime(
                                     context,
-                                    Jalali.fromDateTime(option.endsAt),
+                                    option.endsAt,
                                   );
                                   if (value != null) {
                                     cubit.add(
